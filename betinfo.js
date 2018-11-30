@@ -57,7 +57,7 @@ window.betUtil = {
                 "rebate_count": 80,
                 "multiple": "1",
                 "mode": 3,
-                "bet_money": perMoney * betInfos[i].count + "",
+                "bet_money": (perMoney * betInfos[i].count).toFixed(3),
                 "calc_type": "0"
             });
         }
