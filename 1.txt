@@ -1,0 +1,3 @@
+{"command_id":521,"lottery_id":"91","issue":"20181128450","count":2,"bet_info":[{"method_id":"130001","number":"2,3,4@002$005","rebate_count":80,"multiple":"1","mode":0,"bet_money":"4","calc_type":"0"},{"method_id":"130001","number":"2,3,4@220","rebate_count":80,"multiple":"1","mode":0,"bet_money":"2","calc_type":"0"}]}
+
+{"command_id":521,"lottery_id":"91","issue":"20181128452","count":1,"bet_info":[{"method_id":"130001","number":"2,3,4@001$002","rebate_count":80,"multiple":"1","mode":3,"bet_money":"0.004","calc_type":"0"}]}
