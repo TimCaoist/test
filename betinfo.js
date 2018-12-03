@@ -25,7 +25,7 @@ window.betUtil = {
 };
 
 (function () {
-    var builderOrderParams = function (betInfo, issueNumber, count) {
+    var builderOrderParams = function (betInfo, issueNumber) {
         var betInfo = {
             "command_id": 521,
             "lottery_id": "91",
