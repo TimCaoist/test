@@ -146,7 +146,8 @@ String.prototype.padLeft = function (c, length) {
             policy.isRunning = true;
             console.log("策略dolu符合条件！当前倍数:" + policy.bias);
             var betInfos = buildNumber(guess, compare);
-            var datas = window.betUtil.builderBetInfos(guess.a + "," + guess.b + "," + guess.c, betInfos.datas, policy.bias === 1 ? 0.002 : 0.002 * 11);
+            var b = policy.bias === 1 ? 2 : 23;
+            var datas = window.betUtil.builderBetInfos(guess.a + "," + guess.b + "," + guess.c, betInfos.datas, b * 0.002, b);
             betUtil.builderOrderParams(datas, (parseInt(newData.CP_QS) + 1) + "");
             console.log("下注成功！");
         }

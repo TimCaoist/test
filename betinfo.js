@@ -47,7 +47,7 @@ window.betUtil = {
 
     window.betUtil.builderOrderParams = builderOrderParams;
 
-    var builderBetInfos = function (index, betInfos, perMoney) {
+    var builderBetInfos = function (index, betInfos, perMoney, multiple) {
         var datas = [];
         //"0.004"
         for (var i = 0; i < betInfos.length; i++) {
@@ -55,7 +55,7 @@ window.betUtil = {
                 "method_id": "130001",
                 "number": index + "@" + betInfos[i].number,
                 "rebate_count": 80,
-                "multiple": "1",
+                "multiple": multiple + "",
                 "mode": 3,
                 "bet_money": (perMoney * betInfos[i].count).toFixed(3),
                 "calc_type": "0"
