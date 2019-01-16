@@ -99,18 +99,27 @@ window.betUtil = {
 })();
 
 (function () {
+    var storeDatas = [];
+    var isFirst = true;
     var handlerResult = function (result) {
         if (betUtil.currentBetInfo !== null && result.CP_QS == betUtil.currentBetInfo.CP_QS) {
             return;
         }
 
+        storeDatas.push(result);
         console.log("开奖期号:" + result.CP_QS + "开奖号码:" + result.ZJHM);
-        for (var i = 0; i < window.watchers.length; i++) {
-            var watcher = window.watchers[i];
-            watcher.newBetData(betUtil.currentBetInfo, result);
-            for (var a = 0; a < watcher.policies.length; a++) {
-                watcher.policies[a].check(watcher);
+
+        if (isFirst === false) {
+            for (var i = 0; i < window.watchers.length; i++) {
+                var watcher = window.watchers[i];
+                watcher.newBetData(betUtil.currentBetInfo, result, storeDatas);
+                for (var a = 0; a < watcher.policies.length; a++) {
+                    watcher.policies[a].check(watcher, result);
+                }
             }
+        }
+        else {
+            isFirst = false;
         }
 
         betUtil.currentBetInfo = result;
@@ -127,9 +136,12 @@ window.betUtil = {
 
         $("body").html("<button id='start'>开始</button><button id='stop'>停止</button>");
         $("#start").click(function () {
-            console.log("开始抽奖");
-            loopGetBet();
-            setInterval(loopGetBet, 20000);
+            window.betUtil.getBetDatas(betUtil.jndBetId, 300, function (result) {
+                storeDatas = result.reverse();
+                handlerResult(storeDatas[storeDatas.length - 1]);
+                console.log("开始抽奖");
+                setInterval(loopGetBet, 20000);
+            });
         });
 
         $("#stop").click(function () {

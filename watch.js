@@ -1,4 +1,159 @@
 window.watchers = [];
+(function () {
+    var getNums = function (a, si, histroyDatas, len) {
+        var nums = [];
+        for (var i = si - 1; i >= si - len; i--) {
+            if (i >= histroyDatas.length) {
+                return [];
+            }
+
+            var data = histroyDatas[i].ZJHM.split(',')[a];
+            nums.push(data);
+        }
+
+        return nums;
+    }
+
+    var compare = function (na, nb, isBig) {
+        for (var i = 0; i < na.length; i++) {
+            if (isBig) {
+                if (na[i] < 5 && nb[i] >= 5) {
+                    return false;
+                }
+
+                if (na[i] >= 5 && nb[i] < 5) {
+                    return false;
+                }
+            }
+            else {
+                if (na[i] % 2 !== nb[i] % 2) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    var findGuys = function (nums, a, si, histroyDatas, takeLen, compareType) {
+        var len = histroyDatas.length;
+        for (var i = si; i >= len - 90; i--) {
+            var matchNums = getNums(a, i, histroyDatas, takeLen);
+            if (matchNums.length === 0) {
+                return null;
+            }
+
+            var isMatch = false;
+            if (typeof compareType === "undefined") {
+                var isBig = false;
+                isMatch = compare(nums, matchNums, isBig);
+                if (!isMatch) {
+                    isBig = true;
+                    isMatch = compare(nums, matchNums, true);
+                }
+            }
+            else {
+                var isBig = compareType;
+                isMatch = compare(nums, matchNums, isBig);
+            }
+
+            if (!isMatch) {
+                continue;
+            }
+
+            return {
+                numIndex: a,
+                isBig: isBig,
+                matchNums: matchNums,
+                matchIndex: i,
+                nums: nums,
+                compareLen: takeLen,
+                prevNums: getNums(a, i + 4, histroyDatas, 4),
+            };
+        }
+
+        return null;
+    };
+
+    var findAllGuys = function (nums, a, si, histroyDatas, takeLen) {
+        var i = si;
+        var guys = [];
+        while (i > -1) {
+            var guy = findGuys(nums, a, i, histroyDatas, takeLen);
+            if (guy === null) {
+                i = - 1;
+            }
+            else {
+                guys.push(guy);
+                i = guy.matchIndex - takeLen;
+            }
+        }
+
+        return guys;
+    };
+
+	var watch = {
+        name: "fuckyourmom",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var guys = [];
+            var len = histroyDatas.length;
+            for (var a = 0; a < 5; a++) {
+                for (var takenlen = 12; takenlen >= 6; takenlen--) {
+                    var nums = getNums(a, len, histroyDatas, takenlen);
+                    var macthguys = findAllGuys(nums, a, len - takenlen, histroyDatas, takenlen);
+                    if (macthguys.length === 0) {
+                        continue;
+                    }
+
+                    var mgl = macthguys.length;
+                    var haveFound = false;
+                    for (var b = 0; b < mgl; b++) {
+                        var mg = macthguys[b];
+                        var mgNum = getNums(a, mg.matchIndex + 4, histroyDatas, takenlen + 4);
+                        var guy = findGuys(mgNum, a, mg.matchIndex - 8 - takenlen, histroyDatas, takenlen + 4, mg.isBig);
+                        if (guy === null) {
+                            continue;
+                        }
+
+                        haveFound = true;
+                        guys.push(mg);
+                    }
+
+                    if (haveFound) {
+                        break;
+                    }
+                }
+
+                if (guy === null || typeof guy === "undefined") {
+                    continue;
+                }
+
+                guys.push(guy);
+            }
+
+            if (guys.length === 0) {
+                watch.matchGuy = null;
+                return;
+            }
+
+            guys.sort(function (a, b) {
+                if (b.compareLen != a.compareLen) { return b.compareLen - a.compareLen; }
+                return b.matchIndex - a.matchIndex;
+            });
+
+            console.log(guys);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, guys[0], newData);
+            }
+        }
+    };
+	
+	window.watchers.push(watch);
+})();
 
 (function () {
     var compare = function (aArray, bArray) {
@@ -128,7 +283,7 @@ window.watchers = [];
         }
     };
 
-    watchers.push(watch);
-    console.log("加载Watch -- dolu成功");
+    //watchers.push(watch);
+    //console.log("加载Watch -- dolu成功");
 })();
 
