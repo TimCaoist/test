@@ -106,10 +106,10 @@ window.betUtil = {
             return;
         }
 
-        storeDatas.push(result);
         console.log("开奖期号:" + result.CP_QS + "开奖号码:" + result.ZJHM);
 
         if (isFirst === false) {
+            storeDatas.push(result);
             for (var i = 0; i < window.watchers.length; i++) {
                 var watcher = window.watchers[i];
                 watcher.newBetData(betUtil.currentBetInfo, result, storeDatas);
@@ -136,7 +136,7 @@ window.betUtil = {
 
         $("body").html("<button id='start'>开始</button><button id='stop'>停止</button>");
         $("#start").click(function () {
-            window.betUtil.getBetDatas(betUtil.jndBetId, 300, function (result) {
+            window.betUtil.getBetDatas(betUtil.jndBetId, 2000, function (result) {
                 storeDatas = result.reverse();
                 handlerResult(storeDatas[storeDatas.length - 1]);
                 console.log("开始抽奖");

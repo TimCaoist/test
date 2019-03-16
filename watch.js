@@ -1,4 +1,153 @@
 window.watchers = [];
+
+(function () {
+    var getNums = function (a, si, histroyDatas, len) {
+        var nums = [];
+        for (var i = si - 1; i >= si - len; i--) {
+            if (i >= histroyDatas.length) {
+                return [];
+            }
+
+            var data = histroyDatas[i].ZJHM.split(',')[a];
+            nums.push(data);
+        }
+
+        return nums;
+    }
+
+    var compare = function (na, nb, isBig) {
+        for (var i = 0; i < na.length; i++) {
+            if (na[i] !== nb[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    var findGuy = function (nums, a, si, histroyDatas, takeLen) {
+        var len = histroyDatas.length;
+        for (var i = si; i >= len - 1900; i--) {
+            var matchNums = getNums(a, i, histroyDatas, takeLen);
+            if (matchNums.length === 0) {
+                return null;
+            }
+
+            var isMatch = compare(matchNums, nums);
+            if (isMatch === false) {
+                continue;
+            }
+
+            return {
+                numIndex: a,
+                matchNums: matchNums,
+                matchIndex: i,
+                nums: nums,
+                compareLen: takeLen,
+                prevNum: getNums(a, i + 1, histroyDatas, 1)[0],
+            };
+        }
+
+        return null;
+    };
+
+    var watch = {
+        name: "haven",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var guys = [];
+            var len = histroyDatas.length;
+            
+            for (var a = 0; a < 5; a++) {
+                for (var i = 7; i >= 4; i--) {
+                    var nums = getNums(a, histroyDatas.length, histroyDatas, i);
+                    var guy = findGuy(nums, a, histroyDatas.length - 1, histroyDatas, i);
+                    if (guy == null) {
+                        continue;
+                    }
+
+                    var match = false;
+                    switch (i) {
+                        case 7:
+                            {
+                                guys.push(guy);
+                                match = true;
+                                break;
+                            }
+                        case 6:
+                        case 5:
+                            {
+                                for (var b = histroyDatas.length - 1; b >= histroyDatas.length - 100; b--) {
+                                    var prevNums = getNums(a, b, histroyDatas, 6);
+                                    var prevGuy = findGuy(prevNums, a, b - 1, histroyDatas, 6);
+                                    if (prevGuy === null) {
+                                        continue;
+                                    }
+
+                                    guys.push(guy);
+                                    match = true;
+                                    break;
+                                }
+                            }
+
+                            break;
+                        case 4:
+                            {
+                                for (var b = histroyDatas.length - 2; b >= histroyDatas.length - 5; b--) {
+                                    var prevNums = getNums(a, b, histroyDatas, 5);
+                                    var prevGuy = findGuy(prevNums, a, b - 1, histroyDatas, 5);
+                                    if (prevGuy === null) {
+                                        continue;
+                                    }
+
+                                    if ((histroyDatas.length - 3) != b) {
+                                        guys.push(guy);
+                                        match = true;
+                                    }
+                                    else {
+                                        var prevNum = getNums(a, b, histroyDatas, 1)[0];
+                                        if (prevNum !== prevGuy.prevNum) {
+                                            guys.push(guy);
+                                            match = true;
+                                        }
+                                    }
+
+                                    
+                                    break;
+                                }
+                            }
+
+                            break;
+                    }
+
+                    if (match) {
+                        break;
+                    }
+                }
+            }
+
+            if (guys.length === 0) {
+                watch.matchGuy = null;
+                return;
+            }
+
+            guys.sort(function (a, b) {
+                return b.matchIndex - a.matchIndex;
+            });
+
+            console.log(guys);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, guys[0], newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
+
 (function () {
     var getNums = function (a, si, histroyDatas, len) {
         var nums = [];
@@ -75,7 +224,7 @@ window.watchers = [];
         return null;
     };
 
-    var findAllGuys = function (nums, a, si, histroyDatas, takeLen) {
+    var findAllGuys = function (nums, a, si, histroyDatas, takeLen, matchTimes) {
         var i = si;
         var guys = [];
         while (i > -1) {
@@ -84,13 +233,31 @@ window.watchers = [];
                 i = - 1;
             }
             else {
-                guys.push(guy);
+                var mgNum = getNums(a, guy.matchIndex + 4, histroyDatas, takeLen + 4);
+                var isMatch = findMatchGuy(mgNum, guy.isBig, guy.matchIndex + 4, a, histroyDatas, takeLen + 4, matchTimes);
+                if (isMatch) {
+                    guys.push(guy);
+                }
+                
                 i = guy.matchIndex - takeLen;
             }
         }
 
         return guys;
     };
+
+    var findMatchGuy = function (mgNum, isBig, si, a, histroyDatas, takenlen, matchTimes) {
+        var guy = findGuys(mgNum, a, si, histroyDatas, takenlen, isBig);
+        if (guy === null) {
+            return false;
+        }
+
+        if (matchTimes === 1) {
+            return true;
+        }
+
+        return findMatchGuy(guy.matchNums, isBig, guy.matchIndex - takenlen, a, histroyDatas, takenlen, --matchTimes);
+    }
 
 	var watch = {
         name: "fuckyourmom",
@@ -104,35 +271,31 @@ window.watchers = [];
             for (var a = 0; a < 5; a++) {
                 for (var takenlen = 12; takenlen >= 6; takenlen--) {
                     var nums = getNums(a, len, histroyDatas, takenlen);
-                    var macthguys = findAllGuys(nums, a, len - takenlen, histroyDatas, takenlen);
+                    var mt = 2;
+                    if (takenlen === 7) {
+                        mt = 2;
+                    }
+                    else if (takenlen <= 7) {
+                        mt = 3;
+                    }
+                    else if (takenlen > 7 && takenlen < 10) {
+                        mt = 2;
+                    }
+
+                    var macthguys = findAllGuys(nums, a, len - takenlen, histroyDatas, takenlen, mt);
                     if (macthguys.length === 0) {
                         continue;
                     }
 
                     var mgl = macthguys.length;
-                    var haveFound = false;
                     for (var b = 0; b < mgl; b++) {
-                        var mg = macthguys[b];
-                        var mgNum = getNums(a, mg.matchIndex + 4, histroyDatas, takenlen + 4);
-                        var guy = findGuys(mgNum, a, mg.matchIndex - 8 - takenlen, histroyDatas, takenlen + 4, mg.isBig);
-                        if (guy === null) {
-                            continue;
-                        }
-
-                        haveFound = true;
-                        guys.push(mg);
+                        guys.push(macthguys[b]);
                     }
 
-                    if (haveFound) {
-                        break;
-                    }
+                    break;
                 }
 
-                if (guy === null || typeof guy === "undefined") {
-                    continue;
-                }
-
-                guys.push(guy);
+                
             }
 
             if (guys.length === 0) {
@@ -141,7 +304,6 @@ window.watchers = [];
             }
 
             guys.sort(function (a, b) {
-                if (b.compareLen != a.compareLen) { return b.compareLen - a.compareLen; }
                 return b.matchIndex - a.matchIndex;
             });
 

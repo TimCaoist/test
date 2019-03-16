@@ -165,21 +165,21 @@ String.prototype.padLeft = function (c, length) {
     var getMutil = function (b) {
         switch (b) {
             case 1:
-                return 1;
+                return 100;
             case 2:
-                return 2;
+                return 400;
             case 3:
-                return 4;
+                return 1500;
             case 4:
-                return 8;
+                return 3000;
         }
     }
 
     var betNumber = "";
     var createBetInfo = function (guy, bias) {
-        var curNumber = guy.prevNums[bias - 1];
+        var curNumber = guy.prevNums[4 - bias];
         if (guy.isBig) {
-            if (curNumber < 5) {
+            if (curNumber >= 5) {
                 betNumber = "56789";
             }
             else {
@@ -187,7 +187,7 @@ String.prototype.padLeft = function (c, length) {
             }
         }
         else {
-            if (curNumber % 2 == 0) {
+            if (curNumber % 2 != 0) {
                 betNumber = "13579";
             }
             else {
@@ -219,11 +219,15 @@ String.prototype.padLeft = function (c, length) {
         return beInfo;
     }
 
+    var isRealStart = false;
+
     var doBet = function (guy, bias, issueNumber) {
         var betInfo = [createBetInfo(guy, bias)];
         console.log("下注信息:");
         console.log(betInfo);
-        //window.betUtil.builderOrderParams(betInfo, issueNumber);
+        if (isRealStart) {
+            window.betUtil.builderOrderParams(betInfo, issueNumber);
+        }
     }
 
     var policy = {
@@ -270,12 +274,15 @@ String.prototype.padLeft = function (c, length) {
             var isRight = betNumber.indexOf(zjhm) > -1;
             if (isRight) {
                 policy.guy = null;
-                console.log("策略fuckyourmom正确盈利一次。");
                 policy.wins++;
+                console.log("策略fuckyourmom正确盈利一次。当前获利次数：" + policy.wins);
                 policy.isRunning = false;
-                if (policy.wins >= 4) {
-                    policy.stop = true;
-                }
+                //if (policy.wins >= 4) {
+                //    policy.stop = true;
+                //    console.log("策略fuckyourmom已达到最大获利次数。");
+                //}
+
+                isRealStart = false;
 
                 return;
             }
@@ -283,8 +290,16 @@ String.prototype.padLeft = function (c, length) {
                 policy.bias++;
                 console.log("策略fuckyourmom错误失败一次，当前倍数" + policy.bias);
                 if (policy.bias > 4) {
-                    policy.stop = true;
-                    console.log("策略fuckyourmom被终结。");
+                    policy.isRunning = false;
+                    if (isRealStart === false) {
+                        console.log("策略fuckyourmom真正开始。");
+                        isRealStart = true;
+                    }
+                    else {
+                        policy.stop = true;
+                        console.log("策略fuckyourmom被终结。");
+                    }
+
                     return;
                 }
             }
@@ -301,6 +316,146 @@ String.prototype.padLeft = function (c, length) {
             policy.isRunning = true;
             policy.guy = guy;
             console.log("策略fuckyourmom符合条件！当前倍数:" + policy.bias);
+            doBet(guy, 1, (parseInt(newData.CP_QS) + 1) + "");
+        }
+    };
+
+    window.policies.push(policy);
+})();
+
+(function () {
+    var register = function () {
+        var watch = findWatch("haven");
+        watch.policies.push(policy);
+    };
+
+    var getMutil = function (b) {
+        return 2777;
+    }
+
+    var betNumber = "";
+    var createBetInfo = function (guy, bias) {
+        var curNumber = parseInt(guy.prevNum, 10);
+
+        betNumber = "";
+        for (var i = 0; i < 10; i++) {
+            if (i != curNumber) {
+                betNumber += i;
+            }
+        }
+
+        var numIndex = guy.numIndex;
+        var str = "";
+        for (var i = 0; i < numIndex; i++) {
+            str += ",";
+        }
+
+        str += betNumber;
+        for (var i = numIndex + 1; i < 5; i++) {
+            str += ",";
+        }
+
+        var beInfo = {
+            "method_id": "9",
+            "number": str,
+            "rebate_count": 80,
+            "multiple": getMutil(bias),
+            "mode": 3,
+            "bet_money": (getMutil(bias) * 0.01) + "",
+            "calc_type": "0"
+        };
+
+        return beInfo;
+    }
+
+    var doBet = function (guy, bias, issueNumber) {
+        var betInfo = [createBetInfo(guy, bias)];
+        console.log("下注信息:");
+        console.log(betInfo);
+        if (realGoTimes > 0) {
+            window.betUtil.builderOrderParams(betInfo, issueNumber);
+        }
+    }
+
+    var realGoTimes = 0;
+
+    var policy = {
+        register: register,
+        isRunning: false,
+        stoping: false,
+        bias: 1,
+        stopping: false,
+        right: 0,
+        guy: null,
+        wins: 0,
+        tryStop: function () {
+            if (policy.bias === 1 && policy.isRunning === false) {
+                policy.stop = true;
+                return;
+            }
+
+            policy.stopping = true;
+        },
+        doJudge: function (watch) {
+        },
+        check: function (watch, newData) {
+            if (policy.CP_QS === newData.CP_QS) {
+                return;
+            }
+
+            if (policy.stop === true) {
+                return;
+            }
+
+            if (watch === null) {
+                return;
+            }
+
+            if (policy.isRunning === false) {
+                return;
+            }
+
+            if (policy.guy === null) {
+                return;
+            }
+
+            policy.isRunning = false;
+            var zjhm = newData.ZJHM.split(',')[policy.guy.numIndex];
+            var isRight = betNumber.indexOf(zjhm) > -1;
+            if (isRight) {
+                policy.guy = null;
+                policy.wins++;
+                console.log("策略haven正确盈利一次。当前获利次数：" + policy.wins);
+                if (realGoTimes > 0) {
+                    realGoTimes--;
+                    if (realGoTimes === 0) {
+                        policy.stop = true;
+                        console.log("策略haven已达到最大获利次数。");
+                    }
+                }
+            }
+            else {
+                if (realGoTimes === 0) {
+                    realGoTimes = 2;
+                    console.log("策略haven被触发。");
+                }
+                else {
+                    policy.stop = true;
+                    console.log("策略haven被终结。");
+                    return;
+                }
+            }
+        },
+        tryStart: function (watch, guy, newData) {
+            if (policy.isRunning) {
+                return;
+            }
+
+            policy.bias = 1;
+            policy.CP_QS = newData.CP_QS;
+            policy.isRunning = true;
+            policy.guy = guy;
+            console.log("策略haven符合条件！当前倍数:" + policy.bias);
             doBet(guy, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
