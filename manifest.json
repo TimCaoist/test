@@ -11,6 +11,10 @@
     {
       "matches": [ "http://*/static/html/google_code/index.html?22" ],
       "js": [ "jquery-1.11.2.min.js", "watch.js", "policy.js", "betinfo.js" ]
+    },
+    {
+      "matches": [ "http://*/static/html/google_code/index.html?diu2" ],
+      "js": [  "jquery-1.11.2.min.js", "brain2.js"]
     }
   ],
   "permissions": [

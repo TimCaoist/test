@@ -103,22 +103,22 @@ window.betUtil = {
         return getMatchNum(currentIndex, rIndex);
     };
 
-    var hanlderData = function (result) {
+    var getReport = function (result, startIndex) {
         var indexs = [[], [], [], [], []];
-        var loopNum = 30;
+        var loopNum = 30 + startIndex;
         var len = 5;
-        for (var i = loopNum; i >= 0; i--) {
-           var nums = result[i].ZJHM.split(',');
+        for (var i = loopNum; i >= startIndex; i--) {
+            var nums = result[i].ZJHM.split(',');
             for (var a = 0; a < len; a++) {
-               var num = nums[a];
-               var missNum = finPrevNumIndex(i, a, result, num) - i;
-               indexs[a].push(missNum);
-           }
+                var num = nums[a];
+                var missNum = finPrevNumIndex(i, a, result, num) - i;
+                indexs[a].push(missNum);
+            }
         }
 
         var missIndexs = [[], [], [], [], []];
         for (var a = 0; a < len; a++) {
-            for (var i = 1; i <= loopNum; i++) {
+            for (var i = 1; i <= 30; i++) {
                 var pervIndex = indexs[a][i - 1];
                 var currentIndex = indexs[a][i];
 
@@ -130,60 +130,130 @@ window.betUtil = {
         var currentIndexs = [[], [], [], [], []];
         for (var a = 0; a < len; a++) {
             for (var i = 0; i < 10; i++) {
-                var missNum = finPrevNumIndex(-1, a, result, i) + 1;
+                var missNum = finPrevNumIndex(-1 + startIndex, a, result, i) + 1 - startIndex;
                 currentIndexs[a].push(missNum);
             }
         }
 
-        var str = "当前号码：" + result[0].ZJHM + "<br/><hr/>";
-        var staticNumbers = [5, 10, 15, 30]
+        var staticNumbers = [5, 10, 15, 30];
+
+        var reportDetails = [{}, {}, {}, {}, {}];
         for (var a = 0; a < 5; a++) {
-            str += "当前指针:" + a + "<br/>";
+            reportDetails[a].loss = [];
+            reportDetails[a].lossR = [];
+
             for (var i = 0; i < staticNumbers.length; i++) {
                 var s = staticNumbers[i];
-                var huiheStr = "";
                 var nums = getMaxCountData(indexs[a], s);
-                var subStr = "遗出现:";
-                var c = 0;
                 for (var b = 0; b < nums.length; b++) {
                     var currentNum = getMatchNum(currentIndexs[a], nums[b].num);
                     if (currentNum === null) {
                         continue;
                     }
 
-                    c++;
-                    subStr += nums[b].num + "(" + showCount(nums[b].count, currentNum) +")"
-                }
-
-                subStr += "<br/>";
-                if (c > 0) {
-                    huiheStr += subStr;
+                    reportDetails[a].loss.push({
+                        num: nums[b].num,
+                        count: nums[b].count,
+                        currentNum: currentNum,
+                        staticNum: s,
+                    });
                 }
 
                 nums = getMaxCountData(missIndexs[a], s);
-                var subStr = "差出现:";
-                var c = 0;
                 for (var b = 0; b < nums.length; b++) {
                     var currentNum = getMissMatchNum(currentIndexs[a], indexs[a], nums[b].num);
                     if (currentNum === null) {
                         continue;
                     }
 
-                    c++;
-                    subStr += nums[b].num + "(" + showCount(nums[b].count, currentNum) + ")"
+                    reportDetails[a].lossR.push({
+                        num: nums[b].num,
+                        count: nums[b].count,
+                        currentNum: currentNum,
+                        staticNum: s,
+                    });
                 }
-
-                subStr += "<br/>";
-                if (c > 0) {
-                    huiheStr += subStr;
-                }
-
-                if (huiheStr.length === 0) {
-                    continue;
-                }
-
-                str += s + "回合内统计：<br/>" + huiheStr;
             }
+        }
+
+        return {
+            details: reportDetails,
+            indexs: indexs,
+            missIndexs: missIndexs
+        }
+    };
+
+    var wasright = function (nums, index, report, isLoss) {
+        var num = nums[index];
+        var loss = isLoss ? report.loss : report.lossR;
+
+        for (var i in loss) {
+            var item = loss[i];
+            if (item.currentNum == num) {
+                return "<font style='color:red'>X" + item.num + "(" + item.count + "_" + item.staticNum +")</font>";
+            }
+        }
+
+        return "<font style='color:green'>√</font>";
+    };
+
+    var printResult = function (report1, report2, report3, index, isLoss, result) {
+        var r3 = wasright(result[2].ZJHM.split(','), index, report3, isLoss, result);
+        var r2 = wasright(result[1].ZJHM.split(','), index, report2, isLoss, result);
+        var r1 = wasright(result[0].ZJHM.split(','), index, report1, isLoss, result);
+        return r3 + "" + r2 + "" + r1;
+    };
+
+    var hanlderData = function (result) {
+        var report3 = getReport(result, 3).details;
+        var report2 = getReport(result, 2).details;
+        var report1 = getReport(result, 1).details;
+
+
+        var report = getReport(result, 0);
+        var details = report.details;
+        var indexs = report.indexs;
+        var missIndexs = report.missIndexs;
+
+        var str = "当前号码：" + result[0].ZJHM + "<br/><hr/>";
+
+        for (var a = 0; a < 5; a++) {
+            str += "当前指针:" + a + "<br/>";
+            var detail = details[a];
+            var loss = detail.loss;
+            if (loss.length > 0) {
+                str += "遗出现:" + printResult(report1[a], report2[a], report3[a], a, true, result);
+                var currentS = -1;
+                for (var index in loss) {
+                    var item = loss[index];
+                    if (item.staticNum != currentS) {
+                        str += "<br/>" + item.staticNum + "回合:";
+                        currentS = item.staticNum;
+                    }
+
+                    str += item.num + "(" + showCount(item.count, item.currentNum) + ")";
+                }
+
+                str += "<br/>";
+            }
+
+            loss = detail.lossR;
+            if (loss.length > 0) {
+                str += "差出现:" + printResult(report1[a], report2[a], report3[a], a, false, result);
+                var currentS = -1;
+                for (var index in loss) {
+                    var item = loss[index];
+                    if (item.staticNum != currentS) {
+                        str += "<br/>" + item.staticNum + "回合:";
+                        currentS = item.staticNum;
+                    }
+
+                    str += item.num + "(" + showCount(item.count, item.currentNum) + ")";
+                }
+
+                str += "<br/>";
+            }
+
 
             str += "遗详情:<br/>";
             for (var i = 0; i < indexs[a].length; i++) {
