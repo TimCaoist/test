@@ -25,6 +25,37 @@ window.betUtil = {
 };
 
 (function () {
+    var doubledoubleLoss = {
+        isMatch: function (n, loss, indexs) {
+            var index3 = indexs[indexs.length - 3];
+            var index2 = indexs[indexs.length - 2];
+            var index1 = indexs[indexs.length - 1];
+            if (index3 !== index2 || index1 !== loss) {
+                return false;
+            }
+
+            return true;
+        },
+        color: "#218868",
+    };
+
+    var splitValueEqulsLoss = {
+        isMatch: function (n, loss, indexs) {
+            var index2 = indexs[indexs.length - 2];
+            var index1 = indexs[indexs.length - 1];
+            var v = index1 - index2;
+            var target = index1 + v;
+            if (target === loss) {
+                return true;
+            }
+
+            return false;
+        },
+        color: "blue",
+    };
+
+    var lossFuncs = [doubledoubleLoss, splitValueEqulsLoss];
+
     var finPrevNumIndex = function (i, a, nums, matchNum) {
         var length = nums.length;
         for (var si = i + 1; si < length; si++) {
@@ -81,10 +112,10 @@ window.betUtil = {
 
     var showCount = function (n, num) {
         if (n < 3) {
-            return n + "_<font style='color:green'>" + num + "</font>";
+            return "<font style='color:#218868'>" + num + "</font>_" + n;
         }
 
-        return "<font style='color:red'>" + n + "</font>_<font style='color:green'>" + num + "</font>";
+        return "<font style='color:#218868'>" + num + "</font>_<font style='color:red'>" + n + "</font>";
     }
 
     var getMatchNum = function (currentIndex, num) {
@@ -179,7 +210,8 @@ window.betUtil = {
         return {
             details: reportDetails,
             indexs: indexs,
-            missIndexs: missIndexs
+            missIndexs: missIndexs,
+            currentIndexs: currentIndexs
         }
     };
 
@@ -194,35 +226,55 @@ window.betUtil = {
             }
         }
 
-        return "<font style='color:green'>√</font>";
+        return "<font style='color:#218868'>√</font>";
     };
 
-    var printResult = function (report1, report2, report3, index, isLoss, result) {
+    var printResult = function (report1, report2, report3, report4, report5, index, isLoss, result) {
+        var r5 = wasright(result[4].ZJHM.split(','), index, report5, isLoss, result);
+        var r4 = wasright(result[3].ZJHM.split(','), index, report4, isLoss, result);
         var r3 = wasright(result[2].ZJHM.split(','), index, report3, isLoss, result);
         var r2 = wasright(result[1].ZJHM.split(','), index, report2, isLoss, result);
         var r1 = wasright(result[0].ZJHM.split(','), index, report1, isLoss, result);
-        return r3 + "" + r2 + "" + r1;
+        return r5 + "" + r4 + "" + r3 + "" + r2 + "" + r1;
+    };
+
+    var printSpecial = function (n, loss, indexs) {
+        for (var i in lossFuncs) {
+            var lossFunc = lossFuncs[i];
+            if (lossFunc.isMatch(n, loss, indexs)) {
+                return "<font color='" + lossFunc.color + "'>" + n + "_" + loss + "</font>,";
+            }
+        }
+
+        return n + "_" + loss + ",";
     };
 
     var hanlderData = function (result) {
+        var report5 = getReport(result, 5).details;
+        var report4 = getReport(result, 4).details;
         var report3 = getReport(result, 3).details;
         var report2 = getReport(result, 2).details;
-        var report1 = getReport(result, 1).details;
+        var r1 = getReport(result, 1);
+        var report1 = r1.details;
 
+        var prevIndexs = r1.currentIndexs;
 
         var report = getReport(result, 0);
         var details = report.details;
         var indexs = report.indexs;
         var missIndexs = report.missIndexs;
+        var currentIndexs = report.currentIndexs;
 
-        var str = "当前号码：" + result[0].ZJHM + "<br/><hr/>";
+        var currentNum = result[0].ZJHM;
+        var str = "当前号码：" + currentNum + "<br/><hr/>";
+        currentNum = currentNum.split(',');
 
         for (var a = 0; a < 5; a++) {
-            str += "当前指针:" + a + "<br/>";
+            str += "当前指针:" + (a + 1) + "开" + currentNum[a]+"<br/>";
             var detail = details[a];
             var loss = detail.loss;
+            str += "遗出现:" + printResult(report1[a], report2[a], report3[a], report4[a], report5[a], a, true, result);
             if (loss.length > 0) {
-                str += "遗出现:" + printResult(report1[a], report2[a], report3[a], a, true, result);
                 var currentS = -1;
                 for (var index in loss) {
                     var item = loss[index];
@@ -233,13 +285,13 @@ window.betUtil = {
 
                     str += item.num + "(" + showCount(item.count, item.currentNum) + ")";
                 }
-
-                str += "<br/>";
             }
+
+            str += "<br/>";
 
             loss = detail.lossR;
+            str += "差出现:" + printResult(report1[a], report2[a], report3[a], report4[a], report5[a], a, false, result);
             if (loss.length > 0) {
-                str += "差出现:" + printResult(report1[a], report2[a], report3[a], a, false, result);
                 var currentS = -1;
                 for (var index in loss) {
                     var item = loss[index];
@@ -250,15 +302,41 @@ window.betUtil = {
 
                     str += item.num + "(" + showCount(item.count, item.currentNum) + ")";
                 }
-
-                str += "<br/>";
             }
 
+            str += "<br/>";
+
+            str += "当前遗:<br/>";
+            for (var i = 0; i < currentIndexs[a].length; i++) {
+                str += printSpecial(i, currentIndexs[a][i], indexs[a]);
+            }
+
+            str += "<br/>";
 
             str += "遗详情:<br/>";
+
+            var prevIndex = prevIndexs[a];
+            prevIndex.sort(function (a, b) {
+                return b - a;
+            });
+
             for (var i = 0; i < indexs[a].length; i++) {
                 var s = indexs[a][i];
-                str += s + ",";
+                if (s == prevIndex[0]) {
+                    str += "<font style='color:#8B008B'>" + s + "</font>,";
+                }
+                else {
+                    str += s + ",";
+                }
+            }
+
+            str += "<br/>";
+
+            str += "当前差:<br/>";
+            var lastIndex = indexs[a][indexs[a].length - 1];
+            for (var i = 0; i < currentIndexs[a].length; i++) {
+                var s = parseInt(currentIndexs[a][i], 10) - parseInt(lastIndex, 10);
+                str += i + "_" + s + ",";
             }
 
             str += "<br/>";
