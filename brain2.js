@@ -27,16 +27,17 @@ window.betUtil = {
 (function () {
     var doubledoubleLoss = {
         isMatch: function (n, loss, indexs) {
+            var index4 = indexs[indexs.length - 4];
             var index3 = indexs[indexs.length - 3];
             var index2 = indexs[indexs.length - 2];
             var index1 = indexs[indexs.length - 1];
-            if (index3 !== index2 || index1 !== loss) {
+            if (index4 !== index3 || index2 !== index1 || index1 !== loss) {
                 return false;
             }
 
             return true;
         },
-        color: "#218868",
+        color: "#8B0000",
     };
 
     var splitValueEqulsLoss = {
@@ -54,7 +55,22 @@ window.betUtil = {
         color: "blue",
     };
 
-    var lossFuncs = [doubledoubleLoss, splitValueEqulsLoss];
+    var tensValueEqulsLoss = {
+        isMatch: function (n, loss, indexs) {
+            var index3 = indexs[indexs.length - 3];
+            var index2 = indexs[indexs.length - 2];
+            var index1 = indexs[indexs.length - 1];
+            if (index3 > 10 && index2 > 10 && index1 > 10 && loss >= 10) {
+                return true;
+            }
+
+            return false;
+        },
+        color: "red",
+    };
+
+
+    var lossFuncs = [tensValueEqulsLoss, splitValueEqulsLoss, doubledoubleLoss];
 
     var finPrevNumIndex = function (i, a, nums, matchNum) {
         var length = nums.length;
@@ -68,7 +84,7 @@ window.betUtil = {
         return 70;
     }
 
-    var getMaxCountData = function (nums, compareLength) {
+    var getMaxCountData = function (nums, compareLength, max) {
         var cloneNums = [];
         for (var a = nums.length - 1; a >= (nums.length - compareLength); a--) {
             var n = nums[a];
@@ -97,12 +113,12 @@ window.betUtil = {
 
         var outNumbers = [];
         for (var a = 0; a < cloneNums.length; a++) {
-            if (cloneNums[a].count === 1) {
-                break;
+            if (cloneNums[a].count === 1 && Math.abs(cloneNums[a].num) < 15) {
+                continue;
             }
 
             outNumbers.push(cloneNums[a]);
-            if (a > 3) {
+            if (a > max) {
                 break;
             }
         }
@@ -111,7 +127,26 @@ window.betUtil = {
     }
 
     var showCount = function (n, num) {
-        if (n < 3) {
+        var val = Math.abs(num);
+        var isGreed = false;
+
+        if (val < 4 && n > 7) {
+            isGreed = true;
+        }
+        else if (val >= 4 && val <= 12 && n > 6) {
+            isGreed = true;
+        }
+        else if (val > 12 && val < 21 && n > 2) {
+            isGreed = true;
+        }
+        else if (val > 20 && val < 41 && n > 1) {
+            isGreed = true;
+        }
+        else if (val >= 41) {
+            isGreed = true;
+        }
+
+        if (isGreed === false) {
             return "<font style='color:#218868'>" + num + "</font>_" + n;
         }
 
@@ -136,7 +171,7 @@ window.betUtil = {
 
     var getReport = function (result, startIndex) {
         var indexs = [[], [], [], [], []];
-        var loopNum = 30 + startIndex;
+        var loopNum = 200 + startIndex;
         var len = 5;
         for (var i = loopNum; i >= startIndex; i--) {
             var nums = result[i].ZJHM.split(',');
@@ -149,7 +184,7 @@ window.betUtil = {
 
         var missIndexs = [[], [], [], [], []];
         for (var a = 0; a < len; a++) {
-            for (var i = 1; i <= 30; i++) {
+            for (var i = 1; i <= 200; i++) {
                 var pervIndex = indexs[a][i - 1];
                 var currentIndex = indexs[a][i];
 
@@ -175,7 +210,7 @@ window.betUtil = {
 
             for (var i = 0; i < staticNumbers.length; i++) {
                 var s = staticNumbers[i];
-                var nums = getMaxCountData(indexs[a], s);
+                var nums = getMaxCountData(indexs[a], s, 3);
                 for (var b = 0; b < nums.length; b++) {
                     var currentNum = getMatchNum(currentIndexs[a], nums[b].num);
                     if (currentNum === null) {
@@ -190,7 +225,7 @@ window.betUtil = {
                     });
                 }
 
-                nums = getMaxCountData(missIndexs[a], s);
+                nums = getMaxCountData(missIndexs[a], s, 10);
                 for (var b = 0; b < nums.length; b++) {
                     var currentNum = getMissMatchNum(currentIndexs[a], indexs[a], nums[b].num);
                     if (currentNum === null) {
@@ -229,13 +264,13 @@ window.betUtil = {
         return "<font style='color:#218868'>√</font>";
     };
 
-    var printResult = function (report1, report2, report3, report4, report5, index, isLoss, result) {
-        var r5 = wasright(result[4].ZJHM.split(','), index, report5, isLoss, result);
-        var r4 = wasright(result[3].ZJHM.split(','), index, report4, isLoss, result);
-        var r3 = wasright(result[2].ZJHM.split(','), index, report3, isLoss, result);
-        var r2 = wasright(result[1].ZJHM.split(','), index, report2, isLoss, result);
-        var r1 = wasright(result[0].ZJHM.split(','), index, report1, isLoss, result);
-        return r5 + "" + r4 + "" + r3 + "" + r2 + "" + r1;
+    var printResult = function (reports, index, isLoss, result) {
+        var str = "";
+        for (var i = reports.length - 1; i >= 0; i--) {
+            str += wasright(result[i].ZJHM.split(','), index, reports[i].details[index], isLoss, result);
+        }
+
+        return str;
     };
 
     var printSpecial = function (n, loss, indexs) {
@@ -250,13 +285,12 @@ window.betUtil = {
     };
 
     var hanlderData = function (result) {
-        var report5 = getReport(result, 5).details;
-        var report4 = getReport(result, 4).details;
-        var report3 = getReport(result, 3).details;
-        var report2 = getReport(result, 2).details;
-        var r1 = getReport(result, 1);
-        var report1 = r1.details;
+        var reports = [];
+        for (var i = 1; i <= 10; i++) {
+            reports.push(getReport(result, i));
+        }
 
+        var r1 = reports[0];
         var prevIndexs = r1.currentIndexs;
 
         var report = getReport(result, 0);
@@ -273,7 +307,7 @@ window.betUtil = {
             str += "当前指针:" + (a + 1) + "开" + currentNum[a]+"<br/>";
             var detail = details[a];
             var loss = detail.loss;
-            str += "遗出现:" + printResult(report1[a], report2[a], report3[a], report4[a], report5[a], a, true, result);
+            str += "遗出现:" + printResult(reports, a, true, result);
             if (loss.length > 0) {
                 var currentS = -1;
                 for (var index in loss) {
@@ -290,7 +324,7 @@ window.betUtil = {
             str += "<br/>";
 
             loss = detail.lossR;
-            str += "差出现:" + printResult(report1[a], report2[a], report3[a], report4[a], report5[a], a, false, result);
+            str += "差出现:" + printResult(reports, a, false, result);
             if (loss.length > 0) {
                 var currentS = -1;
                 for (var index in loss) {
@@ -317,17 +351,13 @@ window.betUtil = {
 
             var prevIndex = prevIndexs[a];
             prevIndex.sort(function (a, b) {
-                return b - a;
+                return b - a; 
             });
 
             for (var i = 0; i < indexs[a].length; i++) {
                 var s = indexs[a][i];
-                if (s == prevIndex[0]) {
-                    str += "<font style='color:#8B008B'>" + s + "</font>,";
-                }
-                else {
-                    str += s + ",";
-                }
+                //str += (parseInt(s, 10) <= 5 && parseInt(s, 10) != 0) + ",";
+                str += s + ",";
             }
 
             str += "<br/>";
@@ -354,7 +384,7 @@ window.betUtil = {
         $("body").html(str);
     };
 
-    window.betUtil.getBetDatas(betUtil.jndBetId, 100, hanlderData);
+    window.betUtil.getBetDatas(betUtil.jndBetId, 300, hanlderData);
 
    
 })();

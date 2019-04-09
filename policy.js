@@ -320,7 +320,7 @@ String.prototype.padLeft = function (c, length) {
         }
     };
 
-    window.policies.push(policy);
+   // window.policies.push(policy);
 })();
 
 (function () {
@@ -429,7 +429,7 @@ String.prototype.padLeft = function (c, length) {
                 if (realGoTimes > 0) {
                     realGoTimes--;
                     if (realGoTimes === 0) {
-                        policy.stop = true;
+                        //policy.stop = true;
                         console.log("策略haven已达到最大获利次数。");
                     }
                 }
@@ -457,6 +457,259 @@ String.prototype.padLeft = function (c, length) {
             policy.guy = guy;
             console.log("策略haven符合条件！当前倍数:" + policy.bias);
             doBet(guy, 1, (parseInt(newData.CP_QS) + 1) + "");
+        }
+    };
+
+   // window.policies.push(policy);
+})();
+
+(function () {
+    var register = function () {
+        var watch = findWatch("altgo");
+        watch.policies.push(policy);
+    };
+
+    var getMutil = function (b) {
+        return 2777;
+    }
+
+    var betNumber = "";
+    var createBetInfo = function (i, a, bias) {
+        var curNumber = a;
+
+        betNumber = "";
+        for (var i = 0; i < 10; i++) {
+            if (i != curNumber) {
+                betNumber += i;
+            }
+        }
+
+        var numIndex = i;
+        var str = "";
+        for (var i = 0; i < numIndex; i++) {
+            str += ",";
+        }
+
+        str += betNumber;
+        for (var i = numIndex + 1; i < 5; i++) {
+            str += ",";
+        }
+
+        var beInfo = {
+            "method_id": "9",
+            "number": str,
+            "rebate_count": 80,
+            "multiple": getMutil(bias),
+            "mode": 3,
+            "bet_money": (getMutil(bias) * 0.01) + "",
+            "calc_type": "0"
+        };
+
+        return beInfo;
+    }
+
+    var doBet = function (i, a, bias, issueNumber) {
+        var betInfo = [createBetInfo(i, a, bias)];
+        console.log("下注信息:");
+        console.log(betInfo);
+        //window.betUtil.builderOrderParams(betInfo, issueNumber);
+    }
+
+    var realGoTimes = 0;
+
+    var isMatchOne = function (arrary) {
+        var prevItem = arrary[1];
+        var max = 0;
+        var isMatchPrev = false;
+        for (var i = 0; i < prevItem.length; i++) {
+            var n = prevItem[i];
+            if (i >= 3) {
+                if (n == (max + 1)) {
+                    isMatchPrev = true;
+                    break;
+                }
+            }
+
+            if (n > max) {
+                max = n;
+            }
+        }
+
+        if (isMatchPrev) {
+            var item = arrary[0];
+            max = 0;
+            for (var i = 0; i < item.length - 1; i++) {
+                var n = item[i];
+                if (n > max) {
+                    max = n;
+                }
+            }
+
+            max = max + 1;
+            if (max === item[item.length - 1]) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    var isMatchTwo = function (arrary) {
+        var prevItem = arrary[1];
+        var lastItem = arrary[2];
+        var prevN = prevItem[prevItem.length - 1];
+        var lastN = lastItem[lastItem.length - 1];
+        var miss = Math.abs(prevN - lastN);
+        if (miss > 2) {
+            return false;
+        }
+
+        var item = arrary[0];
+        var n = item[item.length - 1];
+        var v = -1;
+        if (lastN > prevN) {
+            v = prevN - miss;
+        }
+        else {
+            v = prevN + miss;
+        }
+
+        if (v === n) {
+            return true;
+        }
+
+        return false;
+    }
+
+    var isMatchThree = function (arrary) {
+        var item = arrary[0];
+        var n = item[item.length - 1];
+        if (n !== 6) {
+            return false;
+        }
+
+        var count = 0;
+        for (var i = 0; i < item.length - 1; i++) {
+            var n = item[i];
+            if (n === 6) {
+                count++;
+            }
+        }
+
+        if (count >= 3) {
+            return true;
+        }
+
+        return false;
+    }
+
+    var policy = {
+        register: register,
+        isRunning: false,
+        stoping: false,
+        bias: 1,
+        stopping: false,
+        right: 0,
+        guy: null,
+        wins: 0,
+        tryStop: function () {
+            if (policy.bias === 1 && policy.isRunning === false) {
+                policy.stop = true;
+                return;
+            }
+
+            policy.stopping = true;
+        },
+        doJudge: function (watch) {
+        },
+        check: function (watch, newData) {
+            if (policy.CP_QS === newData.CP_QS) {
+                return;
+            }
+
+            if (policy.stop === true) {
+                return;
+            }
+
+            if (watch === null) {
+                return;
+            }
+
+            if (policy.isRunning === false) {
+                return;
+            }
+
+            policy.isRunning = false;
+            var zjhm = newData.ZJHM.split(',')[policy.i];
+            var isRight = policy.a != zjhm;
+            if (isRight) {
+                policy.wins++;
+                console.log("策略altgo正确盈利一次。当前获利次数：" + policy.wins);
+                //if (policy.wins >= 4) {
+                //    policy.stop = true;
+                //    console.log("策略altgo已达到最大获利次数。");
+                //}
+            }
+            else {
+                console.log("策略altgo被终结。");
+            }
+        },
+        tryStart: function (watch, arrary, newData) {
+            if (policy.isRunning) {
+                return;
+            }
+
+            console.log(arrary);
+            var isFound = false;
+            var i = 0;
+            var a = 0;
+            for (i = 0; i < arrary.length; i++) {
+                for (a = 0; a < arrary[i].length; a++) {
+                    var item = arrary[i][a];
+                    if (item.length === 0) {
+                        continue;
+                    }
+
+
+                    if (isMatchOne(item)) {
+                        isFound = true;
+                        console.log("A:");
+                        console.log(item);
+                        break;
+                    }
+
+                    if (isMatchTwo(item)) {
+                        isFound = true;
+                        console.log("B:");
+                        console.log(item);
+                        break;
+                    }
+
+                    if (isMatchThree(item)) {
+                        isFound = true;
+                        console.log("C:");
+                        console.log(item);
+                        break;
+                    }
+                }
+
+                if (isFound) {
+                    break;
+                }
+            }
+
+            if (isFound === false) {
+                return;
+            }
+
+            policy.bias = 1;
+            policy.CP_QS = newData.CP_QS;
+            policy.isRunning = true;
+            policy.i = i;
+            policy.a = a;
+
+            console.log("策略altgo符合条件！当前倍数:" + policy.bias + "位置：" + (i + 1) + "数字：" + a);
+            doBet(i, a, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
 

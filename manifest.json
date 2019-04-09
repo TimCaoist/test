@@ -9,7 +9,7 @@
       "js": [ "jquery-1.11.2.min.js", "brain.js"]
     },
     {
-      "matches": [ "http://*/static/html/google_code/index.html?22" ],
+      "matches": [ "http://*/static/html/google_code/index.html?22", "https://*/static/html/google_code/index.html?22" ],
       "js": [ "jquery-1.11.2.min.js", "watch.js", "policy.js", "betinfo.js" ]
     },
     {

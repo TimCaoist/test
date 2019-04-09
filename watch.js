@@ -145,7 +145,7 @@ window.watchers = [];
         }
     };
 
-    window.watchers.push(watch);
+    //window.watchers.push(watch);
 })();
 
 (function () {
@@ -314,7 +314,7 @@ window.watchers = [];
         }
     };
 	
-	window.watchers.push(watch);
+	//window.watchers.push(watch);
 })();
 
 (function () {
@@ -449,3 +449,94 @@ window.watchers = [];
     //console.log("加载Watch -- dolu成功");
 })();
 
+
+(function () {
+    var getMissMatch = function (a, n, histroyDatas, len) {
+        if (histroyDatas[len - 1].ZJHM.split(',')[a] == n) {
+            return [];
+        }
+
+        var ns = [];
+        var firstIndex = len - 1;
+        var lastIndex = firstIndex ;
+        for (var i = firstIndex ; i >= 0; i--) {
+            var data = histroyDatas[i].ZJHM.split(',')[a];
+            if (data == n) {
+                if (lastIndex !== -1) {
+                    var miss = lastIndex - i;
+                    miss = miss - 1;
+                    ns.push(miss);
+                }
+
+                lastIndex = i;
+            }
+        }
+
+        for (var i = 1; i < 4; i++) {
+            if (ns[i] > 6) {
+                return [];
+            }
+        }
+
+        var s = ns.length;
+        var ccc = [];
+        var splitNs = [];
+        var lastMax = -1;
+        for (var a = 0; a < s; a++) {
+            var n = ns[a];
+            if (n <= 6) {
+                splitNs.push(n);
+            }
+            else {
+                if (splitNs.length > 2) {
+                    splitNs.reverse();
+                    if (lastMax > -1) {
+                        splitNs.push(lastMax);
+                    }
+
+                    ccc.push(splitNs);
+                }
+
+                if (ccc.length > 2) {
+                    break;
+                }
+
+                splitNs = [];
+                lastMax = n;
+            }
+        }
+
+        return ccc;
+    }
+
+    var find = function (histroyDatas) {
+        var len = histroyDatas.length;
+        var arrary = [];
+        for (var a = 0; a < 5; a++) {
+            var ns = [];
+            for (var n = 0; n < 10; n++) {
+                ns.push(getMissMatch(a, n, histroyDatas, len));
+            }
+
+            arrary.push(ns);
+        }
+
+        return arrary;
+    }
+
+    var watch = {
+        name: "altgo",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var arrary = find(histroyDatas);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, arrary, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
