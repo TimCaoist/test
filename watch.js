@@ -464,7 +464,10 @@ window.watchers = [];
             if (data == n) {
                 if (lastIndex !== -1) {
                     var miss = lastIndex - i;
-                    miss = miss - 1;
+                    if (lastIndex !== firstIndex) {
+                        miss = miss - 1;
+                    }
+                   
                     ns.push(miss);
                 }
 

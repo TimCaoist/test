@@ -474,7 +474,7 @@ String.prototype.padLeft = function (c, length) {
     }
 
     var betNumber = "";
-    var createBetInfo = function (i, a, bias) {
+    var createBetInfo = function (index, a, bias) {
         var curNumber = a;
 
         betNumber = "";
@@ -484,7 +484,7 @@ String.prototype.padLeft = function (c, length) {
             }
         }
 
-        var numIndex = i;
+        var numIndex = index;
         var str = "";
         for (var i = 0; i < numIndex; i++) {
             str += ",";
@@ -560,7 +560,7 @@ String.prototype.padLeft = function (c, length) {
         var prevN = prevItem[prevItem.length - 1];
         var lastN = lastItem[lastItem.length - 1];
         var miss = Math.abs(prevN - lastN);
-        if (miss > 2) {
+        if (miss > 2 || (miss === 0 && prevN <= 10)) {
             return false;
         }
 
@@ -584,19 +584,29 @@ String.prototype.padLeft = function (c, length) {
     var isMatchThree = function (arrary) {
         var item = arrary[0];
         var n = item[item.length - 1];
-        if (n !== 6) {
+        if (n !== 6 && n !== 4 && n !== 5) {
             return false;
         }
 
         var count = 0;
+        var fiveCount = 0;
+        var fourCount = 0;
         for (var i = 0; i < item.length - 1; i++) {
             var n = item[i];
             if (n === 6) {
                 count++;
             }
+
+            if (n === 5) {
+                fiveCount++;
+            }
+
+            if (n === 4) {
+                fourCount++;
+            }
         }
 
-        if (count >= 3) {
+        if ((count >= 3 && n === 6) || (fiveCount >= 4 && n === 5) || (fourCount >= 4 && n === 4)) {
             return true;
         }
 
