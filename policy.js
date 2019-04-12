@@ -368,16 +368,19 @@ String.prototype.padLeft = function (c, length) {
         return beInfo;
     }
 
+    var realGoTimes = 0;
+    var havenTimes = typeof localStorage.havenTimes === "undefined" ? 0 : parseInt(localStorage.havenTimes, 10);
+
     var doBet = function (guy, bias, issueNumber) {
+        if (havenTimes <= 0 || realGoTimes <= 0) {
+            return;
+        }
+
         var betInfo = [createBetInfo(guy, bias)];
         console.log("下注信息:");
         console.log(betInfo);
-        if (realGoTimes > 0) {
-            window.betUtil.builderOrderParams(betInfo, issueNumber);
-        }
+        window.betUtil.builderOrderParams(betInfo, issueNumber);
     }
-
-    var realGoTimes = 0;
 
     var policy = {
         register: register,
@@ -428,20 +431,31 @@ String.prototype.padLeft = function (c, length) {
                 console.log("策略haven正确盈利一次。当前获利次数：" + policy.wins);
                 if (realGoTimes > 0) {
                     realGoTimes--;
-                    if (realGoTimes === 0) {
-                        //policy.stop = true;
-                        console.log("策略haven已达到最大获利次数。");
+                    if (havenTimes > 0) {
+                        havenTimes--;
+                        if (havenTimes === 0) {
+                            console.log("策略haven已达到最大获利次数。");
+                        }
+
+                        localStorage.havenTimes = havenTimes;
                     }
                 }
             }
             else {
                 if (realGoTimes === 0) {
                     realGoTimes = 2;
-                    console.log("策略haven被触发。");
+                    console.log("策略haven开启跟踪，如果两回合内出错正式启动。");
                 }
                 else {
-                    policy.stop = true;
-                    console.log("策略haven被终结。");
+                    if (havenTimes > 0) {
+                        console.log("策略haven被终结。");
+                    }
+                    else {
+                        console.log("策略haven被触发。");
+                    }
+
+                    realGoTimes = 0;
+                    localStorage.havenTimes = havenTimes = 4;
                     return;
                 }
             }
@@ -460,7 +474,7 @@ String.prototype.padLeft = function (c, length) {
         }
     };
 
-   // window.policies.push(policy);
+    window.policies.push(policy);
 })();
 
 (function () {
@@ -515,8 +529,7 @@ String.prototype.padLeft = function (c, length) {
         //window.betUtil.builderOrderParams(betInfo, issueNumber);
     }
 
-    var realGoTimes = 0;
-
+    var matchedOnes = [];
     var isMatchOne = function (arrary) {
         var prevItem = arrary[1];
         var max = 0;
@@ -545,8 +558,17 @@ String.prototype.padLeft = function (c, length) {
                 }
             }
 
-            max = max + 1;
+            max = Math.max(max + 1, 4);
             if (max === item[item.length - 1]) {
+                for (var mi = 0; mi < matchedOnes.length; mi++) {
+                    var matchedItem = matchedOnes[mi];
+                    if (matchedItem.si === item.si && matchedItem.index === item.index && matchedItem.n === item.n) {
+                        console.log("已经满足过一次!");
+                        return false;
+                    }
+                }
+
+                matchedOnes.push(item);
                 return true;
             }
         }
@@ -555,30 +577,29 @@ String.prototype.padLeft = function (c, length) {
     }
 
     var isMatchTwo = function (arrary) {
-        var prevItem = arrary[1];
-        var lastItem = arrary[2];
-        var prevN = prevItem[prevItem.length - 1];
-        var lastN = lastItem[lastItem.length - 1];
-        var miss = Math.abs(prevN - lastN);
-        if (miss > 2 || (miss === 0 && prevN <= 10)) {
+        if (arrary.length < 4) {
             return false;
         }
 
         var item = arrary[0];
+        var oneItem = arrary[1];
+        var twoItem = arrary[2];
+        var threeItem = arrary[3];
+
         var n = item[item.length - 1];
-        var v = -1;
-        if (lastN > prevN) {
-            v = prevN - miss;
-        }
-        else {
-            v = prevN + miss;
+        if (n <= 6) {
+            return false;
         }
 
-        if (v === n) {
-            return true;
+        var oneN = oneItem[oneItem.length - 1];
+        var twoN = twoItem[twoItem.length - 1];
+        var threeN = threeItem[threeItem.length - 1];
+
+        if (oneN - twoN !== twoN - threeN || n - oneN !== oneN - twoN) {
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     var isMatchThree = function (arrary) {
@@ -592,26 +613,189 @@ String.prototype.padLeft = function (c, length) {
         var fiveCount = 0;
         var fourCount = 0;
         for (var i = 0; i < item.length - 1; i++) {
-            var n = item[i];
-            if (n === 6) {
+            var cn = item[i];
+            if (cn === 6) {
                 count++;
             }
 
-            if (n === 5) {
+            if (cn === 5) {
                 fiveCount++;
             }
 
-            if (n === 4) {
+            if (cn === 4) {
                 fourCount++;
             }
         }
 
-        if ((count >= 3 && n === 6) || (fiveCount >= 4 && n === 5) || (fourCount >= 4 && n === 4)) {
+        if ((count >= 4 && n === 6) || (fiveCount >= 4 && n === 5) || (fourCount >= 4 && n === 4)) {
             return true;
         }
 
         return false;
     }
+
+    var isMatchFour = function (arrary) {
+        var item = arrary[0];
+        var n = item[item.length - 1];
+        if (n !== 6 && n !== 4 && n !== 5) {
+            return false;
+        }
+
+
+        for (var i = item.length - 2; i >= item.length - 4; i--) {
+            var d = item[i];
+            if (d !== n) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    var isMatchFive = function (arrary) {
+        var item = arrary[0];
+        var n = item[item.length - 1];
+        var str = "";
+        for (var i = 1; i < arrary.length; i++) {
+            var cItem = arrary[i];
+            var cN = cItem[cItem.length - 1];
+            if (cN === n) {
+                str += "V";
+            }
+            else
+            {
+                str += "X";
+            }
+        }
+
+        return str === "XVXXV" || str === "VXVXV";
+    }
+
+    var isMatchSix = function (arrary) {
+        var item = arrary[0];
+        var len = item.length;
+        if (len != 4) {
+            return false;
+        }
+
+        var prevItem = arrary[1];
+        for (var i = 0; i < len; i++) {
+            if (item[i] !== prevItem[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    var isMatchSeven = function (arrary) {
+        if (arrary.length < 5) {
+            return false;
+        }
+
+        var item = arrary[0];
+        var len = item.length;
+        if (item[len - 1] < 7) {
+            return false;
+        }
+
+        var oneItem = item;
+        var twoItem = arrary[2];
+        var threeItem = arrary[4];
+
+        var oneN = oneItem[oneItem.length - 1];
+        var twoN = twoItem[twoItem.length - 1];
+        var threeN = threeItem[threeItem.length - 1];
+
+        if (oneN === twoN) {
+            return false;
+        }
+
+        if (Math.abs(threeN - twoN) > 5) {
+            return false;
+        }
+
+        if (oneN - twoN != twoN - threeN) {
+            return false;
+        }
+
+        return true;
+    }
+
+    var isMatchEight = function (arrary) {
+        if (arrary.length < 7) {
+            return false;
+        }
+
+        var item = arrary[0];
+        var len = item.length;
+        if (item[len - 1] < 7) {
+            return false;
+        }
+
+        var oneItem = item;
+        var twoItem = arrary[3];
+        var threeItem = arrary[6];
+
+        var oneN = oneItem[oneItem.length - 1];
+        var twoN = twoItem[twoItem.length - 1];
+        var threeN = threeItem[threeItem.length - 1];
+
+        if (oneN === twoN) {
+            return false;
+        }
+
+        if (Math.abs(threeN - twoN) > 5) {
+            return false;
+        }
+
+        if (oneN - twoN != twoN - threeN) {
+            return false;
+        }
+
+        return true;
+    }
+
+    var happendNineMatch = [];
+
+    var isMatchNine = function (arrary) {
+        if (arrary.length < 4) {
+            return false;
+        }
+
+        var item = arrary[0];
+        var oneItem = arrary[1];
+        var twoItem = arrary[2];
+
+        var n = item[item.length - 1];
+        if (n <= 6) {
+            return false;
+        }
+
+        var oneN = oneItem[oneItem.length - 1];
+        var twoN = twoItem[twoItem.length - 1];
+
+        for (var mi = 0; mi < happendNineMatch.length; mi++) {
+            var matchedItem = happendNineMatch[mi];
+            if (matchedItem.index === item.index && matchedItem.n === item.n) {
+                if (n - oneN == oneN - twoN) {
+                    return true;
+                }
+
+                break;
+            }
+        }
+
+        var threeItem = arrary[3];
+        var threeN = threeItem[threeItem.length - 1];
+        if (oneN - twoN === twoN - threeN) {
+            happendNineMatch.push(item);
+        }
+
+        return false;
+    }
+
+    var matchers = [isMatchOne, isMatchTwo, isMatchThree, isMatchFour, isMatchFive, isMatchSix, isMatchSeven, isMatchEight, isMatchNine];
 
     var policy = {
         register: register,
@@ -669,7 +853,6 @@ String.prototype.padLeft = function (c, length) {
                 return;
             }
 
-            console.log(arrary);
             var isFound = false;
             var i = 0;
             var a = 0;
@@ -680,25 +863,17 @@ String.prototype.padLeft = function (c, length) {
                         continue;
                     }
 
-
-                    if (isMatchOne(item)) {
-                        isFound = true;
-                        console.log("A:");
-                        console.log(item);
-                        break;
+                    for (var m = 0; m < matchers.length; m++) {
+                        var match = matchers[m];
+                        if (match(item)) {
+                            isFound = true;
+                            console.log(m + ":");
+                            console.log(item);
+                            break;
+                        }
                     }
 
-                    if (isMatchTwo(item)) {
-                        isFound = true;
-                        console.log("B:");
-                        console.log(item);
-                        break;
-                    }
-
-                    if (isMatchThree(item)) {
-                        isFound = true;
-                        console.log("C:");
-                        console.log(item);
+                    if (isFound) {
                         break;
                     }
                 }
