@@ -1,5 +1,5 @@
 window.betUtil = {
-    jndBetId: '91',
+    jndBetId: '96',
     getCurrentBetData: function (lotId, func) {
         return window.betUtil.getBetDatas(lotId, 1, function (result) {
             func(result[0]);
@@ -28,7 +28,7 @@ window.betUtil = {
     var builderOrderParams = function (betInfo, issueNumber) {
         var betInfo = {
             "command_id": 521,
-            "lottery_id": "91",
+            "lottery_id": window.betUtil.jndBetId,
             "count": 2,
             "issue": issueNumber,
             "bet_info": betInfo
@@ -112,10 +112,14 @@ window.betUtil = {
             storeDatas.push(result);
             for (var i = 0; i < window.watchers.length; i++) {
                 var watcher = window.watchers[i];
-                watcher.newBetData(betUtil.currentBetInfo, result, storeDatas);
                 for (var a = 0; a < watcher.policies.length; a++) {
                     watcher.policies[a].check(watcher, result);
                 }
+            }
+
+            for (var i = 0; i < window.watchers.length; i++) {
+                var watcher = window.watchers[i];
+                watcher.newBetData(betUtil.currentBetInfo, result, storeDatas);
             }
         }
         else {
@@ -140,7 +144,7 @@ window.betUtil = {
                 storeDatas = result.reverse();
                 handlerResult(storeDatas[storeDatas.length - 1]);
                 console.log("开始抽奖");
-                setInterval(loopGetBet, 20000);
+                setInterval(loopGetBet, 15000);
             });
         });
 
