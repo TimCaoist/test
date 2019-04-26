@@ -855,18 +855,20 @@ var brotherFind = function (histroyDatas, subIndex, isMatch) {
         var a = matchAs[index];
         for (var i = 0; i < subIndex; i++) {
             var str = "";
+            var wrongCount = 0;
             for (var dl = len - 1; dl >= 2; dl--) {
                 if (isMatch(dl, datas, a)) {
                     var compareNum = datas[dl - i].ZJHM.split(',')[a];
                     var num = datas[dl + 1].ZJHM.split(',')[a];
                     if (num === compareNum) {
                         str += "X";
+                        wrongCount++;
                     }
                     else {
                         str += "V";
                     }
 
-                    if (str.length >= 5) {
+                    if (str.length >= 7) {
                         break;
                     }
                 }
@@ -880,6 +882,20 @@ var brotherFind = function (histroyDatas, subIndex, isMatch) {
                 matchArry.push({
                     index: a,
                     loopIndex: i,
+                    mtype: 0,
+                    num: datas[len - i].ZJHM.split(',')[a]
+                });
+
+                break;
+            }
+
+            var patt2 = /^X{1,}/;
+            var patt3 = /^X{3,}/;
+            if (wrongCount >= 3 && str.match(patt2) != null && str.match(patt3) == null) {
+                matchArry.push({
+                    index: a,
+                    loopIndex: i,
+                    mtype: 1,
                     num: datas[len - i].ZJHM.split(',')[a]
                 });
 

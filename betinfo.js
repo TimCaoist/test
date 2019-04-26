@@ -1,5 +1,9 @@
 window.betUtil = {
-    jndBetId: '96',
+    xxnBetId: '96',
+    jndBetId: '91',
+    workId: function () {
+        return betUtil.xxnBetId;
+    },
     getCurrentBetData: function (lotId, func) {
         return window.betUtil.getBetDatas(lotId, 1, function (result) {
             func(result[0]);
@@ -28,7 +32,7 @@ window.betUtil = {
     var builderOrderParams = function (betInfo, issueNumber) {
         var betInfo = {
             "command_id": 521,
-            "lottery_id": window.betUtil.jndBetId,
+            "lottery_id": window.betUtil.workId(),
             "count": 2,
             "issue": issueNumber,
             "bet_info": betInfo
@@ -140,7 +144,7 @@ window.betUtil = {
 
         $("body").html("<button id='start'>开始</button><button id='stop'>停止</button>");
         $("#start").click(function () {
-            window.betUtil.getBetDatas(betUtil.jndBetId, 2000, function (result) {
+            window.betUtil.getBetDatas(window.betUtil.workId(), 2000, function (result) {
                 storeDatas = result.reverse();
                 handlerResult(storeDatas[storeDatas.length - 1]);
                 console.log("开始抽奖");
