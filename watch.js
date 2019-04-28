@@ -889,18 +889,18 @@ var brotherFind = function (histroyDatas, subIndex, isMatch) {
                 break;
             }
 
-            var patt2 = /^X{1,}/;
-            var patt3 = /^X{3,}/;
-            if (wrongCount >= 3 && str.match(patt2) != null && str.match(patt3) == null) {
-                matchArry.push({
-                    index: a,
-                    loopIndex: i,
-                    mtype: 1,
-                    num: datas[len - i].ZJHM.split(',')[a]
-                });
+            //var patt2 = /^X{1,}/;
+            //var patt3 = /^X{3,}/;
+            //if (wrongCount >= 3 && str.match(patt2) != null && str.match(patt3) == null) {
+            //    matchArry.push({
+            //        index: a,
+            //        loopIndex: i,
+            //        mtype: 1,
+            //        num: datas[len - i].ZJHM.split(',')[a]
+            //    });
 
-                break;
-            }
+            //    break;
+            //}
         }
 
         if (matchArry.length > 0) {

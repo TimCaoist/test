@@ -134,7 +134,7 @@ window.betUtil = {
     };
 
     var loopGetBet = function () {
-        betUtil.getCurrentBetData(betUtil.jndBetId, handlerResult);
+        betUtil.getCurrentBetData(window.betUtil.workId(), handlerResult);
     };
 
     var init = function () {
