@@ -11,12 +11,21 @@ var findWatch = function (name)
 }
 
 var getMutil = function (b) {
-    return 1000;
-}
+    switch (b) {
+        case 2:
+            return 8000;
+        default:
+            return 4000;
+    }
+};
 
 var getMutil1 = function (b) {
-    return 1000;
-}
+    return getMutil(b) / 2;
+};
+
+var getMutil2 = function (b) {
+    return getMutil1(b) / 10;
+};
 
 var batchWins = 0;
 
@@ -290,7 +299,7 @@ var createBetInfo1 = function (index, a, bias) {
     var curNumber = a;
 
     betNumber = "";
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i <= 5; i++) {
         if (i != curNumber) {
             betNumber += i;
         }
@@ -320,6 +329,48 @@ var createBetInfo1 = function (index, a, bias) {
     return beInfo;
 };
 
+var createBetInfo2 = function (index, a, bias) {
+    var head = "";
+    var cIndex = 0;
+    var str = "";
+    if (index === 4) {
+        cIndex = 1;
+        head = "3,4";
+    }
+    else {
+        head = index + "," + (index + 1);
+    }
+
+    var str = head + "@" + str;
+    for (var i = 0; i < 100; i++) {
+        var num = (i + "").padLeft('0', 2);
+        if (num[cIndex] != a && num[cIndex] > 5) {
+            str += num;
+            if (i !== 99) {
+                str += "$";
+            }
+        }
+    }
+
+    if (str[str.length - 1] === '$') {
+        str = str.substr(0, str.length - 1);
+    }
+
+    //{"command_id":521,"lottery_id":"91","issue":"20190428634","count":1,"bet_info":[{"method_id":"120001","number":"3,4@01$02","rebate_count":80,"multiple":"1","mode":3,"bet_money":"0.004","calc_type":"0"}]}
+
+    var beInfo = {
+        "method_id": "120001",
+        "number": str,
+        "rebate_count": 80,
+        "multiple": getMutil2(bias),
+        "mode": 3,
+        "bet_money": (getMutil2(bias) * 0.01) + "",
+        "calc_type": "0"
+    };
+
+    return beInfo;
+};
+
 var doBet = function (i, a, bias, issueNumber) {
     var betInfo = [createBetInfo(i, a, bias)];
     console.log("下注信息:");
@@ -332,18 +383,55 @@ var doBet1 = function (i, a, bias, issueNumber) {
     console.log("下注信息:");
     console.log(betInfo);
     window.betUtil.builderOrderParams(betInfo, issueNumber);
+
+    setTimeout(function () {
+        betInfo = [createBetInfo2(i, a, bias)];
+        console.log("下注信息:");
+        console.log(betInfo);
+        window.betUtil.builderOrderParams(betInfo, issueNumber);
+    }, 2000);
 };
 
 var altgoStr = "";
 
 var checkAltgoStr = function (i, cn, newData) {
-    if (altgoStr.match(/X{10,}$/) != null) {
+    //if (altgoStr.match(/X{40,}$/) != null) {
+    //    doBet(i, cn, 2, (parseInt(newData.CP_QS) + 1) + "");
+    //}
+
+    if (altgoStr.match(/X{14,}$/) != null) {
         doBet(i, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
     }
     else if (altgoStr.match(/V{1,}XV{1,}X$/) != null || altgoStr.match(/V{3,}$/) != null) {
         doBet1(i, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
     }
 };
+
+setInterval(function () {
+    var str = altgoStr;
+    var wrong = 0;
+    var right = 0;
+    var lastWrong = 0;
+    for (var index = 0; index < str.length; index++) {
+        if (str[index] === "X") {
+            wrong++;
+        }
+        else {
+            right++;
+        }
+    }
+
+    for (var index = str.length - 1; index >= 0; index--) {
+        if (str[index] === "X") {
+            lastWrong++;
+        }
+        else {
+            break;
+        }
+    }
+
+    $("#msg").html("V:" + right + "X:" + wrong + "LX:" + lastWrong);
+}, 30000);
 
 (function () {
     var register = function () {
@@ -1238,7 +1326,7 @@ var createBrother = function (name) {
                 return;
             }
 
-            //doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
+            doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
 

@@ -142,7 +142,7 @@ window.betUtil = {
             window.policies[i].register();
         }
 
-        $("body").html("<button id='start'>开始</button><button id='stop'>停止</button>");
+        $("body").html("<button id='start'>开始</button><button id='stop'>停止</button><span id='msg'></span>");
         $("#start").click(function () {
             window.betUtil.getBetDatas(window.betUtil.workId(), 2000, function (result) {
                 storeDatas = result.reverse();
