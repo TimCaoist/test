@@ -1,6 +1,7 @@
 window.betUtil = {
     xxnBetId: '96',
     jndBetId: '91',
+    txBetId: '67',
     workId: function () {
         return $("#betId").val();
     },

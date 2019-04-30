@@ -400,11 +400,10 @@ var doBet1 = function (i, a, bias, issueNumber) {
 var altgoStr = "";
 
 var checkAltgoStr = function (i, cn, newData) {
-    //if (altgoStr.match(/X{40,}$/) != null) {
-    //    doBet(i, cn, 2, (parseInt(newData.CP_QS) + 1) + "");
-    //}
-
-    if (altgoStr.match(/X{14,}$/) != null) {
+    if (altgoStr.match(/X{34,}$/) != null) {
+        doBet(i, cn, 2, (parseInt(newData.CP_QS) + 1) + "");
+    }
+    else if (altgoStr.match(/X{14,}$/) != null) {
         doBet(i, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
     }
     else if (altgoStr.match(/V{1,}XV{1,}X$/) != null || altgoStr.match(/V{3,}$/) != null) {
