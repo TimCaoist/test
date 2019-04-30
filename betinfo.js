@@ -2,7 +2,7 @@ window.betUtil = {
     xxnBetId: '96',
     jndBetId: '91',
     workId: function () {
-        return betUtil.xxnBetId;
+        return $("#betId").val();
     },
     getCurrentBetData: function (lotId, func) {
         return window.betUtil.getBetDatas(lotId, 1, function (result) {
@@ -142,7 +142,10 @@ window.betUtil = {
             window.policies[i].register();
         }
 
-        $("body").html("<button id='start'>开始</button><button id='stop'>停止</button><span id='msg'></span>");
+        var str = "<button id='start'>开始</button><button id='stop'>停止</button><div id='msg'></div>";
+        str += "<div><input id='betId' type='text' value='" + window.betUtil.xxnBetId + "' ></div>";
+
+        $("body").html(str);
         $("#start").click(function () {
             window.betUtil.getBetDatas(window.betUtil.workId(), 2000, function (result) {
                 storeDatas = result.reverse();

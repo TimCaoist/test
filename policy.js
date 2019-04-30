@@ -13,14 +13,19 @@ var findWatch = function (name)
 var getMutil = function (b) {
     switch (b) {
         case 2:
-            return 8000;
+            return 7000;
         default:
-            return 4000;
+            return 3500;
     }
 };
 
 var getMutil1 = function (b) {
-    return getMutil(b) / 2;
+    switch (b) {
+        case 2:
+            return 3600;
+        default:
+            return 1800;
+    }
 };
 
 var getMutil2 = function (b) {
