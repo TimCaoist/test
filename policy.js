@@ -417,12 +417,18 @@ setInterval(function () {
     var wrong = 0;
     var right = 0;
     var lastWrong = 0;
+
+    var perWrongStr = "";
+    var perWrong = 0;
     for (var index = 0; index < str.length; index++) {
         if (str[index] === "X") {
             wrong++;
+            perWrong++;
         }
         else {
             right++;
+            perWrongStr += perWrong + ",";
+            perWrong = 0;
         }
     }
 
@@ -435,7 +441,7 @@ setInterval(function () {
         }
     }
 
-    $("#msg").html("V:" + right + "X:" + wrong + "LX:" + lastWrong);
+    $("#msg").html("V:" + right + "X:" + wrong + "LX:" + lastWrong + "<br/>" + perWrongStr);
 }, 30000);
 
 (function () {
@@ -738,7 +744,7 @@ setInterval(function () {
             policy.a = a;
 
             console.log("策略altgo符合条件！当前倍数:" + policy.bias + "位置：" + (i + 1) + "数字：" + a);
-            if (policy.stop === true ) {
+            if (policy.stop === true || policy.stoping === true) {
                 console.log("策略altgo停止，未下注!");
                 return;
             }
@@ -999,7 +1005,7 @@ setInterval(function () {
             policy.a = cn;
 
             console.log("策略dissaltgo符合条件！当前倍数:" + policy.bias + "位置：" + (i + 1) + "数字：" + cn + "加数：" + a);
-            if (policy.stop === true) {
+            if (policy.stop === true || policy.stoping === true) {
                 console.log("策略dissaltgo停止，未下注!");
                 return;
             }
@@ -1256,7 +1262,7 @@ setInterval(function () {
             policy.a = cn;
 
             console.log("策略missaltgo符合条件！当前倍数:" + policy.bias + "位置：" + (i + 1) + "数字：" + cn + "遗漏位置：" + a);
-            if (policy.stop === true) {
+            if (policy.stop === true || policy.stoping === true) {
                 console.log("策略missaltgo停止，未下注!");
                 return;
             }
