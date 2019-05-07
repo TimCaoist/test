@@ -113,30 +113,29 @@ window.console.logex = function (str) {
 
 (function () {
     var storeDatas = [];
-    var isFirst = true;
     var handlerResult = function (result) {
         if (betUtil.currentBetInfo !== null && result.CP_QS == betUtil.currentBetInfo.CP_QS) {
             return;
         }
 
+        var lastCP = storeDatas[storeDatas.length - 1];
+        if (lastCP.CP_QS === result.CP_QS) {
+            console.log("重复期号");
+            return;
+        }
+
         console.log("开奖期号:" + result.CP_QS + "开奖号码:" + result.ZJHM);
-
-        if (isFirst === false) {
-            storeDatas.push(result);
-            for (var i = 0; i < window.watchers.length; i++) {
-                var watcher = window.watchers[i];
-                for (var a = 0; a < watcher.policies.length; a++) {
-                    watcher.policies[a].check(watcher, result);
-                }
-            }
-
-            for (var i = 0; i < window.watchers.length; i++) {
-                var watcher = window.watchers[i];
-                watcher.newBetData(betUtil.currentBetInfo, result, storeDatas);
+        storeDatas.push(result);
+        for (var i = 0; i < window.watchers.length; i++) {
+            var watcher = window.watchers[i];
+            for (var a = 0; a < watcher.policies.length; a++) {
+                watcher.policies[a].check(watcher, result);
             }
         }
-        else {
-            isFirst = false;
+
+        for (var i = 0; i < window.watchers.length; i++) {
+            var watcher = window.watchers[i];
+            watcher.newBetData(betUtil.currentBetInfo, result, storeDatas);
         }
 
         betUtil.currentBetInfo = result;
@@ -173,7 +172,6 @@ window.console.logex = function (str) {
         $("#start").click(function () {
             window.betUtil.getBetDatas(window.betUtil.workId(), 2000, function (result) {
                 storeDatas = result.reverse();
-                handlerResult(storeDatas[storeDatas.length - 1]);
                 console.log("开始抽奖");
                 setInterval(loopGetBet, 15000);
             });

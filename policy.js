@@ -1,4 +1,6 @@
 window.policies = [];
+var timetamp = Number(new Date());
+
 var findWatch = function (name)
 {
     for (var i = 0; i < window.watchers.length; i++) {
@@ -455,7 +457,7 @@ setInterval(function () {
     $("#msg").html(msg);
 
     var workId = window.betUtil.workId();
-    $.get("http://127.0.0.1:1500?workId=" + workId + "&content=" + msg + "&reportName=altgo", { }, function () {
+    $.get("http://127.0.0.1:1500?workId=" + workId + "&content=" + msg + "&reportName=altgo&id=" + timetamp, { }, function () {
 
     });
 
@@ -1595,7 +1597,7 @@ setInterval(function () {
 
     var msg = "V:" + right + "X:" + wrong + "LX:" + lastWrong + "<br/>" + perWrongStr;
     var workId = window.betUtil.workId();
-    $.get("http://127.0.0.1:1500?workId=" + workId + "&content=" + msg + "&reportName=haven", {}, function () {
+    $.get("http://127.0.0.1:1500?workId=" + workId + "&content=" + msg + "&reportName=haven&id=" + timetamp, {}, function () {
 
     });
 
@@ -1671,4 +1673,81 @@ setInterval(function () {
     };
 
     window.policies.push(policy);
+})();
+
+var createReverse = function (name) {
+    var register = function () {
+        var watch = findWatch(name);
+        watch.policies.push(policy);
+    };
+
+    var policy = {
+        register: register,
+        isRunning: false,
+        stoping: false,
+        bias: 1,
+        stopping: false,
+        right: 0,
+        wins: 0,
+        tryStop: function () {
+            if (policy.bias === 1 && policy.isRunning === false) {
+                policy.stop = true;
+                return;
+            }
+
+            policy.stopping = true;
+        },
+        check: function (watch, newData) {
+            if (watch === null) {
+                return;
+            }
+
+            if (policy.isRunning === false) {
+                return;
+            }
+
+            policy.isRunning = false;
+            var zjhm = newData.ZJHM.split(',')[policy.i];
+            var isRight = policy.a != zjhm;
+
+            if (isRight) {
+                policy.wins++;
+                batchWins++;
+                console.logex("策略" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
+            }
+            else {
+                console.logex("策略" + name + "被终结。");
+            }
+        },
+        tryStart: function (watch, array, newData) {
+            if (policy.isRunning) {
+                return;
+            }
+
+            var matchItem = array[0];
+            policy.bias = 1;
+            policy.CP_QS = newData.CP_QS;
+            policy.isRunning = true;
+            policy.i = matchItem.index;
+            policy.a = matchItem.num;
+
+            console.logex("策略" + name + "符合条件！当前倍数:" + policy.bias);
+            if (policy.stop === true || policy.stoping === true) {
+                console.logex("策略" + name + "未下注！");
+                return;
+            }
+            
+            //doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
+        }
+    };
+
+    window.policies.push(policy);
+};
+
+(function () {
+    createAddBrother("reverse4");
+})();
+
+(function () {
+    createAddBrother("reverse");
 })();
