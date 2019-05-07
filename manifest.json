@@ -18,7 +18,8 @@
     }
   ],
   "permissions": [
-     "http://*/static/html/client/bh/lottery/help.html*"
+    "http://*/static/html/client/bh/lottery/help.html*",
+    "http://*/static/html/client/bh/lottery/help.html*"
   ],
   "browser_action": {
     "default_icon": "icon.png"

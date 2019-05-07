@@ -13,18 +13,18 @@ var findWatch = function (name)
 var getMutil = function (b) {
     switch (b) {
         case 2:
-            return 7000;
+            return 8000;
         default:
-            return 3500;
+            return 4000;
     }
 };
 
 var getMutil1 = function (b) {
     switch (b) {
         case 2:
-            return 3600;
+            return 2800;
         default:
-            return 1800;
+            return 2800;
     }
 };
 
@@ -389,26 +389,37 @@ var doBet1 = function (i, a, bias, issueNumber) {
     console.log(betInfo);
     window.betUtil.builderOrderParams(betInfo, issueNumber);
 
-    setTimeout(function () {
-        betInfo = [createBetInfo2(i, a, bias)];
-        console.log("下注信息:");
-        console.log(betInfo);
-        window.betUtil.builderOrderParams(betInfo, issueNumber);
-    }, 2000);
+    betInfo = [createBetInfo2(i, a, bias)];
+    console.log("下注信息:");
+    console.log(betInfo);
+    window.betUtil.builderOrderParams(betInfo, issueNumber);
 };
 
 var altgoStr = "";
 
 var checkAltgoStr = function (i, cn, newData) {
-    if (altgoStr.match(/X{34,}$/) != null) {
-        doBet(i, cn, 2, (parseInt(newData.CP_QS) + 1) + "");
+	if (altgoStr.match(/X{54,}$/) != null) {
+        //doBet(i, cn, 2, (parseInt(newData.CP_QS) + 1) + "");
     }
-    else if (altgoStr.match(/X{14,}$/) != null) {
-        doBet(i, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
+    else if (altgoStr.match(/X{31,40}$/) != null) {
+        //doBet(i, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
     }
-    else if (altgoStr.match(/V{1,}XV{1,}X$/) != null || altgoStr.match(/V{3,}$/) != null) {
-        doBet1(i, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
-    }
+	
+	//var str = altgoStr;
+ //   var lastWrong = 0;
+	
+ //   for (var index = str.length - 1; index >= 0; index--) {
+ //       if (str[index] === "X") {
+ //           lastWrong++;
+ //       }
+ //       else {
+ //           break;
+ //       }
+ //   }
+	
+	//if (altgoStr.match("VX{"+ lastWrong+","+lastWrong+"}VX{"+ lastWrong+","+lastWrong+"}VX{"+ lastWrong+","+lastWrong+"}$") != null){
+	//	doBet1(i, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
+	//}
 };
 
 setInterval(function () {
@@ -440,7 +451,14 @@ setInterval(function () {
         }
     }
 
-    $("#msg").html("V:" + right + "X:" + wrong + "LX:" + lastWrong + "<br/>" + perWrongStr);
+    var msg = "V:" + right + "X:" + wrong + "LX:" + lastWrong + "<br/>" + perWrongStr;
+    $("#msg").html(msg);
+
+    var workId = window.betUtil.workId();
+    $.get("http://127.0.0.1:1500?workId=" + workId + "&content=" + msg + "&reportName=altgo", { }, function () {
+
+    });
+
 }, 30000);
 
 (function () {
@@ -688,12 +706,12 @@ setInterval(function () {
                     batchWins++;
                 }
 
-                console.log("策略altgo正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
+                console.logex("策略altgo正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
                 altgoStr += "X";
             }
             else {
                 isWronging = true;
-                console.log("策略altgo被终结。");
+                console.logex("策略altgo被终结。");
                 altgoStr += "V";
             }
         },
@@ -742,9 +760,9 @@ setInterval(function () {
             policy.i = i;
             policy.a = a;
 
-            console.log("策略altgo符合条件！当前倍数:" + policy.bias + "位置：" + (i + 1) + "数字：" + a);
+            console.logex("策略altgo符合条件！当前倍数:" + policy.bias + "位置：" + (i + 1) + "数字：" + a);
             if (policy.stop === true || policy.stoping === true) {
-                console.log("策略altgo停止，未下注!");
+                console.logex("策略altgo停止，未下注!");
                 return;
             }
 
@@ -943,12 +961,12 @@ setInterval(function () {
                     batchWins++;
                 }
 
-                console.log("策略dissaltgo正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
+                console.logex("策略dissaltgo正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
                 altgoStr += "X";
             }
             else {
                 isWronging = true;
-                console.log("策略dissaltgo被终结。");
+                console.logex("策略dissaltgo被终结。");
                 altgoStr += "V";
             }
         },
@@ -1003,9 +1021,9 @@ setInterval(function () {
 
             policy.a = cn;
 
-            console.log("策略dissaltgo符合条件！当前倍数:" + policy.bias + "位置：" + (i + 1) + "数字：" + cn + "加数：" + a);
+            console.logex("策略dissaltgo符合条件！当前倍数:" + policy.bias + "位置：" + (i + 1) + "数字：" + cn + "加数：" + a);
             if (policy.stop === true || policy.stoping === true) {
-                console.log("策略dissaltgo停止，未下注!");
+                console.logex("策略dissaltgo停止，未下注!");
                 return;
             }
 
@@ -1204,12 +1222,12 @@ setInterval(function () {
                     batchWins++;
                 }
 
-                console.log("策略missaltgo正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
+                console.logex("策略missaltgo正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
                 altgoStr += "X";
             }
             else {
                 isWronging = true;
-                console.log("策略missaltgo被终结。");
+                console.logex("策略missaltgo被终结。");
                 altgoStr += "V";
             }
         },
@@ -1260,9 +1278,9 @@ setInterval(function () {
             var cn = currentMisses[i][a].n;
             policy.a = cn;
 
-            console.log("策略missaltgo符合条件！当前倍数:" + policy.bias + "位置：" + (i + 1) + "数字：" + cn + "遗漏位置：" + a);
+            console.logex("策略missaltgo符合条件！当前倍数:" + policy.bias + "位置：" + (i + 1) + "数字：" + cn + "遗漏位置：" + a);
             if (policy.stop === true || policy.stoping === true) {
-                console.log("策略missaltgo停止，未下注!");
+                console.logex("策略missaltgo停止，未下注!");
                 return;
             }
 
@@ -1273,6 +1291,7 @@ setInterval(function () {
     window.policies.push(policy);
 })();
 
+var brotherTry = 0;
 var createBrother = function (name) {
     var register = function () {
         var watch = findWatch(name);
@@ -1311,10 +1330,11 @@ var createBrother = function (name) {
             if (isRight) {
                 policy.wins++;
                 batchWins++;
-                console.log("策略" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
+                console.logex("策略br_" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
             }
             else {
-                console.log("策略" + name + "被终结。");
+				brotherTry = 2;
+                console.logex("策略br_" + name + "被终结。");
             }
         },
         tryStart: function (watch, array, newData) {
@@ -1329,13 +1349,14 @@ var createBrother = function (name) {
             policy.i = matchItem.index;
             policy.a = matchItem.num;
 
-            console.log("策略" + name + "符合条件！当前倍数:" + policy.bias);
+            console.logex("策略br_" + name + "符合条件！当前倍数:" + policy.bias);
 
-            if (policy.stop === true || policy.stoping === true) {
-                console.log("策略" + name + "未下注！");
+            if (policy.stop === true || policy.stoping === true || brotherTry <= 0) {
+                console.logex("策略br_" + name + "未下注！");
                 return;
             }
-
+			
+			brotherTry--;
             doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
@@ -1353,4 +1374,296 @@ var createBrother = function (name) {
 
 (function () {
     createBrother("split");
+})();
+
+var missBrotherTry = 0;
+
+var createMissBrother = function (name) {
+    var register = function () {
+        var watch = findWatch(name);
+        watch.policies.push(policy);
+    };
+
+    var policy = {
+        register: register,
+        isRunning: false,
+        stoping: false,
+        bias: 1,
+        stopping: false,
+        right: 0,
+        wins: 0,
+        tryStop: function () {
+            if (policy.bias === 1 && policy.isRunning === false) {
+                policy.stop = true;
+                return;
+            }
+
+            policy.stopping = true;
+        },
+        check: function (watch, newData) {
+            if (watch === null) {
+                return;
+            }
+
+            if (policy.isRunning === false) {
+                return;
+            }
+
+            policy.isRunning = false;
+            var zjhm = newData.ZJHM.split(',')[policy.i];
+            var isRight = policy.a != zjhm;
+
+            if (isRight) {
+                policy.wins++;
+                batchWins++;
+                console.logex("策略mbr_" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
+            }
+            else {
+                missBrotherTry = 2;
+                console.logex("策略mbr_" + name + "被终结。");
+            }
+        },
+        tryStart: function (watch, array, newData, currentMisses) {
+            if (policy.isRunning) {
+                return;
+            }
+
+            
+            var matchItem = array[0];
+            policy.bias = 1;
+            policy.CP_QS = newData.CP_QS;
+            policy.isRunning = true;
+            policy.i = matchItem.index;
+
+            var cn = currentMisses[matchItem.index][matchItem.num].n;
+            policy.a = cn;
+
+            console.logex("策略mbr_" + name + "符合条件！当前倍数:" + policy.bias);
+
+            if (policy.stop === true || policy.stoping === true || missBrotherTry <= 0) {
+                console.logex("策略mbr_" + name + "未下注！");
+                return;
+            }
+
+            missBrotherTry--;
+            doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
+        }
+    };
+
+    window.policies.push(policy);
+};
+
+(function () {
+    createMissBrother("missloops");
+})();
+
+(function () {
+    createMissBrother("missdouble");
+})();
+
+(function () {
+    createMissBrother("misssplit");
+})();
+
+var addBrotherTry = 0;
+var createAddBrother = function (name) {
+    var register = function () {
+        var watch = findWatch(name);
+        watch.policies.push(policy);
+    };
+
+    var policy = {
+        register: register,
+        isRunning: false,
+        stoping: false,
+        bias: 1,
+        stopping: false,
+        right: 0,
+        wins: 0,
+        tryStop: function () {
+            if (policy.bias === 1 && policy.isRunning === false) {
+                policy.stop = true;
+                return;
+            }
+
+            policy.stopping = true;
+        },
+        check: function (watch, newData) {
+            if (watch === null) {
+                return;
+            }
+
+            if (policy.isRunning === false) {
+                return;
+            }
+
+            policy.isRunning = false;
+            var zjhm = newData.ZJHM.split(',')[policy.i];
+            var isRight = policy.a != zjhm;
+
+            if (isRight) {
+                policy.wins++;
+                batchWins++;
+                console.log("策略abr_" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
+            }
+            else {
+                addBrotherTry = 2;
+                console.log("策略abr_" + name + "被终结。");
+            }
+        },
+        tryStart: function (watch, array, newData) {
+            if (policy.isRunning) {
+                return;
+            }
+
+
+            var matchItem = array[0];
+            policy.bias = 1;
+            policy.CP_QS = newData.CP_QS;
+            policy.isRunning = true;
+            policy.i = matchItem.index;
+
+            var cn = parseInt(newData.ZJHM.split(',')[matchItem.index], 10) + matchItem.num;
+            if (cn > 9) {
+                cn = cn - 10;
+            }
+
+            policy.a = cn;
+
+            console.log("策略abr_" + name + "符合条件！当前倍数:" + policy.bias);
+
+            if (policy.stop === true || policy.stoping === true || addBrotherTry <= 0) {
+                console.log("策略abr_" + name + "未下注！");
+                return;
+            }
+
+            addBrotherTry--;
+            //doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
+        }
+    };
+
+    window.policies.push(policy);
+};
+
+(function () {
+    createAddBrother("addloops");
+})();
+
+(function () {
+    createAddBrother("adddouble");
+})();
+
+(function () {
+    createAddBrother("addsplit");
+})();
+
+var havenStr = "";
+
+setInterval(function () {
+    var str = havenStr;
+    var wrong = 0;
+    var right = 0;
+    var lastWrong = 0;
+
+    var perWrongStr = "";
+    var perWrong = 0;
+    for (var index = 0; index < str.length; index++) {
+        if (str[index] === "X") {
+            wrong++;
+            perWrong++;
+        }
+        else {
+            right++;
+            perWrongStr += perWrong + ",";
+            perWrong = 0;
+        }
+    }
+
+    for (var index = str.length - 1; index >= 0; index--) {
+        if (str[index] === "X") {
+            lastWrong++;
+        }
+        else {
+            break;
+        }
+    }
+
+    var msg = "V:" + right + "X:" + wrong + "LX:" + lastWrong + "<br/>" + perWrongStr;
+    var workId = window.betUtil.workId();
+    $.get("http://127.0.0.1:1500?workId=" + workId + "&content=" + msg + "&reportName=haven", {}, function () {
+
+    });
+
+    $("#havenmsg").html(msg);
+}, 30000);
+
+(function () {
+    var register = function () {
+        var watch = findWatch("haven");
+        watch.policies.push(policy);
+    };
+
+    var policy = {
+        register: register,
+        isRunning: false,
+        stoping: false,
+        bias: 1,
+        stopping: false,
+        right: 0,
+        wins: 0,
+        tryStop: function () {
+            if (policy.bias === 1 && policy.isRunning === false) {
+                policy.stop = true;
+                return;
+            }
+
+            policy.stopping = true;
+        },
+        check: function (watch, newData) {
+            if (watch === null) {
+                return;
+            }
+
+            if (policy.isRunning === false) {
+                return;
+            }
+
+            policy.isRunning = false;
+            var zjhm = newData.ZJHM.split(',')[policy.i];
+            var isRight = policy.a != zjhm;
+
+            if (isRight) {
+                policy.wins++;
+                havenStr += "X";
+                console.log("策略haven正确盈利一次。当前获利次数：" + policy.wins);
+            }
+            else {
+                havenStr += "V";
+                console.log("策略haven被终结。");
+            }
+        },
+        tryStart: function (watch, guy, newData) {
+            if (policy.isRunning) {
+                return;
+            }
+
+            var matchItem = guy;
+            policy.bias = 1;
+            policy.CP_QS = newData.CP_QS;
+            policy.isRunning = true;
+            policy.i = matchItem.numIndex;
+            policy.a = matchItem.prevNum;
+
+            console.log("策略haven符合条件！当前倍数:" + policy.bias);
+
+            //if (policy.stop === true || policy.stoping === true || missbrotherTry <= 0) {
+            //    console.log("策略" + name + "未下注！");
+            //    return;
+            //}
+
+            //doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
+        }
+    };
+
+    window.policies.push(policy);
 })();

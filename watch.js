@@ -145,7 +145,7 @@ window.watchers = [];
         }
     };
 
-    //window.watchers.push(watch);
+    window.watchers.push(watch);
 })();
 
 (function () {
@@ -673,101 +673,121 @@ window.watchers = [];
     window.watchers.push(watch);
 })();
 
-(function () {
-    var getMissMatch = function (si, n, histroyDatas, len) {
-        if (histroyDatas[len - 1][si] == n) {
+var getMissMatch = function (si, n, histroyDatas, len) {
+    if (histroyDatas[len - 1][si] == n) {
+        return [];
+    }
+
+    var ns = [];
+    var firstIndex = len - 1;
+    var lastIndex = firstIndex;
+    for (var i = firstIndex; i >= 0; i--) {
+        var data = histroyDatas[i][si];
+        if (data == n) {
+            if (lastIndex !== -1) {
+                var miss = lastIndex - i;
+                if (lastIndex !== firstIndex) {
+                    miss = miss - 1;
+                }
+
+                if (miss !== 0) {
+                    ns.push(miss);
+                }
+            }
+
+            lastIndex = i;
+        }
+    }
+
+    for (var i = 1; i < 4; i++) {
+        if (ns[i] > 6) {
             return [];
         }
-
-        var ns = [];
-        var firstIndex = len - 1;
-        var lastIndex = firstIndex;
-        for (var i = firstIndex; i >= 0; i--) {
-            var data = histroyDatas[i][si];
-            if (data == n) {
-                if (lastIndex !== -1) {
-                    var miss = lastIndex - i;
-                    if (lastIndex !== firstIndex) {
-                        miss = miss - 1;
-                    }
-
-                    if (miss !== 0) {
-                        ns.push(miss);
-                    }
-                }
-
-                lastIndex = i;
-            }
-        }
-
-        for (var i = 1; i < 4; i++) {
-            if (ns[i] > 6) {
-                return [];
-            }
-        }
-
-        var s = ns.length;
-        var ccc = [];
-        var splitNs = [];
-        var lastMax = -1;
-        for (var a = 0; a < s; a++) {
-            var n = ns[a];
-            if (n <= 6) {
-                splitNs.push(n);
-            }
-            else {
-                if (splitNs.length > 2) {
-                    splitNs.reverse();
-                    if (lastMax > -1) {
-                        splitNs.push(lastMax);
-                    }
-
-                    splitNs.index = a;
-                    splitNs.si = si;
-                    splitNs.n = n;
-                    ccc.push(splitNs);
-                }
-
-                if (ccc.length > 9) {
-                    break;
-                }
-
-                splitNs = [];
-                lastMax = n;
-            }
-        }
-
-        return ccc;
     }
 
-    var finPrevNumIndex = function (i, a, nums, matchNum) {
-        for (var si = i; si >= 0; si --) {
-            var num = nums[si].nums[a];
-            if (num == matchNum) {
-                return i - si;
-            }
+    var s = ns.length;
+    var ccc = [];
+    var splitNs = [];
+    var lastMax = -1;
+    for (var a = 0; a < s; a++) {
+        var n = ns[a];
+        if (n <= 6) {
+            splitNs.push(n);
         }
+        else {
+            if (splitNs.length > 2) {
+                splitNs.reverse();
+                if (lastMax > -1) {
+                    splitNs.push(lastMax);
+                }
 
-        return 99;
+                splitNs.index = a;
+                splitNs.si = si;
+                splitNs.n = n;
+                ccc.push(splitNs);
+            }
+
+            if (ccc.length > 9) {
+                break;
+            }
+
+            splitNs = [];
+            lastMax = n;
+        }
     }
 
-    var getMissNumIndex = function (i, a, nums) {
-        var misses = [];
-        var currentMiss = 99;
-        var cns = nums[i + 1].nums[a];
+    return ccc;
+};
+
+var finPrevNumIndex = function (i, a, nums, matchNum) {
+    for (var si = i; si >= 0; si--) {
+        var num = nums[si].nums[a];
+        if (num == matchNum) {
+            return i - si;
+        }
+    }
+
+    return 99;
+};
+
+var getMissNumIndex = function (i, a, nums) {
+    var misses = [];
+    var currentMiss = 99;
+    var cns = nums[i + 1].nums[a];
+    for (var n = 0; n < 10; n++) {
+        var miss = finPrevNumIndex(i, a, nums, n);
+        if (cns == n) {
+            currentMiss = miss;
+        }
+
+        misses.push(miss);
+    }
+
+    misses.sort(function (a, b) { return b - a; });
+    return misses.indexOf(currentMiss);
+};
+
+var getCurrentMisses = function (histroyDatas) {
+    var currentMisses = [];
+    var len = histroyDatas.length - 1;
+    for (var a = 0; a < 5; a++) {
+        var perMiss = [];
         for (var n = 0; n < 10; n++) {
-            var miss = finPrevNumIndex(i, a, nums, n);
-            if (cns == n) {
-                currentMiss = miss;
-            }
-
-            misses.push(miss);
+            var miss = finPrevNumIndex(len, a, histroyDatas, n);
+            perMiss.push({
+                n: n,
+                miss: miss
+            });
         }
 
-        misses.sort(function (a, b) { return b - a; });
-        return misses.indexOf(currentMiss);
+        perMiss.sort(function (a, b) { return b.miss - a.miss; });
+        currentMisses.push(perMiss);
     }
 
+    return currentMisses;
+};
+
+(function () {
     var convertDatas = function (histroyDatas) {
         var len = histroyDatas.length;
         var datas = [];
@@ -815,24 +835,8 @@ window.watchers = [];
         matchGuy: null,
         newBetData: function (oldData, newData, histroyDatas) {
             var arrary = find(histroyDatas);
-            var currentMisses = [];
-            var len = histroyDatas.length - 1;
-            for (var a = 0; a < 5; a++) {
-                var perMiss = [];
-                for (var n = 0; n < 10; n++) {
-                    var miss = finPrevNumIndex(len, a, histroyDatas, n);
-                    perMiss.push({
-                        n: n,
-                        miss: miss
-                    });
-                }
-
-                perMiss.sort(function (a, b) { return b.miss - a.miss; });
-                currentMisses.push(perMiss);
-            }
-
             for (var a = 0; a < watch.policies.length; a++) {
-                watch.policies[a].tryStart(watch, arrary, newData, currentMisses);
+                watch.policies[a].tryStart(watch, arrary, newData, getCurrentMisses(histroyDatas));
             }
         }
     };
@@ -840,7 +844,7 @@ window.watchers = [];
     window.watchers.push(watch);
 })();
 
-var brotherFind = function (histroyDatas, subIndex, isMatch) {
+var brotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     var datas = histroyDatas;
     var len = datas.length - 1;
     var matchAs = [];
@@ -876,6 +880,10 @@ var brotherFind = function (histroyDatas, subIndex, isMatch) {
 
            // var patt = /^VX{2,}/;
             var patt1 = /^VX{1,}VX{1,}/;
+            if (isSplit === true) {
+                patt1 = /^VX{1,}VX{1,}VX{1,}/;
+            }
+
             //var patt = /X{1,}/;
             //var patt1 = /X{1,}/;
             if (str.match(patt1) != null) {
@@ -949,7 +957,8 @@ var brotherFind = function (histroyDatas, subIndex, isMatch) {
     var isDouble = function (index, datas, a) {
         var na = datas[index].ZJHM.split(',')[a];
         var nb = datas[index - 1].ZJHM.split(',')[a];
-        if (na == nb) {
+		var nc = datas[index - 2].ZJHM.split(',')[a];
+        if (nb == nc && nb != na) {
             return true;
         }
 
@@ -997,7 +1006,409 @@ var brotherFind = function (histroyDatas, subIndex, isMatch) {
         policies: [],
         matchGuy: null,
         newBetData: function (oldData, newData, histroyDatas) {
-            var matchArry = brotherFind(histroyDatas, 1, isSplit);
+            var matchArry = brotherFind(histroyDatas, 1, isSplit, true);
+            if (matchArry.length === 0) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, matchArry, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
+
+
+var missBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
+    var convertDatas = function (histroyDatas) {
+        var len = histroyDatas.length;
+        var datas = [];
+        for (var i = 0; i < len; i++) {
+            if (typeof histroyDatas[i].nums === "undefined") {
+                histroyDatas[i].nums = histroyDatas[i].ZJHM.split(',');
+            }
+        }
+
+        for (var i = 100; i < len; i++) {
+            var perDatas = [];
+            for (var a = 0; a < 5; a++) {
+                var miss = getMissNumIndex(i - 1, a, histroyDatas);
+                perDatas.push(miss);
+            }
+
+            datas.push(perDatas);
+        }
+
+        return datas;
+    }
+
+    var datas = convertDatas(histroyDatas);
+    var len = datas.length - 1;
+    var matchAs = [];
+    for (var a = 0; a < 5; a++) {
+        if (isMatch(len, datas, a)) {
+            matchAs.push(a);
+        }
+    }
+
+    var matchArry = [];
+    for (var index in matchAs) {
+        var a = matchAs[index];
+        for (var i = 0; i < subIndex; i++) {
+            var str = "";
+            var wrongCount = 0;
+            for (var dl = len - 1; dl >= 2; dl--) {
+                if (isMatch(dl, datas, a)) {
+                    var compareNum = datas[dl - i][a];
+                    var num = datas[dl + 1][a];
+                    if (num === compareNum) {
+                        str += "X";
+                        wrongCount++;
+                    }
+                    else {
+                        str += "V";
+                    }
+
+                    if (str.length >= 7) {
+                        break;
+                    }
+                }
+            }
+
+            // var patt = /^VX{2,}/;
+            var patt1 = /^VX{1,}VX{1,}/;
+            if (isSplit === true) {
+                patt1 = /^VX{1,}VX{1,}VX{1,}/;
+            }
+
+            //var patt = /X{1,}/;
+            //var patt1 = /X{1,}/;
+            if (str.match(patt1) != null) {
+                matchArry.push({
+                    index: a,
+                    loopIndex: i,
+                    mtype: 0,
+                    num: datas[len - i][a]
+                });
+
+                break;
+            }
+
+            //var patt2 = /^X{1,}/;
+            //var patt3 = /^X{3,}/;
+            //if (wrongCount >= 3 && str.match(patt2) != null && str.match(patt3) == null) {
+            //    matchArry.push({
+            //        index: a,
+            //        loopIndex: i,
+            //        mtype: 1,
+            //        num: datas[len - i].ZJHM.split(',')[a]
+            //    });
+
+            //    break;
+            //}
+        }
+
+        if (matchArry.length > 0) {
+            break;
+        }
+    }
+
+    return matchArry;
+};
+
+
+(function () {
+    var isLoop = function (index, datas, a) {
+        var na = datas[index][a];
+        var nb = datas[index - 1][a];
+        var nc = datas[index - 2][a];
+        if (na - nb == nb - nc) {
+            return true;
+        }
+
+        return false;
+    }
+
+    var watch = {
+        name: "missloops",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = missBrotherFind(histroyDatas, 3, isLoop);
+            if (matchArry.length === 0) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, matchArry, newData, getCurrentMisses(histroyDatas));
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
+
+(function () {
+    var isDouble = function (index, datas, a) {
+        var na = datas[index][a];
+        var nb = datas[index - 1][a];
+        var nc = datas[index - 2][a];
+        if (nb == nc && nb != na) {
+            return true;
+        }
+
+        return false;
+    }
+
+    var watch = {
+        name: "missdouble",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = missBrotherFind(histroyDatas, 1, isDouble);
+            if (matchArry.length === 0) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, matchArry, newData, getCurrentMisses(histroyDatas));
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
+
+(function () {
+    var isSplit = function (index, datas, a) {
+        var na = datas[index][a];
+        var nb = datas[index - 1][a];
+        var nc = datas[index - 2][a];
+        if (na === nc && na !== nb) {
+            return true;
+        }
+
+        return false;
+    }
+
+    var watch = {
+        name: "misssplit",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = missBrotherFind(histroyDatas, 1, isSplit, true);
+            if (matchArry.length === 0) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, matchArry, newData, getCurrentMisses(histroyDatas));
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
+
+var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
+    var convertDatas = function (histroyDatas) {
+        var len = histroyDatas.length;
+        var datas = [];
+        for (var i = 1; i < len; i++) {
+            var pNum = histroyDatas[i - 1].ZJHM.split(',');
+            var cNum = histroyDatas[i].ZJHM.split(',');
+
+            var perDatas = [];
+            for (var a = 0; a < pNum.length; a++) {
+                var miss = parseInt(cNum[a], 10) - parseInt(pNum[a], 10);
+                if (cNum[a] < pNum[a]) {
+                    miss += 10;
+                }
+
+                perDatas.push(miss);
+            }
+
+            datas.push(perDatas);
+        }
+
+        return datas;
+    }
+
+    var datas = convertDatas(histroyDatas);
+    var len = datas.length - 1;
+    var matchAs = [];
+    for (var a = 0; a < 5; a++) {
+        if (isMatch(len, datas, a)) {
+            matchAs.push(a);
+        }
+    }
+
+    var matchArry = [];
+    for (var index in matchAs) {
+        var a = matchAs[index];
+        for (var i = 0; i < subIndex; i++) {
+            var str = "";
+            var wrongCount = 0;
+            for (var dl = len - 1; dl >= 2; dl--) {
+                if (isMatch(dl, datas, a)) {
+                    var compareNum = datas[dl - i][a];
+                    var num = datas[dl + 1][a];
+                    if (num === compareNum) {
+                        str += "X";
+                        wrongCount++;
+                    }
+                    else {
+                        str += "V";
+                    }
+
+                    if (str.length >= 7) {
+                        break;
+                    }
+                }
+            }
+
+            // var patt = /^VX{2,}/;
+            var patt1 = /^VX{1,}VX{1,}/;
+            if (isSplit === true) {
+                patt1 = /^VX{1,}VX{1,}VX{1,}/;
+            }
+
+            //var patt = /X{1,}/;
+            //var patt1 = /X{1,}/;
+            if (str.match(patt1) != null) {
+                matchArry.push({
+                    index: a,
+                    loopIndex: i,
+                    mtype: 0,
+                    num: datas[len - i][a]
+                });
+
+                break;
+            }
+
+            //var patt2 = /^X{1,}/;
+            //var patt3 = /^X{3,}/;
+            //if (wrongCount >= 3 && str.match(patt2) != null && str.match(patt3) == null) {
+            //    matchArry.push({
+            //        index: a,
+            //        loopIndex: i,
+            //        mtype: 1,
+            //        num: datas[len - i].ZJHM.split(',')[a]
+            //    });
+
+            //    break;
+            //}
+        }
+
+        if (matchArry.length > 0) {
+            break;
+        }
+    }
+
+    return matchArry;
+};
+
+
+(function () {
+    var isLoop = function (index, datas, a) {
+        var na = datas[index][a];
+        var nb = datas[index - 1][a];
+        var nc = datas[index - 2][a];
+        if (na - nb == nb - nc) {
+            return true;
+        }
+
+        return false;
+    }
+
+    var watch = {
+        name: "addloops",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = addBrotherFind(histroyDatas, 3, isLoop);
+            if (matchArry.length === 0) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, matchArry, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
+
+(function () {
+    var isDouble = function (index, datas, a) {
+        var na = datas[index][a];
+        var nb = datas[index - 1][a];
+        var nc = datas[index - 2][a];
+        if (nb == nc && nb != na) {
+            return true;
+        }
+
+        return false;
+    }
+
+    var watch = {
+        name: "adddouble",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = addBrotherFind(histroyDatas, 1, isDouble);
+            if (matchArry.length === 0) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, matchArry, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
+
+(function () {
+    var isSplit = function (index, datas, a) {
+        var na = datas[index][a];
+        var nb = datas[index - 1][a];
+        var nc = datas[index - 2][a];
+        if (na === nc && na !== nb) {
+            return true;
+        }
+
+        return false;
+    }
+
+    var watch = {
+        name: "addsplit",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = addBrotherFind(histroyDatas, 1, isSplit, true);
             if (matchArry.length === 0) {
                 return;
             }

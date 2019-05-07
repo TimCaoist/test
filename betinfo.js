@@ -29,6 +29,14 @@ window.betUtil = {
     currentBetInfo: null,
 };
 
+window.console.logex = function (str) {
+    var workId = window.betUtil.workId();
+    console.log(str);
+    $.get("http://127.0.0.1:1500?workId=" + workId + "&content=" + str, { }, function () {
+
+    });
+};
+
 (function () {
     var builderOrderParams = function (betInfo, issueNumber) {
         var betInfo = {
@@ -143,10 +151,25 @@ window.betUtil = {
             window.policies[i].register();
         }
 
-        var str = "<button id='start'>开始</button><button id='stop'>停止</button><div id='msg'></div>";
+        var str = "<button id='start'>开始</button><button id='stop'>停止</button><div id='msg'></div><div id='havenmsg'></div>";
         str += "<div><input id='betId' type='text' value='" + window.betUtil.xxnBetId + "' ></div>";
 
+        var ids = [96,91,67,65,47];
+        str += "<div>"
+        for (var i = 0; i < ids.length; i++) {
+            str += "<button class='idButton' bet_id='" + ids[i] + "' >" + ids[i]+"</button>";
+        }
+
+        str += "</div>"
+
         $("body").html(str);
+
+
+
+        $(".idButton").click(function () {
+            $("#betId").val($(this).attr("bet_id"));
+        });
+
         $("#start").click(function () {
             window.betUtil.getBetDatas(window.betUtil.workId(), 2000, function (result) {
                 storeDatas = result.reverse();
