@@ -1291,7 +1291,8 @@ setInterval(function () {
     window.policies.push(policy);
 })();
 
-var brotherTry = 0;
+sessionStorage.brotherTry = 0;
+
 var createBrother = function (name) {
     var register = function () {
         var watch = findWatch(name);
@@ -1333,7 +1334,7 @@ var createBrother = function (name) {
                 console.logex("策略br_" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
             }
             else {
-				brotherTry = 2;
+                sessionStorage.brotherTry = 2;
                 console.logex("策略br_" + name + "被终结。");
             }
         },
@@ -1350,13 +1351,14 @@ var createBrother = function (name) {
             policy.a = matchItem.num;
 
             console.logex("策略br_" + name + "符合条件！当前倍数:" + policy.bias);
-
+            var brotherTry = parseInt(sessionStorage.brotherTry, 10);
             if (policy.stop === true || policy.stoping === true || brotherTry <= 0) {
                 console.logex("策略br_" + name + "未下注！");
                 return;
             }
-			
-			brotherTry--;
+
+            brotherTry--;
+            sessionStorage.brotherTry = brotherTry
             doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
@@ -1376,7 +1378,7 @@ var createBrother = function (name) {
     createBrother("split");
 })();
 
-var missBrotherTry = 0;
+sessionStorage.missBrotherTry = 0;
 
 var createMissBrother = function (name) {
     var register = function () {
@@ -1419,7 +1421,7 @@ var createMissBrother = function (name) {
                 console.logex("策略mbr_" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
             }
             else {
-                missBrotherTry = 2;
+                sessionStorage.missBrotherTry = 2;
                 console.logex("策略mbr_" + name + "被终结。");
             }
         },
@@ -1440,13 +1442,15 @@ var createMissBrother = function (name) {
 
             console.logex("策略mbr_" + name + "符合条件！当前倍数:" + policy.bias);
 
-            if (policy.stop === true || policy.stoping === true || missBrotherTry <= 0) {
+            var brotherTry = parseInt(sessionStorage.missBrotherTry, 10);
+            if (policy.stop === true || policy.stoping === true || brotherTry <= 0) {
                 console.logex("策略mbr_" + name + "未下注！");
                 return;
             }
 
-            missBrotherTry--;
-            doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
+            brotherTry--;
+            sessionStorage.missBrotherTry = brotherTry;
+            doBet1(matchItem.index, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
 
@@ -1465,7 +1469,7 @@ var createMissBrother = function (name) {
     createMissBrother("misssplit");
 })();
 
-var addBrotherTry = 0;
+sessionStorage.addBrotherTry = 0;
 var createAddBrother = function (name) {
     var register = function () {
         var watch = findWatch(name);
@@ -1507,7 +1511,7 @@ var createAddBrother = function (name) {
                 console.log("策略abr_" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
             }
             else {
-                addBrotherTry = 2;
+                sessionStorage.addBrotherTry = 2;
                 console.log("策略abr_" + name + "被终结。");
             }
         },
@@ -1515,8 +1519,7 @@ var createAddBrother = function (name) {
             if (policy.isRunning) {
                 return;
             }
-
-
+            
             var matchItem = array[0];
             policy.bias = 1;
             policy.CP_QS = newData.CP_QS;
@@ -1532,13 +1535,15 @@ var createAddBrother = function (name) {
 
             console.log("策略abr_" + name + "符合条件！当前倍数:" + policy.bias);
 
-            if (policy.stop === true || policy.stoping === true || addBrotherTry <= 0) {
+            var brotherTry = parseInt(sessionStorage.addBrotherTry, 10);
+            if (policy.stop === true || policy.stoping === true || brotherTry <= 0) {
                 console.log("策略abr_" + name + "未下注！");
                 return;
             }
 
-            addBrotherTry--;
-            //doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
+            brotherTry--;
+            sessionStorage.addBrotherTry = brotherTry;
+            doBet1(matchItem.index, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
 
