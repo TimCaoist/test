@@ -1642,11 +1642,11 @@ setInterval(function () {
             if (isRight) {
                 policy.wins++;
                 havenStr += "X";
-                console.log("策略haven正确盈利一次。当前获利次数：" + policy.wins);
+                console.logex("策略haven正确盈利一次。当前获利次数：" + policy.wins);
             }
             else {
                 havenStr += "V";
-                console.log("策略haven被终结。");
+                console.logex("策略haven被终结。");
             }
         },
         tryStart: function (watch, guy, newData) {
@@ -1661,7 +1661,7 @@ setInterval(function () {
             policy.i = matchItem.numIndex;
             policy.a = matchItem.prevNum;
 
-            console.log("策略haven符合条件！当前倍数:" + policy.bias);
+            console.logex("策略haven符合条件！当前倍数:" + policy.bias);
 
             //if (policy.stop === true || policy.stoping === true || missbrotherTry <= 0) {
             //    console.log("策略" + name + "未下注！");

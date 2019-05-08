@@ -1427,7 +1427,6 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                     var num = datas[dl + 1].ZJHM.split(',')[a];
                     if (num === compareNum) {
                         str += "X";
-                        wrongCount++;
                     }
                     else {
                         str += "V";
