@@ -1441,7 +1441,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             if (str.match(patt1) != null) {
                 matchArry.push({
                     index: a,
-                    num: datas[len - i].ZJHM.split(',')[a]
+                    num: datas[len - compareIndex].ZJHM.split(',')[a]
                 });
 
                 break;
@@ -1475,7 +1475,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
         policies: [],
         matchGuy: null,
         newBetData: function (oldData, newData, histroyDatas) {
-            var matchArry = find(histroyDatas, isReverse, 4, /^V{1,4}X{2,}/);
+            var matchArry = find(histroyDatas, isReverse, 4, /^V{1,1}X{1,}/);
             if (matchArry.length === 0) {
                 return;
             }
@@ -1505,7 +1505,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     }
 
 
-    var watch = {
+    var watch1 = {
         name: "reverse4",
         txt: "",
         prevWrong: false,
@@ -1524,5 +1524,5 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
         }
     };
 
-    window.watchers.push(watch);
+    window.watchers.push(watch1);
 })();

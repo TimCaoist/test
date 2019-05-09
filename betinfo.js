@@ -150,7 +150,7 @@ window.console.logex = function (str) {
             window.policies[i].register();
         }
 
-        var str = "<button id='start'>开始</button><button id='stop'>停止</button><div id='msg'></div><div id='havenmsg'></div>";
+        var str = "<button id='start'>开始</button><button id='stop'>停止</button><div id='msg'></div><div id='havenmsg'></div><div id='brothermsg'></div>";
         str += "<div><input id='betId' type='text' value='" + window.betUtil.xxnBetId + "' ></div>";
 
         var ids = [96,91,67,65,47];
