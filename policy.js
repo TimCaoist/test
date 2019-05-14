@@ -15,9 +15,9 @@ var findWatch = function (name)
 var getMutil = function (b) {
     switch (b) {
         case 2:
-            return 500;
+            return 50;
         default:
-            return 500;
+            return 50;
     }
 };
 
@@ -1209,6 +1209,30 @@ setInterval(function () {
 sessionStorage.brotherTry = 0;
 var brotherTryStr = "";
 
+var checkBrotherStr = function (tryStr, key) {
+    var patt3 = /X{1,}VX{1,}V{0,1}$/;
+    var patt1 = /X{2,}V$/;
+    var patt2 = /X{1,}V$/;
+
+    if (tryStr.match(patt3) !== null) {
+        sessionStorage[key] = 0;
+    }
+    else if (tryStr.match(patt1) !== null) {
+        sessionStorage[key] = 2;
+    }
+    else if (tryStr.match(patt2) !== null) {
+        sessionStorage[key] = 1;
+    }
+};
+
+var openBrother = function (index, num, newData) {
+    if (sessionStorage["brother_start"] != "1") {
+        return;
+    }
+
+    doBet(index, num, 1, (parseInt(newData.CP_QS) + 1) + "");
+};
+
 var createBrother = function (name) {
     var register = function () {
         var watch = findWatch(name);
@@ -1257,14 +1281,7 @@ var createBrother = function (name) {
                 console.logex("策略br_" + name + "被终结。");
             }
 
-            var patt1 = /X{2,}V$/;
-            var patt2 = /X{1,}V$/;
-            if (brotherTryStr.match(patt1) !== null) {
-                sessionStorage.brotherTry = 2;
-            }
-            else if (brotherTryStr.match(patt2) !== null) {
-                sessionStorage.brotherTry = 1;
-            }
+            checkBrotherStr(brotherTryStr, "brotherTry");
         },
         tryStart: function (watch, array, newData) {
             if (policy.isRunning) {
@@ -1279,15 +1296,17 @@ var createBrother = function (name) {
             policy.a = matchItem.num;
 
             console.logex("策略br_" + name + "符合条件！当前倍数:" + policy.bias);
+
+            openBrother(matchItem.index, matchItem.num, newData);
             var brotherTry = parseInt(sessionStorage.brotherTry, 10);
-            if (policy.stop === true || policy.stoping === true || brotherTry <= 0) {
+            if (policy.stop === true || policy.stoping === true || brotherTry <= 0 || window.betUtil.workId() == 67) {
                 console.logex("策略br_" + name + "未下注！");
                 return;
             }
 
             brotherTry--;
             sessionStorage.brotherTry = brotherTry
-            doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
+            //doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
 
@@ -1356,14 +1375,7 @@ var createMissBrother = function (name) {
                 console.logex("策略mbr_" + name + "被终结。");
             }
 
-            var patt1 = /X{2,}V$/;
-            var patt2 = /X{1,}V$/;
-            if (missBrotherTryStr.match(patt1) !== null) {
-                sessionStorage.missBrotherTry = 2;
-            }
-            else if (missBrotherTryStr.match(patt2) !== null) {
-                sessionStorage.missBrotherTry = 1;
-            }
+            checkBrotherStr(missBrotherTryStr, "missBrotherTry");
         },
         tryStart: function (watch, array, newData, currentMisses) {
             if (policy.isRunning) {
@@ -1383,14 +1395,16 @@ var createMissBrother = function (name) {
             console.logex("策略mbr_" + name + "符合条件！当前倍数:" + policy.bias);
 
             var brotherTry = parseInt(sessionStorage.missBrotherTry, 10);
-            if (policy.stop === true || policy.stoping === true || brotherTry <= 0) {
+            openBrother(matchItem.index, cn, newData);
+
+            if (policy.stop === true || policy.stoping === true || brotherTry <= 0 || window.betUtil.workId() == 67) {
                 console.logex("策略mbr_" + name + "未下注！");
                 return;
             }
 
             brotherTry--;
             sessionStorage.missBrotherTry = brotherTry;
-            doBet1(matchItem.index, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
+            //doBet1(matchItem.index, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
 
@@ -1448,24 +1462,17 @@ var createAddBrother = function (name) {
 
             if (isRight) {
                 policy.wins++;
-                addBrotherTryStr = "V";
+                addBrotherTryStr += "V";
                 allBrotherTryStr += "V";
                 console.logex("策略abr_" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
             }
             else {
-                addBrotherTryStr = "X";
+                addBrotherTryStr += "X";
                 allBrotherTryStr += "X";
                 console.logex("策略abr_" + name + "被终结。");
             }
 
-            var patt1 = /X{2,}V$/;
-            var patt2 = /X{1,}V$/;
-            if (addBrotherTryStr.match(patt1) !== null) {
-                sessionStorage.addBrotherTry = 2;
-            }
-            else if (addBrotherTryStr.match(patt2) !== null) {
-                sessionStorage.addBrotherTry = 1;
-            }
+            checkBrotherStr(addBrotherTryStr, "addBrotherTry");
         },
         tryStart: function (watch, array, newData) {
             if (policy.isRunning) {
@@ -1486,16 +1493,17 @@ var createAddBrother = function (name) {
             policy.a = cn;
 
             console.logex("策略abr_" + name + "符合条件！当前倍数:" + policy.bias);
+            openBrother(matchItem.index, cn, newData);
 
             var brotherTry = parseInt(sessionStorage.addBrotherTry, 10);
-            if (policy.stop === true || policy.stoping === true || brotherTry <= 0) {
+            if (policy.stop === true || policy.stoping === true || brotherTry <= 0 || window.betUtil.workId() == 67) {
                 console.log("策略abr_" + name + "未下注！");
                 return;
             }
 
             brotherTry--;
             sessionStorage.addBrotherTry = brotherTry;
-            doBet1(matchItem.index, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
+            //doBet1(matchItem.index, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
 
@@ -1700,9 +1708,13 @@ var createReverse = function (name) {
 };
 
 (function () {
+    createReverse("reverse");
+})();
+
+(function () {
     createReverse("reverse4");
 })();
 
 (function () {
-    createReverse("reverse");
+    createReverse("reverse5");
 })();

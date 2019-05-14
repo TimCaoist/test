@@ -161,12 +161,20 @@ window.console.logex = function (str) {
 
         str += "</div>"
 
+        str += "<div><button id='btnBrother'>brother</button></div>";
         $("body").html(str);
-
-
 
         $(".idButton").click(function () {
             $("#betId").val($(this).attr("bet_id"));
+        });
+
+        $("#btnBrother").click(function () {
+            if (sessionStorage["brother_start"] == "1") {
+                sessionStorage["brother_start"] = "0";
+            }
+            else {
+                sessionStorage["brother_start"] = "1";
+            }
         });
 
         $("#start").click(function () {
