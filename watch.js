@@ -450,229 +450,6 @@ window.watchers = [];
 })();
 
 
-(function () {
-    var getMissMatch = function (si, n, histroyDatas, len) {
-        if (histroyDatas[len - 1].ZJHM.split(',')[si] == n) {
-            return [];
-        }
-
-        var ns = [];
-        var firstIndex = len - 1;
-        var lastIndex = firstIndex ;
-        for (var i = firstIndex ; i >= 0; i--) {
-            var data = histroyDatas[i].ZJHM.split(',')[si];
-            if (data == n) {
-                if (lastIndex !== -1) {
-                    var miss = lastIndex - i;
-                    if (lastIndex !== firstIndex) {
-                        miss = miss - 1;
-                    }
-
-                    if (miss !== 0) {
-                        ns.push(miss);
-                    }
-                }
-
-                lastIndex = i;
-            }
-        }
-
-        for (var i = 1; i < 4; i++) {
-            if (ns[i] > 6) {
-                return [];
-            }
-        }
-
-        var s = ns.length;
-        var ccc = [];
-        var splitNs = [];
-        var lastMax = -1;
-        for (var a = 0; a < s; a++) {
-            var n = ns[a];
-            if (n <= 6) {
-                splitNs.push(n);
-            }
-            else {
-                if (splitNs.length > 2) {
-                    splitNs.reverse();
-                    if (lastMax > -1) {
-                        splitNs.push(lastMax);
-                    }
-
-                    splitNs.index = a;
-                    splitNs.si = si;
-                    splitNs.n = n;
-                    ccc.push(splitNs);
-                }
-
-                if (ccc.length > 9) {
-                    break;
-                }
-
-                splitNs = [];
-                lastMax = n;
-            }
-        }
-
-        return ccc;
-    }
-
-    var find = function (histroyDatas) {
-        var len = histroyDatas.length;
-        var arrary = [];
-        for (var a = 0; a < 5; a++) {
-            var ns = [];
-            for (var n = 0; n < 10; n++) {
-                ns.push(getMissMatch(a, n, histroyDatas, len));
-            }
-
-            arrary.push(ns);
-        }
-
-        return arrary;
-    }
-
-    var watch = {
-        name: "altgo",
-        txt: "",
-        prevWrong: false,
-        policies: [],
-        matchGuy: null,
-        newBetData: function (oldData, newData, histroyDatas) {
-            var arrary = find(histroyDatas);
-            for (var a = 0; a < watch.policies.length; a++) {
-                watch.policies[a].tryStart(watch, arrary, newData);
-            }
-        }
-    };
-
-    window.watchers.push(watch);
-})();
-
-(function () {
-    var getMissMatch = function (si, n, histroyDatas, len) {
-        if (histroyDatas[len - 1][si] == n) {
-            return [];
-        }
-
-        var ns = [];
-        var firstIndex = len - 1;
-        var lastIndex = firstIndex;
-        for (var i = firstIndex; i >= 0; i--) {
-            var data = histroyDatas[i][si];
-            if (data == n) {
-                if (lastIndex !== -1) {
-                    var miss = lastIndex - i;
-                    if (lastIndex !== firstIndex) {
-                        miss = miss - 1;
-                    }
-
-                    if (miss !== 0) {
-                        ns.push(miss);
-                    }
-                }
-
-                lastIndex = i;
-            }
-        }
-
-        for (var i = 1; i < 4; i++) {
-            if (ns[i] > 6) {
-                return [];
-            }
-        }
-
-        var s = ns.length;
-        var ccc = [];
-        var splitNs = [];
-        var lastMax = -1;
-        for (var a = 0; a < s; a++) {
-            var n = ns[a];
-            if (n <= 6) {
-                splitNs.push(n);
-            }
-            else {
-                if (splitNs.length > 2) {
-                    splitNs.reverse();
-                    if (lastMax > -1) {
-                        splitNs.push(lastMax);
-                    }
-
-                    splitNs.index = a;
-                    splitNs.si = si;
-                    splitNs.n = n;
-                    ccc.push(splitNs);
-                }
-
-                if (ccc.length > 9) {
-                    break;
-                }
-
-                splitNs = [];
-                lastMax = n;
-            }
-        }
-
-        return ccc;
-    }
-
-    var convertDatas = function (histroyDatas) {
-        var len = histroyDatas.length;
-        var datas = [];
-        for (var i = 1; i < len; i++) {
-            var pNum = histroyDatas[i - 1].ZJHM.split(',');
-            var cNum = histroyDatas[i].ZJHM.split(',');
-
-            var perDatas = [];
-            for (var a = 0; a < pNum.length; a++) {
-                var miss = parseInt(cNum[a], 10) - parseInt(pNum[a], 10);
-                if (cNum[a] < pNum[a]) {
-                    miss += 10;
-                }
-
-                perDatas.push(miss);
-            }
-
-            datas.push(perDatas);
-        }
-
-        return datas;
-    }
-
-    var find = function (histroyDatas) {
-        var datas = convertDatas(histroyDatas);
-        var len = datas.length;
-
-        var arrary = [];
-        for (var a = 0; a < 5; a++) {
-            var ns = [];
-            for (var n = 0; n < 10; n++) {
-                ns.push(getMissMatch(a, n, datas, len));
-            }
-
-            arrary.push(ns);
-        }
-
-        return arrary;
-    }
-
-    var watch = {
-        name: "dissaltgo",
-        txt: "",
-        prevWrong: false,
-        policies: [],
-        matchGuy: null,
-        newBetData: function (oldData, newData, histroyDatas) {
-            var arrary = find(histroyDatas);
-            for (var a = 0; a < watch.policies.length; a++) {
-                watch.policies[a].tryStart(watch, arrary, newData);
-            }
-        }
-    };
-
-    window.watchers.push(watch);
-})();
-
 var getMissMatch = function (si, n, histroyDatas, len) {
     if (histroyDatas[len - 1][si] == n) {
         return [];
@@ -787,63 +564,6 @@ var getCurrentMisses = function (histroyDatas) {
     return currentMisses;
 };
 
-(function () {
-    var convertDatas = function (histroyDatas) {
-        var len = histroyDatas.length;
-        var datas = [];
-        for (var i = 0; i < len; i++) {
-            if (typeof histroyDatas[i].nums === "undefined") {
-                histroyDatas[i].nums = histroyDatas[i].ZJHM.split(',');
-            }
-        }
-
-        for (var i = 100; i < len; i++) {
-            var perDatas = [];
-            for (var a = 0; a < 5; a++) {
-                var miss = getMissNumIndex(i - 1, a, histroyDatas);
-                perDatas.push(miss);
-            }
-
-            datas.push(perDatas);
-        }
-
-        return datas;
-    }
-
-    var find = function (histroyDatas) {
-        var datas = convertDatas(histroyDatas);
-        var len = datas.length;
-
-        var arrary = [];
-        for (var a = 0; a < 5; a++) {
-            var ns = [];
-            for (var n = 0; n < 10; n++) {
-                ns.push(getMissMatch(a, n, datas, len));
-            }
-
-            arrary.push(ns);
-        }
-
-        return arrary;
-    }
-
-    var watch = {
-        name: "missaltgo",
-        txt: "",
-        prevWrong: false,
-        policies: [],
-        matchGuy: null,
-        newBetData: function (oldData, newData, histroyDatas) {
-            var arrary = find(histroyDatas);
-            for (var a = 0; a < watch.policies.length; a++) {
-                watch.policies[a].tryStart(watch, arrary, newData, getCurrentMisses(histroyDatas));
-            }
-        }
-    };
-
-    window.watchers.push(watch);
-})();
-
 var brotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     var datas = histroyDatas;
     var len = datas.length - 1;
@@ -877,10 +597,10 @@ var brotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
            // var patt = /^VX{2,}/;
-            var patt1 = /^VX{1,}VX{1,}/;
-            if (isSplit === true) {
-                patt1 = /^VX{1,}VX{1,}VX{1,}/;
-            }
+            var patt1 = /^XVX{1,}/;
+            //if (isSplit === true) {
+            //    patt1 = /^VX{1,}VX{1,}VX{1,}/;
+            //}
 
             if (str.match(patt1) != null) {
                 console.logex("brother");
@@ -1065,10 +785,10 @@ var missBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             // var patt = /^VX{2,}/;
-            var patt1 = /^VX{1,}VX{1,}/;
-            if (isSplit === true) {
-                patt1 = /^VX{1,}VX{1,}VX{1,}/;
-            }
+            var patt1 = /^XVX{1,}/;
+            //if (isSplit === true) {
+            //    patt1 = /^VX{1,}VX{1,}VX{1,}/;
+            //}
 
             //var patt = /X{1,}/;
             //var patt1 = /X{1,}/;
@@ -1269,10 +989,10 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             // var patt = /^VX{2,}/;
-            var patt1 = /^VX{1,}VX{1,}/;
-            if (isSplit === true) {
-                patt1 = /^VX{1,}VX{1,}VX{1,}/;
-            }
+            var patt1 = /^XVX{1,}/;
+            //if (isSplit === true) {
+            //    patt1 = /^VX{1,}VX{1,}VX{1,}/;
+            //}
 
             //var patt = /X{1,}/;
             //var patt1 = /X{1,}/;
