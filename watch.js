@@ -564,6 +564,8 @@ var getCurrentMisses = function (histroyDatas) {
     return currentMisses;
 };
 
+var pattArray = [/^XVX{1,}/, /^X{4,4}V/];
+
 var brotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     var datas = histroyDatas;
     var len = datas.length - 1;
@@ -596,24 +598,22 @@ var brotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 }
             }
 
-           // var patt = /^VX{2,}/;
-            var patt1 = /^XVX{1,}/;
-            //if (isSplit === true) {
-            //    patt1 = /^VX{1,}VX{1,}VX{1,}/;
-            //}
-
-            if (str.match(patt1) != null) {
+            if (str.match(/XV{0,2}X/) != null) {
                 console.logex("brother");
                 console.logex(str);
+            }
 
-                matchArry.push({
-                    index: a,
-                    loopIndex: i,
-                    mtype: 0,
-                    num: datas[len - i].ZJHM.split(',')[a]
-                });
+            for (var pi = 0; pi < pattArray.length; pi++) {
+                if (str.match(pattArray[pi]) != null) {
+                    matchArry.push({
+                        index: a,
+                        loopIndex: i,
+                        mtype: pi > 0 ? 1 : 0,
+                        num: datas[len - i].ZJHM.split(',')[a]
+                    });
 
-                break;
+                    return matchArry;
+                }
             }
         }
 
@@ -784,40 +784,24 @@ var missBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 }
             }
 
-            // var patt = /^VX{2,}/;
-            var patt1 = /^XVX{1,}/;
-            //if (isSplit === true) {
-            //    patt1 = /^VX{1,}VX{1,}VX{1,}/;
-            //}
 
-            //var patt = /X{1,}/;
-            //var patt1 = /X{1,}/;
-            if (str.match(patt1) != null) {
-                matchArry.push({
-                    index: a,
-                    loopIndex: i,
-                    mtype: 0,
-                    num: datas[len - i][a]
-                });
-
+            if (str.match(/XV{0,2}X/) != null) {
                 console.logex("missBrother");
                 console.logex(str);
-
-                break;
             }
 
-            //var patt2 = /^X{1,}/;
-            //var patt3 = /^X{3,}/;
-            //if (wrongCount >= 3 && str.match(patt2) != null && str.match(patt3) == null) {
-            //    matchArry.push({
-            //        index: a,
-            //        loopIndex: i,
-            //        mtype: 1,
-            //        num: datas[len - i].ZJHM.split(',')[a]
-            //    });
+            for (var pi = 0; pi < pattArray.length; pi++) {
+                if (str.match(pattArray[pi]) != null) {
+                    matchArry.push({
+                        index: a,
+                        loopIndex: i,
+                        mtype: pi > 0 ? 1 : 0,
+                        num: datas[len - i][a]
+                    });
 
-            //    break;
-            //}
+                    return matchArry;
+                }
+            }
         }
 
         if (matchArry.length > 0) {
@@ -988,40 +972,23 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 }
             }
 
-            // var patt = /^VX{2,}/;
-            var patt1 = /^XVX{1,}/;
-            //if (isSplit === true) {
-            //    patt1 = /^VX{1,}VX{1,}VX{1,}/;
-            //}
-
-            //var patt = /X{1,}/;
-            //var patt1 = /X{1,}/;
-            if (str.match(patt1) != null) {
+            if (str.match(/XV{0,2}X/) != null) {
                 console.logex("addBrother");
                 console.logex(str);
-
-                matchArry.push({
-                    index: a,
-                    loopIndex: i,
-                    mtype: 0,
-                    num: datas[len - i][a]
-                });
-
-                break;
             }
 
-            //var patt2 = /^X{1,}/;
-            //var patt3 = /^X{3,}/;
-            //if (wrongCount >= 3 && str.match(patt2) != null && str.match(patt3) == null) {
-            //    matchArry.push({
-            //        index: a,
-            //        loopIndex: i,
-            //        mtype: 1,
-            //        num: datas[len - i].ZJHM.split(',')[a]
-            //    });
+            for (var pi = 0; pi < pattArray.length; pi++) {
+                if (str.match(pattArray[pi]) != null) {
+                    matchArry.push({
+                        index: a,
+                        loopIndex: i,
+                        mtype: pi > 0 ? 1 : 0,
+                        num: datas[len - i][a]
+                    });
 
-            //    break;
-            //}
+                    return matchArry;
+                }
+            }
         }
 
         if (matchArry.length > 0) {
@@ -1271,7 +1238,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
         policies: [],
         matchGuy: null,
         newBetData: function (oldData, newData, histroyDatas) {
-            var matchArry = findMore(histroyDatas, isReverse4, 6, /^X{0,}/);
+            var matchArry = findMore(histroyDatas, isReverse4, 6, /^X{1,}/);
             if (matchArry.length === 0) {
                 return;
             }
@@ -1313,7 +1280,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
         policies: [],
         matchGuy: null,
         newBetData: function (oldData, newData, histroyDatas) {
-            var matchArry = findMore(histroyDatas, isReverse5, 8, /^X{0,}/);
+            var matchArry = findMore(histroyDatas, isReverse5, 8, /^X{1,}/);
             if (matchArry.length === 0) {
                 return;
             }

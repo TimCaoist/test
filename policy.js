@@ -24,9 +24,9 @@ var getMutil = function (b) {
 var getMutil1 = function (b) {
     switch (b) {
         case 2:
-            return 550;
+            return 250;
         default:
-            return 550;
+            return 250;
     }
 };
 
@@ -325,7 +325,12 @@ var checkBrotherStr = function (tryStr, key) {
     }
 };
 
-var openBrother = function (index, num, newData) {
+var openBrother = function (index, num, newData, type) {
+    if (type === 1) {
+        doBet1(index, num, 1, (parseInt(newData.CP_QS) + 1) + "");
+        return;
+    }
+
     if (sessionStorage["brother_start"] != "1") {
         return;
     }
@@ -375,13 +380,19 @@ var createBrother = function (name) {
             if (isRight) {
                 policy.wins++;
                 batchWins++;
-                brotherTryStr += "V";
-                allBrotherTryStr += "V";
+                if (policy.type === 0) {
+                    brotherTryStr += "V";
+                    allBrotherTryStr += "V";
+                }
+
                 console.logex("策略br_" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
             }
             else {
-                brotherTryStr += "X";
-                allBrotherTryStr += "X";
+                if (policy.type === 0) {
+                    brotherTryStr += "X";
+                    allBrotherTryStr += "X";
+                }
+
                 console.logex("策略br_" + name + "被终结。");
             }
 
@@ -398,10 +409,11 @@ var createBrother = function (name) {
             policy.isRunning = true;
             policy.i = matchItem.index;
             policy.a = matchItem.num;
+            policy.type = matchItem.mtype;
 
             console.logex("策略br_" + name + "符合条件！当前倍数:" + policy.bias);
 
-            openBrother(matchItem.index, matchItem.num, newData);
+            openBrother(matchItem.index, matchItem.num, newData, matchItem.mtype);
             var brotherTry = parseInt(sessionStorage.brotherTry, 10);
             if (policy.stop === true || policy.stoping === true || brotherTry <= 0 || window.betUtil.workId() == 67) {
                 console.logex("策略br_" + name + "未下注！");
@@ -469,13 +481,19 @@ var createMissBrother = function (name) {
 
             if (isRight) {
                 policy.wins++;
-                missBrotherTryStr += "V";
-                allBrotherTryStr += "V";
+                if (policy.type === 0) {
+                    missBrotherTryStr += "V";
+                    allBrotherTryStr += "V";
+                }
+
                 console.logex("策略mbr_" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
             }
             else {
-                missBrotherTryStr += "X";
-                allBrotherTryStr += "X";
+                if (policy.type === 0) {
+                    missBrotherTryStr += "X";
+                    allBrotherTryStr += "X";
+                }
+
                 console.logex("策略mbr_" + name + "被终结。");
             }
 
@@ -492,6 +510,7 @@ var createMissBrother = function (name) {
             policy.CP_QS = newData.CP_QS;
             policy.isRunning = true;
             policy.i = matchItem.index;
+            policy.type = matchItem.mtype;
 
             var cn = currentMisses[matchItem.index][matchItem.num].n;
             policy.a = cn;
@@ -499,7 +518,7 @@ var createMissBrother = function (name) {
             console.logex("策略mbr_" + name + "符合条件！当前倍数:" + policy.bias);
 
             var brotherTry = parseInt(sessionStorage.missBrotherTry, 10);
-            openBrother(matchItem.index, cn, newData);
+            openBrother(matchItem.index, cn, newData, matchItem.mtype);
 
             if (policy.stop === true || policy.stoping === true || brotherTry <= 0 || window.betUtil.workId() == 67) {
                 console.logex("策略mbr_" + name + "未下注！");
@@ -566,13 +585,19 @@ var createAddBrother = function (name) {
 
             if (isRight) {
                 policy.wins++;
-                addBrotherTryStr += "V";
-                allBrotherTryStr += "V";
+                if (policy.type === 0) {
+                    addBrotherTryStr += "V";
+                    allBrotherTryStr += "V";
+                }
+
                 console.logex("策略abr_" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
             }
             else {
-                addBrotherTryStr += "X";
-                allBrotherTryStr += "X";
+                if (policy.type === 0) {
+                    addBrotherTryStr += "X";
+                    allBrotherTryStr += "X";
+                }
+
                 console.logex("策略abr_" + name + "被终结。");
             }
 
@@ -588,6 +613,7 @@ var createAddBrother = function (name) {
             policy.CP_QS = newData.CP_QS;
             policy.isRunning = true;
             policy.i = matchItem.index;
+            policy.type = matchItem.mtype;
 
             var cn = parseInt(newData.ZJHM.split(',')[matchItem.index], 10) + matchItem.num;
             if (cn > 9) {
@@ -597,7 +623,7 @@ var createAddBrother = function (name) {
             policy.a = cn;
 
             console.logex("策略abr_" + name + "符合条件！当前倍数:" + policy.bias);
-            openBrother(matchItem.index, cn, newData);
+            openBrother(matchItem.index, cn, newData, matchItem.mtype);
 
             var brotherTry = parseInt(sessionStorage.addBrotherTry, 10);
             if (policy.stop === true || policy.stoping === true || brotherTry <= 0 || window.betUtil.workId() == 67) {
@@ -742,6 +768,46 @@ setInterval(function () {
     window.policies.push(policy);
 })();
 
+var reverseStr = "";
+
+setInterval(function () {
+    var str = reverseStr;
+    var wrong = 0;
+    var right = 0;
+    var lastWrong = 0;
+
+    var perWrongStr = "";
+    var perWrong = 0;
+    for (var index = 0; index < str.length; index++) {
+        if (str[index] === "X") {
+            wrong++;
+            perWrong++;
+        }
+        else {
+            right++;
+            perWrongStr += perWrong + ",";
+            perWrong = 0;
+        }
+    }
+
+    for (var index = str.length - 1; index >= 0; index--) {
+        if (str[index] === "X") {
+            lastWrong++;
+        }
+        else {
+            break;
+        }
+    }
+
+    var msg = "V:" + right + "X:" + wrong + "LX:" + lastWrong + "<br/>" + perWrongStr;
+    var workId = window.betUtil.workId();
+    $.get("http://127.0.0.1:1500?workId=" + workId + "&content=" + msg + "&reportName=reverse&id=" + timetamp, {}, function () {
+
+    });
+
+    $("#msg").html(msg);
+}, 30000);
+
 var createReverse = function (name) {
     var register = function () {
         var watch = findWatch(name);
@@ -778,11 +844,19 @@ var createReverse = function (name) {
             var isRight = policy.a != zjhm;
 
             if (isRight) {
+                if (name === "reverse") {
+                    reverseStr += "X";
+                }
+                
                 policy.wins++;
                 batchWins++;
                 console.logex("策略" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
             }
             else {
+                if (name === "reverse") {
+                    reverseStr += "V";
+                }
+
                 console.logex("策略" + name + "被终结。");
             }
         },
@@ -803,8 +877,13 @@ var createReverse = function (name) {
                 console.logex("策略" + name + "未下注！");
                 return;
             }
-            
-            //doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
+
+            if (name === "reverse") {
+                console.logex("策略" + name + "未下注！");
+                return;
+            }
+
+            doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
 
