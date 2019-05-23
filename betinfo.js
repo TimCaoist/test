@@ -162,6 +162,7 @@ window.console.logex = function (str) {
         str += "</div>"
 
         str += "<div><button id='btnBrother'>brother</button></div>";
+        str += "<div><button id='btnBrotherBet1'>brotherBet1</button></div>";
         $("body").html(str);
 
         $(".idButton").click(function () {
@@ -174,6 +175,15 @@ window.console.logex = function (str) {
             }
             else {
                 sessionStorage["brother_start"] = "1";
+            }
+        });
+
+        $("#btnBrotherBet1").click(function () {
+            if (sessionStorage["brother_bet_start"] == "1") {
+                sessionStorage["brother_bet_start"] = "0";
+            }
+            else {
+                sessionStorage["brother_bet_start"] = "1";
             }
         });
 

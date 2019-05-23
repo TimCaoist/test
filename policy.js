@@ -309,24 +309,25 @@ setInterval(function () {
 sessionStorage.brotherTry = 0;
 var brotherTryStr = "";
 
-var checkBrotherStr = function (tryStr, key) {
-    var patt3 = /X{1,}VX{1,}V{0,1}$/;
-    var patt1 = /X{2,}V$/;
-    var patt2 = /X{1,}V$/;
+var checkBrotherStr = function () {
+    if (sessionStorage["brother_bet_start"] != "1") {
+        return;
+    }
 
-    if (tryStr.match(patt3) !== null) {
-        sessionStorage[key] = 0;
-    }
-    else if (tryStr.match(patt1) !== null) {
-        sessionStorage[key] = 2;
-    }
-    else if (tryStr.match(patt2) !== null) {
-        sessionStorage[key] = 1;
+    var patt2 = /X{1,}$/;
+    if (allBrotherTryStr.match(patt2) !== null) {
+        sessionStorage["brotherTry"] = 1;
     }
 };
 
 var openBrother = function (index, num, newData, type) {
     if (type === 1) {
+        doBet1(index, num, 1, (parseInt(newData.CP_QS) + 1) + "");
+        return;
+    }
+
+    if (parseInt(sessionStorage.brotherTry, 10) > 0) {
+        sessionStorage.brotherTry = 0;
         doBet1(index, num, 1, (parseInt(newData.CP_QS) + 1) + "");
         return;
     }
@@ -396,7 +397,7 @@ var createBrother = function (name) {
                 console.logex("策略br_" + name + "被终结。");
             }
 
-            checkBrotherStr(brotherTryStr, "brotherTry");
+            checkBrotherStr();
         },
         tryStart: function (watch, array, newData) {
             if (policy.isRunning) {
@@ -414,14 +415,14 @@ var createBrother = function (name) {
             console.logex("策略br_" + name + "符合条件！当前倍数:" + policy.bias);
 
             openBrother(matchItem.index, matchItem.num, newData, matchItem.mtype);
-            var brotherTry = parseInt(sessionStorage.brotherTry, 10);
-            if (policy.stop === true || policy.stoping === true || brotherTry <= 0 || window.betUtil.workId() == 67) {
-                console.logex("策略br_" + name + "未下注！");
-                return;
-            }
+            //var brotherTry = parseInt(sessionStorage.brotherTry, 10);
+            //if (policy.stop === true || policy.stoping === true || brotherTry <= 0) {
+            //    console.logex("策略br_" + name + "未下注！");
+            //    return;
+            //}
 
-            brotherTry--;
-            sessionStorage.brotherTry = brotherTry
+            //brotherTry--;
+            //sessionStorage.brotherTry = brotherTry
             //doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
@@ -497,7 +498,7 @@ var createMissBrother = function (name) {
                 console.logex("策略mbr_" + name + "被终结。");
             }
 
-            checkBrotherStr(missBrotherTryStr, "missBrotherTry");
+            checkBrotherStr();
         },
         tryStart: function (watch, array, newData, currentMisses) {
             if (policy.isRunning) {
@@ -520,13 +521,13 @@ var createMissBrother = function (name) {
             var brotherTry = parseInt(sessionStorage.missBrotherTry, 10);
             openBrother(matchItem.index, cn, newData, matchItem.mtype);
 
-            if (policy.stop === true || policy.stoping === true || brotherTry <= 0 || window.betUtil.workId() == 67) {
-                console.logex("策略mbr_" + name + "未下注！");
-                return;
-            }
+            //if (policy.stop === true || policy.stoping === true || brotherTry <= 0) {
+            //    console.logex("策略mbr_" + name + "未下注！");
+            //    return;
+            //}
 
-            brotherTry--;
-            sessionStorage.missBrotherTry = brotherTry;
+            //brotherTry--;
+            //sessionStorage.missBrotherTry = brotherTry;
             //doBet1(matchItem.index, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
@@ -601,7 +602,7 @@ var createAddBrother = function (name) {
                 console.logex("策略abr_" + name + "被终结。");
             }
 
-            checkBrotherStr(addBrotherTryStr, "addBrotherTry");
+            checkBrotherStr();
         },
         tryStart: function (watch, array, newData) {
             if (policy.isRunning) {
@@ -625,14 +626,14 @@ var createAddBrother = function (name) {
             console.logex("策略abr_" + name + "符合条件！当前倍数:" + policy.bias);
             openBrother(matchItem.index, cn, newData, matchItem.mtype);
 
-            var brotherTry = parseInt(sessionStorage.addBrotherTry, 10);
-            if (policy.stop === true || policy.stoping === true || brotherTry <= 0 || window.betUtil.workId() == 67) {
-                console.log("策略abr_" + name + "未下注！");
-                return;
-            }
+            //var brotherTry = parseInt(sessionStorage.addBrotherTry, 10);
+            //if (policy.stop === true || policy.stoping === true || brotherTry <= 0) {
+            //    console.log("策略abr_" + name + "未下注！");
+            //    return;
+            //}
 
-            brotherTry--;
-            sessionStorage.addBrotherTry = brotherTry;
+            //brotherTry--;
+            //sessionStorage.addBrotherTry = brotherTry;
             //doBet1(matchItem.index, cn, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
