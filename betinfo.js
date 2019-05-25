@@ -42,7 +42,7 @@ window.console.logex = function (str) {
         var betInfo = {
             "command_id": 521,
             "lottery_id": window.betUtil.workId(),
-            "count": 2,
+            "count": betInfo.length,
             "issue": issueNumber,
             "bet_info": betInfo
         }

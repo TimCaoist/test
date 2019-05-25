@@ -22,12 +22,13 @@ var getMutil = function (b) {
 };
 
 var getMutil1 = function (b) {
-    switch (b) {
-        case 2:
-            return 250;
-        default:
-            return 250;
-    }
+    return 400;
+    //switch (b) {
+    //    case 2:
+    //        return 400;
+    //    default:
+    //        return 250;
+    //}
 };
 
 var getMutil2 = function (b) {
@@ -255,15 +256,15 @@ var doBet = function (i, a, bias, issueNumber) {
 };
 
 var doBet1 = function (i, a, bias, issueNumber) {
-    var betInfo = [createBetInfo1(i, a, bias)];
+    var betInfo = [createBetInfo1(i, a, bias), createBetInfo2(i, a, bias)];
     console.log("下注信息:");
     console.log(betInfo);
     window.betUtil.builderOrderParams(betInfo, issueNumber);
 
-    betInfo = [createBetInfo2(i, a, bias)];
-    console.log("下注信息:");
-    console.log(betInfo);
-    window.betUtil.builderOrderParams(betInfo, issueNumber);
+    //betInfo = [createBetInfo2(i, a, bias)];
+    //console.log("下注信息:");
+    //console.log(betInfo);
+    //window.betUtil.builderOrderParams(betInfo, issueNumber);
 };
 
 var allBrotherTryStr = "";

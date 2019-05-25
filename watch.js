@@ -564,7 +564,7 @@ var getCurrentMisses = function (histroyDatas) {
     return currentMisses;
 };
 
-var pattArray = [/^XVX{1,}/, /^X{4,4}V/];
+var pattArray = [/^XVX{1,}/];
 
 var brotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     var datas = histroyDatas;
