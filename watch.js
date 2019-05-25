@@ -1262,11 +1262,14 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
         var nf = datas[index - 5].ZJHM.split(',')[a];
         var ng = datas[index - 6].ZJHM.split(',')[a];
         var nh = datas[index - 7].ZJHM.split(',')[a];
+        var ni = datas[index - 8].ZJHM.split(',')[a];
+        var nj = datas[index - 9].ZJHM.split(',')[a];
 
-        if ((parseInt(na, 10) - parseInt(nh, 10)) == miss &&
-            (parseInt(nb, 10) - parseInt(ng, 10)) == miss &&
-            (parseInt(nc, 10) - parseInt(nf, 10)) == miss &&
-            (parseInt(nd, 10) - parseInt(ne, 10)) == miss) {
+        if ((parseInt(na, 10) - parseInt(nj, 10)) == miss &&
+            (parseInt(nb, 10) - parseInt(ni, 10)) == miss &&
+            (parseInt(nc, 10) - parseInt(nh, 10)) == miss &&
+            (parseInt(nd, 10) - parseInt(ng, 10)) == miss &&
+            (parseInt(ne, 10) - parseInt(nf, 10)) == miss) {
             return true;
         }
 
@@ -1280,7 +1283,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
         policies: [],
         matchGuy: null,
         newBetData: function (oldData, newData, histroyDatas) {
-            var matchArry = findMore(histroyDatas, isReverse5, 8, /^X{1,}/);
+            var matchArry = findMore(histroyDatas, isReverse5, 10, /^X{0,}/);
             if (matchArry.length === 0) {
                 return;
             }
