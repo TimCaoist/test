@@ -21,8 +21,10 @@ var getMutil = function (b) {
     }
 };
 
+sessionStorage.bet_money_1 = 2800;
+
 var getMutil1 = function (b) {
-    return 400;
+    return parseInt(sessionStorage.bet_money_1, 10);
     //switch (b) {
     //    case 2:
     //        return 400;
@@ -310,14 +312,19 @@ setInterval(function () {
 sessionStorage.brotherTry = 0;
 var brotherTryStr = "";
 
+sessionStorage["brother_bet_start"] = "1";
 var checkBrotherStr = function () {
-    if (sessionStorage["brother_bet_start"] != "1") {
-        return;
+    if (sessionStorage["brother_bet_start"] == "1") {
+        var patt2 = /V{2,}X{1,}V{1,}$/;
+        if (allBrotherTryStr.match(patt2) !== null) {
+            sessionStorage["brotherTry"] = 1;
+        }
     }
-
-    var patt2 = /X{1,}$/;
-    if (allBrotherTryStr.match(patt2) !== null) {
-        sessionStorage["brotherTry"] = 1;
+    else if (sessionStorage["brother_bet_start"] == "2") {
+        var patt2 = /V{1,}$/;
+        if (allBrotherTryStr.match(patt2) !== null) {
+            sessionStorage["brotherTry"] = 1;
+        }
     }
 };
 
@@ -694,6 +701,7 @@ setInterval(function () {
     $("#havenmsg").html(msg);
 }, 30000);
 
+sessionStorage.havenStart = "1";
 (function () {
     var register = function () {
         var watch = findWatch("haven");
@@ -736,9 +744,9 @@ setInterval(function () {
             }
             else {
                 havenStr += "V";
-                sessionStorage.havenStart = "1";
                 console.logex("策略haven被终结。");
             }
+
         },
         tryStart: function (watch, guy, newData) {
             if (policy.isRunning) {
@@ -754,16 +762,22 @@ setInterval(function () {
 
             console.logex("策略haven符合条件！当前倍数:" + policy.bias);
 
-            if (policy.stop === true || policy.stoping === true) {
-                console.log("策略" + name + "未下注！");
+            if (policy.stop === true || policy.stoping === true || (sessionStorage.havenStart != "1" && sessionStorage.havenStart != "2")) {
+                console.log("策略haven未下注！");
                 return;
             }
 
-            if (sessionStorage.havenStart != "0") {
+            var patt2 = /V{2,}X{1,}V{1,}$/;
+            if (sessionStorage.havenStart == "2") {
+                patt2 = /V{1,}$/;
+            }
+
+            if (havenStr.match(patt2) === null) {
+                console.log("策略haven未下注！");
                 return;
             }
 
-            doBet(matchItem.numIndex, matchItem.prevNum, 1, (parseInt(newData.CP_QS) + 1) + "");
+            doBet1(matchItem.numIndex, matchItem.prevNum, 1, (parseInt(newData.CP_QS) + 1) + "");
         }
     };
 
@@ -809,6 +823,8 @@ setInterval(function () {
 
     $("#msg").html(msg);
 }, 30000);
+
+sessionStorage["reverseStart"] = "1";
 
 var createReverse = function (name) {
     var register = function () {
@@ -880,9 +896,26 @@ var createReverse = function (name) {
                 return;
             }
 
-            if (name === "reverse") {
+            if (name === "reverseAdv") {
                 console.logex("策略" + name + "未下注！");
                 return;
+            }
+
+            if (name === "reverse") {
+                if (sessionStorage["reverseStart"] != "1" && sessionStorage["reverseStart"] != "2") {
+                    console.logex("策略" + name + "未下注！");
+                    return;
+                }
+
+                var patt2 = /V{2,}X{1,}V{1,}$/;
+                if (sessionStorage["reverseStart"] == "2") {
+                    patt2 = /V{1,}$/;
+                }
+
+                if (reverseStr.match(patt2) === null) {
+                    console.logex("策略" + name + "未下注！");
+                    return;
+                }
             }
 
             doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
@@ -901,5 +934,9 @@ var createReverse = function (name) {
 })();
 
 (function () {
-    createReverse("reverse5");
+    createReverse("reverse6");
+})();
+
+(function () {
+    createReverse("reverseAdv");
 })();

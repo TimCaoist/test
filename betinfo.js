@@ -163,6 +163,8 @@ window.console.logex = function (str) {
 
         str += "<div><button id='btnBrother'>brother</button></div>";
         str += "<div><button id='btnBrotherBet1'>brotherBet1</button></div>";
+        str += "<div><button id='btnHavenBet1'>havenBet1</button></div>";
+        str += "<div><button id='btnReverse1'>reverseBet1</button></div>";
         $("body").html(str);
 
         $(".idButton").click(function () {
@@ -184,6 +186,24 @@ window.console.logex = function (str) {
             }
             else {
                 sessionStorage["brother_bet_start"] = "1";
+            }
+        });
+
+        $("#btnHavenBet1").click(function () {
+            if (sessionStorage["havenStart"] == "1") {
+                sessionStorage["havenStart"] = "0";
+            }
+            else {
+                sessionStorage["havenStart"] = "1";
+            }
+        });
+
+        $("#btnReverse1").click(function () {
+            if (sessionStorage["reverseStart"] == "1") {
+                sessionStorage["reverseStart"] = "0";
+            }
+            else {
+                sessionStorage["reverseStart"] = "1";
             }
         });
 
