@@ -315,13 +315,13 @@ var brotherTryStr = "";
 sessionStorage["brother_bet_start"] = "1";
 var checkBrotherStr = function () {
     if (sessionStorage["brother_bet_start"] == "1") {
-        var patt2 = /V{2,}X{1,}V{1,}$/;
+        var patt2 = /X{2,}V{1,}X{1,}$/;
         if (allBrotherTryStr.match(patt2) !== null) {
             sessionStorage["brotherTry"] = 1;
         }
     }
     else if (sessionStorage["brother_bet_start"] == "2") {
-        var patt2 = /V{1,}$/;
+        var patt2 = /X{1,}$/;
         if (allBrotherTryStr.match(patt2) !== null) {
             sessionStorage["brotherTry"] = 1;
         }
