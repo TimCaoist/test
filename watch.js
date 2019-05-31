@@ -1372,13 +1372,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_adv");
-            if (str.match(/^V{0,2}XV{0,1}X/)) {
-                return matchAs[mi];
-            }
-            else if (str.match(/^V{0,1}XVVX/)) {
-                return matchAs[mi];
-            }
-            else if (str.match(/^VXVVVX/)) {
+            if (str.match(/^V{0,2}XX|^XVX|^VVXVX|^V{0,1}X{2,2}X|^VXV{3,3}X/)) {
                 return matchAs[mi];
             }
 
