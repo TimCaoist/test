@@ -39,23 +39,40 @@ window.console.logex = function (str) {
 
 (function () {
     var builderOrderParams = function (betInfo, issueNumber) {
-        var betInfo = {
-            "command_id": 521,
-            "lottery_id": window.betUtil.workId(),
-            "count": betInfo.length,
-            "issue": issueNumber,
-            "bet_info": betInfo
-        }
-        
-        var model = {
-            command: 'lottery_logon_request_transmit_v2',
-            param: JSON.stringify(betInfo)
+        var realBet = function () {
+            var betInfos = {
+                "command_id": 521,
+                "lottery_id": window.betUtil.workId(),
+                "count": betInfo.length,
+                "issue": issueNumber,
+                "bet_info": betInfo
+            }
+
+            var model = {
+                command: 'lottery_logon_request_transmit_v2',
+                param: JSON.stringify(betInfos)
+            };
+
+            $.post("/controller/lottery/943848", model,
+                function (data) {
+                    // console.log(data.data.detail[0].remark);
+                });
         };
 
-        $.post("/controller/lottery/943848", model,
+        $.post("/controller/user/get/get_user_balance/943848", {},
             function (data) {
-                // console.log(data.data.detail[0].remark);
-            });
+                var totalMoney = 0;
+                for (var i = 0; i < betInfo.length; i++) {
+                    totalMoney += parseFloat(betInfo[i].bet_money);
+                }
+
+                if (parseFloat(data.money) <= totalMoney) {
+                    console.log("余额不足！");
+                    return;
+                }
+
+                realBet();
+        });
     }
 
     window.betUtil.builderOrderParams = builderOrderParams;

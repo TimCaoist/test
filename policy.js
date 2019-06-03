@@ -21,7 +21,7 @@ var getMutil = function (b) {
     }
 };
 
-sessionStorage.bet_money_1 = 2800;
+sessionStorage.bet_money_1 = 5600;
 
 var getMutil1 = function (b) {
     return parseInt(sessionStorage.bet_money_1, 10);
@@ -312,7 +312,7 @@ setInterval(function () {
 sessionStorage.brotherTry = 0;
 var brotherTryStr = "";
 
-sessionStorage["brother_bet_start"] = "1";
+sessionStorage["brother_bet_start"] = "0";
 var checkBrotherStr = function () {
     if (sessionStorage["brother_bet_start"] == "1") {
         var patt2 = /X{2,}V{1,}X{1,}$/;
@@ -701,7 +701,7 @@ setInterval(function () {
     $("#havenmsg").html(msg);
 }, 30000);
 
-sessionStorage.havenStart = "1";
+sessionStorage.havenStart = "0";
 (function () {
     var register = function () {
         var watch = findWatch("haven");
@@ -824,7 +824,7 @@ setInterval(function () {
     $("#msg").html(msg);
 }, 30000);
 
-sessionStorage["reverseStart"] = "1";
+sessionStorage["reverseStart"] = "0";
 
 var createReverse = function (name) {
     var register = function () {
@@ -896,7 +896,7 @@ var createReverse = function (name) {
                 return;
             }
 
-            if (name === "reverseAdv") {
+            if (name === "reverseAdv5") {
                 console.logex("策略" + name + "未下注！");
                 return;
             }

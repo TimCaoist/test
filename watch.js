@@ -1372,7 +1372,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_adv");
-            if (str.match(/^V{0,2}XX|^XVX|^VVXVX|^V{0,1}X{2,2}X|^VXV{3,3}X/)) {
+            if (str.match(/^V{0,1}XV{0,3}XV{0,3}X|^V{0,2}XX/)) {
                 return matchAs[mi];
             }
 
@@ -1394,6 +1394,133 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     
     var watch1 = {
         name: "reverseAdv",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = find(histroyDatas);
+            if (matchArry === null) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch1.policies.length; a++) {
+                watch1.policies[a].tryStart(watch1, [matchArry], newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch1);
+})();
+
+(function () {
+    var findPrev = function (histroyDatas, index, a) {
+        var missArray = getMissArray(histroyDatas, index, a);
+        var compareMiss = getLastMissArray(missArray, histroyDatas, index, a);
+        if (compareMiss == null) {
+            return null;
+        }
+
+        return missArray[0] === compareMiss;
+    }
+
+    var getLastMissArray = function (missArray, histroyDatas, index, a) {
+        var compareMissArray = [];
+        for (var i = index - 1; i >= index - 50; i--) {
+            compareMissArray = getMissArray(histroyDatas, i, a);
+            if (missArray[1] === compareMissArray[1] &&
+                missArray[2] === compareMissArray[2] &&
+                missArray[3] === compareMissArray[3] &&
+                missArray[4] === compareMissArray[4]) {
+                return compareMissArray[0];
+            }
+        }
+
+        return null;
+    }
+
+    var getMissArray = function (datas, index, a) {
+        var na = datas[index].ZJHM.split(',')[a];
+        var nb = datas[index - 1].ZJHM.split(',')[a];
+        var nc = datas[index - 2].ZJHM.split(',')[a];
+        var nd = datas[index - 3].ZJHM.split(',')[a];
+        var ne = datas[index - 4].ZJHM.split(',')[a];
+        var nf = datas[index - 5].ZJHM.split(',')[a];
+        var ng = datas[index - 6].ZJHM.split(',')[a];
+        var nh = datas[index - 7].ZJHM.split(',')[a];
+        var ni = datas[index - 8].ZJHM.split(',')[a];
+        var nj = datas[index - 9].ZJHM.split(',')[a];
+        return [parseInt(na - nj, 10), parseInt(nb - ni, 10), parseInt(nc - nh, 10), parseInt(nd - ng, 10), parseInt(ne - nf, 10)];
+    };
+
+    var find = function (histroyDatas) {
+        var datas = histroyDatas;
+        var index = histroyDatas.length - 1;
+
+        var matchAs = [];
+        for (var a = 0; a < 5; a++) {
+            var na = datas[index].ZJHM.split(',')[a];
+            var nb = datas[index - 1].ZJHM.split(',')[a];
+            var nc = datas[index - 2].ZJHM.split(',')[a];
+            var nd = datas[index - 3].ZJHM.split(',')[a];
+            var ne = datas[index - 4].ZJHM.split(',')[a];
+            var nf = datas[index - 5].ZJHM.split(',')[a];
+            var ng = datas[index - 6].ZJHM.split(',')[a];
+            var nh = datas[index - 7].ZJHM.split(',')[a];
+
+            var missArray = [-1, parseInt(na - nh, 10), parseInt(nb - ng, 10), parseInt(nc - nf, 10), parseInt(nd - ne, 10)];
+            var lastMiss = getLastMissArray(missArray, histroyDatas, index, a);
+            if (lastMiss === null) {
+                continue;
+            }
+
+            var num = parseInt(datas[index - 8].ZJHM.split(',')[a], 10) + lastMiss;
+            if (num < 0 || num > 9) {
+                continue;
+            }
+
+            matchAs.push({
+                index: a,
+                miss: lastMiss,
+                num: num
+            });
+        }
+
+        for (var mi in matchAs) {
+            var a = matchAs[mi].index;
+            var str = "";
+            for (var dl = index - 1; dl >= 100; dl--) {
+                var result = findPrev(histroyDatas, dl, a);
+                if (result === null) {
+                    continue;
+                }
+
+                if (result === true) {
+                    str += "X";
+                }
+                else if (result === false) {
+                    str += "V";
+                }
+
+                if (str.length > 15) {
+                    break;
+                }
+            }
+
+            console.logex(str + "_adv5");
+            if (str.match(/^V{0,}/)) {
+                return matchAs[mi];
+            }
+
+            return matchAs[mi];
+        }
+
+        return null;
+    }
+
+    var watch1 = {
+        name: "reverseAdv5",
         txt: "",
         prevWrong: false,
         policies: [],
