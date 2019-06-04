@@ -148,307 +148,6 @@ window.watchers = [];
     window.watchers.push(watch);
 })();
 
-(function () {
-    var getNums = function (a, si, histroyDatas, len) {
-        var nums = [];
-        for (var i = si - 1; i >= si - len; i--) {
-            if (i >= histroyDatas.length) {
-                return [];
-            }
-
-            var data = histroyDatas[i].ZJHM.split(',')[a];
-            nums.push(data);
-        }
-
-        return nums;
-    }
-
-    var compare = function (na, nb, isBig) {
-        for (var i = 0; i < na.length; i++) {
-            if (isBig) {
-                if (na[i] < 5 && nb[i] >= 5) {
-                    return false;
-                }
-
-                if (na[i] >= 5 && nb[i] < 5) {
-                    return false;
-                }
-            }
-            else {
-                if (na[i] % 2 !== nb[i] % 2) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    var findGuys = function (nums, a, si, histroyDatas, takeLen, compareType) {
-        var len = histroyDatas.length;
-        for (var i = si; i >= len - 90; i--) {
-            var matchNums = getNums(a, i, histroyDatas, takeLen);
-            if (matchNums.length === 0) {
-                return null;
-            }
-
-            var isMatch = false;
-            if (typeof compareType === "undefined") {
-                var isBig = false;
-                isMatch = compare(nums, matchNums, isBig);
-                if (!isMatch) {
-                    isBig = true;
-                    isMatch = compare(nums, matchNums, true);
-                }
-            }
-            else {
-                var isBig = compareType;
-                isMatch = compare(nums, matchNums, isBig);
-            }
-
-            if (!isMatch) {
-                continue;
-            }
-
-            return {
-                numIndex: a,
-                isBig: isBig,
-                matchNums: matchNums,
-                matchIndex: i,
-                nums: nums,
-                compareLen: takeLen,
-                prevNums: getNums(a, i + 4, histroyDatas, 4),
-            };
-        }
-
-        return null;
-    };
-
-    var findAllGuys = function (nums, a, si, histroyDatas, takeLen, matchTimes) {
-        var i = si;
-        var guys = [];
-        while (i > -1) {
-            var guy = findGuys(nums, a, i, histroyDatas, takeLen);
-            if (guy === null) {
-                i = - 1;
-            }
-            else {
-                var mgNum = getNums(a, guy.matchIndex + 4, histroyDatas, takeLen + 4);
-                var isMatch = findMatchGuy(mgNum, guy.isBig, guy.matchIndex + 4, a, histroyDatas, takeLen + 4, matchTimes);
-                if (isMatch) {
-                    guys.push(guy);
-                }
-                
-                i = guy.matchIndex - takeLen;
-            }
-        }
-
-        return guys;
-    };
-
-    var findMatchGuy = function (mgNum, isBig, si, a, histroyDatas, takenlen, matchTimes) {
-        var guy = findGuys(mgNum, a, si, histroyDatas, takenlen, isBig);
-        if (guy === null) {
-            return false;
-        }
-
-        if (matchTimes === 1) {
-            return true;
-        }
-
-        return findMatchGuy(guy.matchNums, isBig, guy.matchIndex - takenlen, a, histroyDatas, takenlen, --matchTimes);
-    }
-
-	var watch = {
-        name: "fuckyourmom",
-        txt: "",
-        prevWrong: false,
-        policies: [],
-        matchGuy: null,
-        newBetData: function (oldData, newData, histroyDatas) {
-            var guys = [];
-            var len = histroyDatas.length;
-            for (var a = 0; a < 5; a++) {
-                for (var takenlen = 12; takenlen >= 6; takenlen--) {
-                    var nums = getNums(a, len, histroyDatas, takenlen);
-                    var mt = 2;
-                    if (takenlen === 7) {
-                        mt = 2;
-                    }
-                    else if (takenlen <= 7) {
-                        mt = 3;
-                    }
-                    else if (takenlen > 7 && takenlen < 10) {
-                        mt = 2;
-                    }
-
-                    var macthguys = findAllGuys(nums, a, len - takenlen, histroyDatas, takenlen, mt);
-                    if (macthguys.length === 0) {
-                        continue;
-                    }
-
-                    var mgl = macthguys.length;
-                    for (var b = 0; b < mgl; b++) {
-                        guys.push(macthguys[b]);
-                    }
-
-                    break;
-                }
-
-                
-            }
-
-            if (guys.length === 0) {
-                watch.matchGuy = null;
-                return;
-            }
-
-            guys.sort(function (a, b) {
-                return b.matchIndex - a.matchIndex;
-            });
-
-            console.log(guys);
-            for (var a = 0; a < watch.policies.length; a++) {
-                watch.policies[a].tryStart(watch, guys[0], newData);
-            }
-        }
-    };
-	
-	//window.watchers.push(watch);
-})();
-
-(function () {
-    var compare = function (aArray, bArray) {
-        var rights = [];
-        for (var i = 0; i < 3; i++) {
-            if (aArray[i] == bArray[i]) {
-                rights.push(true);
-            }
-        }
-
-        return rights.length >= 2;
-    };
-
-    var isMatch = function (datas, ns, index, a, b, c) {
-        for (var i = index; i < index + 4; i++) {
-            var num = datas[i].ZJHM.split(',');
-            if (compare([num[a], num[b], num[c]], ns)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    var getGuessData = function (datas) {
-        var d1 = datas[0].ZJHM.split(',');
-        var d2 = datas[1].ZJHM.split(',');
-        var d3 = datas[2].ZJHM.split(',');
-        var d4 = datas[3].ZJHM.split(',');
-        var len = datas.length;
-
-        var matchGuesses = [];
-        for (var a = 0; a < 2; a++) {
-            for (var b = a + 1; b < 3; b++) {
-                for (var c = b + 1; c < 5; c++) {
-                    var nums1 = [d1[a], d1[b], d1[c]];
-                    var nums2 = [d2[a], d2[b], d2[c]];
-                    var nums3 = [d3[a], d3[b], d3[c]];
-                    var nums4 = [d4[a], d4[b], d4[c]];
-
-                    for (var i = 1; i < len - 6; i++) {
-                        var a1 = isMatch(datas, nums1, i, a, b, c);
-                        var a2 = isMatch(datas, nums2, i + 1, a, b, c);
-                        if (a1 === false || a2 === false) {
-                            continue;
-                        }
-
-                        var a3 = isMatch(datas, nums3, i + 2, a, b, c);
-                        var a4 = isMatch(datas, nums4, i + 3, a, b, c);
-
-                        var matchGuess = {
-                            index: i - 1,
-                            count: 2,
-                            a: a,
-                            b: b,
-                            c: c
-                        };
-
-                        if (a3) {
-                            matchGuess.count++;
-                            if (a4) {
-                                matchGuess.count++;
-                            }
-                        }
-
-                        matchGuesses.push(matchGuess);
-                    }
-                }
-            }
-        }
-
-        matchGuesses.sort(function (a, b) {
-            if (b.count != a.count) {
-                return b.count - a.count;
-            }
-            else {
-                return a.index - b.index;
-            }
-        });
-
-        var firstMatchGuess = matchGuesses[0];
-        var betDatas = [];
-        for (var i = firstMatchGuess.index; i < firstMatchGuess.index + 4; i++) {
-            var d = datas[i].ZJHM.split(',');
-            betDatas.push([d[firstMatchGuess.a], d[firstMatchGuess.b], d[firstMatchGuess.c]]);
-        }
-
-        firstMatchGuess.betDatas = betDatas;
-        console.log(firstMatchGuess);
-        return firstMatchGuess;
-    };
-
-    var lastGuess = null;
-
-    var watch = {
-        name: "dolu",
-        txt: "",
-        prevWrong: false,
-        policies:[],
-        newBetData: function (oldData, newData) {
-            if (lastGuess !== null) {
-                var d = newData.ZJHM.split(',');
-                var isWrong = false;
-                for (var i = 0; i < lastGuess.betDatas.length; i++) {
-                    if (compare(lastGuess.betDatas[i], [d[lastGuess.a], d[lastGuess.b], d[lastGuess.c]])) {
-                        isWrong = true;
-                        break;
-                    }
-                };
-
-                watch.prevWrong = isWrong;
-                if (isWrong) {
-                    console.log("Watch -- dolu错了!");
-                    watch.txt += "x";
-                }
-                else {
-                    watch.txt += "o";
-                }
-            }
-
-            window.betUtil.getBetDatas(betUtil.jndBetId, 1000, function (result) {
-                lastGuess = getGuessData(result);
-                for (var a = 0; a < watch.policies.length; a++) {
-                    watch.policies[a].tryStart(watch, lastGuess, compare, newData);
-                }
-            });
-        }
-    };
-
-    //watchers.push(watch);
-    //console.log("加载Watch -- dolu成功");
-})();
-
 
 var getMissMatch = function (si, n, histroyDatas, len) {
     if (histroyDatas[len - 1][si] == n) {
@@ -1512,8 +1211,6 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             if (str.match(/^V{0,}/)) {
                 return matchAs[mi];
             }
-
-            return matchAs[mi];
         }
 
         return null;
@@ -1539,4 +1236,107 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     };
 
     window.watchers.push(watch1);
+})();
+
+(function () {
+    var findPrev = function (histroyDatas, index, a, n, miss) {
+        var na = histroyDatas[index].ZJHM.split(',')[a];
+        var nb = histroyDatas[index - miss - 1].ZJHM.split(',')[a];
+        if (nb != n || na != n) {
+            return false;
+        }
+
+        for (var i = index - 1; i >= index - miss; i--) {
+            var nb = histroyDatas[i].ZJHM.split(',')[a];
+            if (nb === n) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    var find = function (histroyDatas) {
+        var len = histroyDatas.length - 1;
+        var matchAs = [];
+        for (var a = 0; a < 5; a++) {
+            var na = histroyDatas[len].ZJHM.split(',')[a];
+            var miss = 0;
+            var isFound = false;
+            for (var i = len - 1; i >= len - 7; i--) {
+                var nb = histroyDatas[i].ZJHM.split(',')[a];
+                if (na === nb) {
+                    isFound = true;
+                    break;
+                }
+
+                miss++;
+            }
+
+            if (miss < 4 || isFound === false) {
+                continue;
+            }
+
+            matchAs.push({
+                miss: miss,
+                num: na,
+                index: a
+            });
+        }
+
+        if (matchAs.length <= 0) {
+            return [];
+        }
+
+        for (var mi in matchAs) {
+            var a = matchAs[mi].index;
+            var str = "";
+            for (var dl = len - matchAs[mi].miss; dl >= 100; dl--) {
+                var match = findPrev(histroyDatas, dl, a, matchAs[mi].num, matchAs[mi].miss);
+                if (match === false) {
+                    continue;
+                }
+
+                var result = histroyDatas[dl + 1].ZJHM.split(',')[a] == matchAs[mi].num;
+                if (result === true) {
+                    str += "X";
+                }
+                else if (result === false) {
+                    str += "V";
+                }
+
+                if (str.length > 15) {
+                    break;
+                }
+            }
+
+            console.logex(str + "_drag");
+            if (str.match(/^X{2,}|^X{1,}VX{1,}/)) {
+                return matchAs[mi];
+            }
+        }
+
+        return [];
+    }
+
+    var watch = {
+        name: "drag",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = find(histroyDatas);
+            if (matchArry.length === 0) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, [matchArry], newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
 })();
