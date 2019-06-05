@@ -896,7 +896,7 @@ var createReverse = function (name) {
                 return;
             }
 
-            if (name === "reverseAdv5" || name === "drag") {
+            if ((name === "reverseAdv5" && sessionStorage["reverse5Start"] != "1") || name === "drag") {
                 console.logex("策略" + name + "未下注！");
                 return;
             }
@@ -927,6 +927,10 @@ var createReverse = function (name) {
 
 (function () {
     createReverse("reverse");
+})();
+
+(function () {
+    createReverse("reverse3");
 })();
 
 (function () {

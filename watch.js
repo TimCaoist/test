@@ -817,6 +817,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 }
             }
 
+            console.logex(str + "_r" + compareIndex);
             var cn = parseInt(datas[len - compareIndex].ZJHM.split(',')[a], 10) + miss;
             if (cn < 0 || cn > 9) {
                 continue;
@@ -829,7 +830,6 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                     miss: miss
                 });
 
-                console.logex(str + "_r");
                 console.logex(miss);
                 break;
             }
@@ -980,6 +980,28 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     };
 
     window.watchers.push(watch2);
+
+    var watch3 = {
+        name: "reverse3",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = findMore(histroyDatas, isReverse, 4, /^X{3,}/);
+            if (matchArry.length === 0) {
+                return;
+            }
+
+            console.logex("reverse3");
+            console.log(matchArry);
+            for (var a = 0; a < watch3.policies.length; a++) {
+                watch3.policies[a].tryStart(watch3, matchArry, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch3);
 })();
 
 (function () {
@@ -1311,7 +1333,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_drag");
-            if (str.match(/^X{2,}|^X{1,}VX{1,}/)) {
+            if (str.match(/^VX{1,}V{0,3}X{1,}V{0,3}X{1,}/)) {
                 return matchAs[mi];
             }
         }
