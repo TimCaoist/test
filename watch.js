@@ -827,7 +827,8 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 matchArry.push({
                     index: a,
                     num: cn,
-                    miss: miss
+                    miss: miss,
+                    matchStr: str
                 });
 
                 console.logex(miss);
@@ -843,14 +844,14 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     }
 
     var findMore = function (histroyDatas, isMatch, compareIndex, patt1) {
-        for (var i = 6; i >= 0; i--) {
+        for (var i = 7; i >= 0; i--) {
             var matchArry = find(histroyDatas, isMatch, compareIndex, patt1, i);
             if (matchArry.length > 0) {
                 return matchArry;
             }
         }
 
-        for (var i = -6; i < 0; i++) {
+        for (var i = -7; i < 0; i++) {
             var matchArry = find(histroyDatas, isMatch, compareIndex, patt1, i);
             if (matchArry.length > 0) {
                 return matchArry;
@@ -921,8 +922,15 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
         policies: [],
         matchGuy: null,
         newBetData: function (oldData, newData, histroyDatas) {
-            var matchArry = findMore(histroyDatas, isReverse4, 6, /^X{1,}/);
+            var matchArry = findMore(histroyDatas, isReverse4, 6, /^X{0,}/);
             if (matchArry.length === 0) {
+                return;
+            }
+
+            var fMatch = matchArry[0];
+            var miss = Math.abs(fMatch.miss);
+            var matchStr = fMatch.matchStr;
+            if (miss <= 4 && matchStr.match(/^X{1,}V{0,}X{1,}|^VX{1,}/) === null) {
                 return;
             }
 
