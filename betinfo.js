@@ -66,6 +66,7 @@ window.console.logex = function (str) {
                     totalMoney += parseFloat(betInfo[i].bet_money);
                 }
 
+                console.log(totalMoney + "_" + data.money);
                 if (parseFloat(data.money) <= totalMoney) {
                     console.log("余额不足！");
                     return;
