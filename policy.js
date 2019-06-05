@@ -896,7 +896,7 @@ var createReverse = function (name) {
                 return;
             }
 
-            if ((name === "reverseAdv5" && sessionStorage["reverse5Start"] != "1") || name === "drag") {
+            if ((name === "reverseAdv5" && sessionStorage["reverse5Start"] != "1") || name === "kongmin" || name === "kongmax") {
                 console.logex("策略" + name + "未下注！");
                 return;
             }
@@ -950,5 +950,6 @@ var createReverse = function (name) {
 })();
 
 (function () {
-    createReverse("drag");
+    createReverse("kongmin");
+    createReverse("kongmax");
 })();

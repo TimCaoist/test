@@ -817,7 +817,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 }
             }
 
-            console.logex(str + "_r" + compareIndex);
+            console.logex(str + "_" + miss +"_r" + compareIndex);
             var cn = parseInt(datas[len - compareIndex].ZJHM.split(',')[a], 10) + miss;
             if (cn < 0 || cn > 9) {
                 continue;
@@ -1269,49 +1269,44 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
 })();
 
 (function () {
-    var findPrev = function (histroyDatas, index, a, n, miss) {
-        var na = histroyDatas[index].ZJHM.split(',')[a];
-        var nb = histroyDatas[index - miss - 1].ZJHM.split(',')[a];
-        if (nb != n || na != n) {
+    var findPrev = function (histroyDatas, index, a, n) {
+        var count = 0;
+        var firstNum = parseInt(histroyDatas[index].ZJHM.split(',')[a]);
+        if (firstNum != n) {
             return false;
         }
 
-        for (var i = index - 1; i >= index - miss; i--) {
-            var nb = histroyDatas[i].ZJHM.split(',')[a];
-            if (nb === n) {
-                return false;
+        for (var i = index - 1; i >= 0; i--) {
+            var nb = parseInt(histroyDatas[i].ZJHM.split(',')[a]);
+            if (n == 9) {
+                if (nb > firstNum) {
+                    break;
+                }
             }
+            else {
+                if (nb < firstNum) {
+                    break;
+                }
+            }
+
+            count++;
+            firstNum = nb;
         }
 
-        return true;
+        return count >= 4;
     };
 
-    var find = function (histroyDatas) {
+    var find = function (histroyDatas, n) {
         var len = histroyDatas.length - 1;
         var matchAs = [];
         for (var a = 0; a < 5; a++) {
-            var na = histroyDatas[len].ZJHM.split(',')[a];
-            var miss = 0;
-            var isFound = false;
-            for (var i = len - 1; i >= len - 7; i--) {
-                var nb = histroyDatas[i].ZJHM.split(',')[a];
-                if (na === nb) {
-                    isFound = true;
-                    break;
-                }
-
-                miss++;
+            var r = findPrev(histroyDatas, len, a, n);
+            if (r === true) {
+                matchAs.push({
+                    index: a,
+                    num: n + ''
+                });
             }
-
-            if (miss < 4 || isFound === false) {
-                continue;
-            }
-
-            matchAs.push({
-                miss: miss,
-                num: na,
-                index: a
-            });
         }
 
         if (matchAs.length <= 0) {
@@ -1321,13 +1316,13 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
         for (var mi in matchAs) {
             var a = matchAs[mi].index;
             var str = "";
-            for (var dl = len - matchAs[mi].miss; dl >= 100; dl--) {
-                var match = findPrev(histroyDatas, dl, a, matchAs[mi].num, matchAs[mi].miss);
+            for (var dl = len - 1; dl >= 100; dl--) {
+                var match = findPrev(histroyDatas, dl, a, n);
                 if (match === false) {
                     continue;
                 }
 
-                var result = histroyDatas[dl + 1].ZJHM.split(',')[a] == matchAs[mi].num;
+                var result = histroyDatas[dl + 1].ZJHM.split(',')[a] == n;
                 if (result === true) {
                     str += "X";
                 }
@@ -1340,8 +1335,8 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 }
             }
 
-            console.logex(str + "_drag");
-            if (str.match(/^VX{1,}V{0,3}X{1,}V{0,3}X{1,}/)) {
+            console.logex(str + "_kong");
+            if (str.match(/^VX{1,}VX{1,}VX{1,}|^X{2,}|^X{1,}V{0,2}X{2,}/)) {
                 return matchAs[mi];
             }
         }
@@ -1350,13 +1345,13 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     }
 
     var watch = {
-        name: "drag",
+        name: "kongmin",
         txt: "",
         prevWrong: false,
         policies: [],
         matchGuy: null,
         newBetData: function (oldData, newData, histroyDatas) {
-            var matchArry = find(histroyDatas);
+            var matchArry = find(histroyDatas, 0);
             if (matchArry.length === 0) {
                 return;
             }
@@ -1369,4 +1364,25 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     };
 
     window.watchers.push(watch);
+
+    var watch1 = {
+        name: "kongmax",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = find(histroyDatas, 9);
+            if (matchArry.length === 0) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch1.policies.length; a++) {
+                watch1.policies[a].tryStart(watch1, [matchArry], newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch1);
 })();
