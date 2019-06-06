@@ -161,13 +161,14 @@ var createBetInfo = function (index, a, bias) {
         str += ",";
     }
 
+    var betMoney = betNumber.length * 0.002 * getMutil(bias);
     var beInfo = {
         "method_id": "9",
         "number": str,
         "rebate_count": 80,
         "multiple": getMutil(bias),
         "mode": 3,
-        "bet_money": (getMutil(bias) * 0.01) + "",
+        "bet_money": betMoney + "",
         "calc_type": "0"
     };
 
@@ -195,13 +196,14 @@ var createBetInfo1 = function (index, a, bias) {
         str += ",";
     }
 
+    var betMoney = betNumber.length * 0.002 * getMutil1(bias);
     var beInfo = {
         "method_id": "9",
         "number": str,
         "rebate_count": 80,
         "multiple": getMutil1(bias),
         "mode": 3,
-        "bet_money": (getMutil1(bias) * 0.01) + "",
+        "bet_money": betMoney + "",
         "calc_type": "0"
     };
 
@@ -220,11 +222,13 @@ var createBetInfo2 = function (index, a, bias) {
         head = index + "," + (index + 1);
     }
 
+    var count = 0;
     var str = head + "@" + str;
     for (var i = 0; i < 100; i++) {
         var num = (i + "").padLeft('0', 2);
         if (num[cIndex] != a && num[cIndex] > 5) {
             str += num;
+            count++;
             if (i !== 99) {
                 str += "$";
             }
@@ -237,13 +241,14 @@ var createBetInfo2 = function (index, a, bias) {
 
     //{"command_id":521,"lottery_id":"91","issue":"20190428634","count":1,"bet_info":[{"method_id":"120001","number":"3,4@01$02","rebate_count":80,"multiple":"1","mode":3,"bet_money":"0.004","calc_type":"0"}]}
 
+    var betMoney = betNumber.length * 0.002 * getMutil2(bias);
     var beInfo = {
         "method_id": "120001",
         "number": str,
         "rebate_count": 80,
         "multiple": getMutil2(bias),
         "mode": 3,
-        "bet_money": (getMutil2(bias) * 0.01) + "",
+        "bet_money": betMoney + "",
         "calc_type": "0"
     };
 
