@@ -241,7 +241,7 @@ var createBetInfo2 = function (index, a, bias) {
 
     //{"command_id":521,"lottery_id":"91","issue":"20190428634","count":1,"bet_info":[{"method_id":"120001","number":"3,4@01$02","rebate_count":80,"multiple":"1","mode":3,"bet_money":"0.004","calc_type":"0"}]}
 
-    var betMoney = betNumber.length * 0.002 * getMutil2(bias);
+    var betMoney = count * 0.002 * getMutil2(bias);
     var beInfo = {
         "method_id": "120001",
         "number": str,
