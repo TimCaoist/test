@@ -21,7 +21,7 @@ var getMutil = function (b) {
     }
 };
 
-sessionStorage.bet_money_1 = 1550;
+sessionStorage.bet_money_1 = 1100;
 
 var getMutil1 = function (b) {
     return parseInt(sessionStorage.bet_money_1, 10);
