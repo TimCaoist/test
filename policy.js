@@ -21,7 +21,7 @@ var getMutil = function (b) {
     }
 };
 
-sessionStorage.bet_money_1 = 5600;
+sessionStorage.bet_money_1 = 1550;
 
 var getMutil1 = function (b) {
     return parseInt(sessionStorage.bet_money_1, 10);
@@ -947,6 +947,10 @@ var createReverse = function (name) {
 
 (function () {
     createReverse("reverseAdv5");
+})();
+
+(function () {
+    createReverse("reverseAdv6");
 })();
 
 (function () {

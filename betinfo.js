@@ -61,13 +61,14 @@ window.console.logex = function (str) {
 
         $.post("/controller/user/get/get_user_balance/943848", {},
             function (data) {
+                var money = data.data.money;
+
                 var totalMoney = 0;
                 for (var i = 0; i < betInfo.length; i++) {
                     totalMoney += parseFloat(betInfo[i].bet_money);
                 }
 
-                console.log(totalMoney + "_" + data.money);
-                if (parseFloat(data.money) <= totalMoney) {
+                if (parseFloat(money) <= totalMoney) {
                     console.log("余额不足！");
                     return;
                 }
