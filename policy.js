@@ -901,7 +901,7 @@ var createReverse = function (name) {
                 return;
             }
 
-            if ((name === "reverseAdv5" && sessionStorage["reverse5Start"] != "1") || name === "kongmin" || name === "kongmax") {
+            if (name === "kongmin" || name === "kongmax" || name === "reverseAll") {
                 console.logex("策略" + name + "未下注！");
                 return;
             }
@@ -935,10 +935,6 @@ var createReverse = function (name) {
 })();
 
 (function () {
-    createReverse("reverse3");
-})();
-
-(function () {
     createReverse("reverse4");
 })();
 
@@ -951,7 +947,86 @@ var createReverse = function (name) {
 })();
 
 (function () {
-    createReverse("reverseAdv5");
+    createReverse("reverseAll");
+})();
+
+(function () {
+    var register = function () {
+        var watch = findWatch("reverseAdv5");
+        watch.policies.push(policy);
+    };
+
+    var policy = {
+        register: register,
+        isRunning: false,
+        stoping: false,
+        bias: 1,
+        stopping: false,
+        right: 0,
+        wins: 0,
+        tryStop: function () {
+            if (policy.bias === 1 && policy.isRunning === false) {
+                policy.stop = true;
+                return;
+            }
+
+            policy.stopping = true;
+        },
+        check: function (watch, newData) {
+            if (watch === null) {
+                return;
+            }
+
+            if (policy.isRunning === false) {
+                return;
+            }
+
+            policy.isRunning = false;
+            var zjhm = newData.ZJHM.split(',')[policy.i];
+            var isRight = policy.a != zjhm;
+
+            if (isRight) {
+                policy.wins++;
+                batchWins++;
+                console.logex("策略reverseAdv5正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
+            }
+            else {
+                if (policy.t == 2) {
+                    sessionStorage["reverse5Start"] = "1";
+                }
+
+                console.logex("策略reverseAdv5被终结。");
+            }
+        },
+        tryStart: function (watch, array, newData, t) {
+            if (policy.isRunning) {
+                return;
+            }
+
+            var matchItem = array[0];
+            policy.bias = 1;
+            policy.CP_QS = newData.CP_QS;
+            policy.isRunning = true;
+            policy.i = matchItem.index;
+            policy.a = matchItem.num;
+            policy.t = t;
+
+            console.logex("策略reverseAdv5符合条件！当前倍数:" + policy.bias);
+            if (policy.stop === true || policy.stoping === true) {
+                console.logex("策略reverseAdv5未下注！");
+                return;
+            }
+
+            if (t == 2 && sessionStorage["reverse5Start"] != "1") {
+                console.logex("策略reverseAdv5未下注！");
+                return;
+            }
+
+            doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
+        }
+    };
+
+    window.policies.push(policy);
 })();
 
 (function () {
