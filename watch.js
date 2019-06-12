@@ -933,7 +933,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             if (miss == 0 && matchStr.match(/^V{0,4}X{1,}V{0,}X{1,}V{0,}X{1,}/) === null) {
                 return;
             }
-            else if (matchStr.match(/^X{1,}V{0,}X{1,}|^VX{1,}/) === null) {
+            else if (miss <= 4 && matchStr.match(/^X{1,}V{0,}X{1,}|^VX{1,}/) === null) {
                 return;
             }
 
@@ -1219,7 +1219,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_adv5");
-            if (str.match(/^V{0,2}X{1,}/)) {
+            if (str.match(/^V{1,2}X{1,}/)) {
                 return {
                     t: 1,
                     m: matchAs[mi]
@@ -1294,19 +1294,19 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                     var num = datas[dl + 1].ZJHM.split(',')[a];
                     var cm = parseInt(num, 10) - parseInt(compareNum, 10);
                     perMissArray.push(cm);
-                    str += cm + ",";
-                    if (perMissArray.length >= 10) {
+                    str += cm + "_" + compareNum + "_" + num + ",";
+                    if (perMissArray.length >= 20) {
                         break;
                     }
                 }
             }
 
-            console.logex(str + "_" + miss + "_ra");
+            console.logex(str + "_"+ a + "_" + miss + "_ra");
             if (perMissArray.length < 3) {
                 continue;
             }
 
-            if (perMissArray[0] === perMissArray[2]) {
+            if (perMissArray[0] === perMissArray[2] || perMissArray[0] === perMissArray[1]) {
                 var cn = parseInt(datas[len - 4].ZJHM.split(',')[a], 10) + perMissArray[0];
                 if (cn < 0 || cn > 9) {
                    continue;
@@ -1327,14 +1327,14 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     }
 
     var findMore = function (histroyDatas) {
-        for (var i = 8; i > 2; i--) {
+        for (var i = 8; i >= 0; i--) {
             var matchArry = find(histroyDatas, i);
             if (matchArry.length > 0) {
                 return matchArry;
             }
         }
 
-        for (var i = -8; i < -2; i++) {
+        for (var i = -8; i < 0; i++) {
             var matchArry = find(histroyDatas, i);
             if (matchArry.length > 0) {
                 return matchArry;
@@ -1483,4 +1483,152 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
     };
 
     window.watchers.push(watch1);
+})();
+
+(function () {
+    var findPrev = function (histroyDatas, index, a, nums) {
+        var count = 0;
+        for (var i = index; i >= 10; i--) {
+            var nb = parseInt(histroyDatas[i].ZJHM.split(',')[a], 10);
+            if (nums.indexOf(nb) <= -1) {
+                break;
+            }
+
+            count++;
+            if (count >= 5) {
+                return true;
+            }
+        }
+
+        return count >= 5;
+    };
+
+    var find = function (histroyDatas, nums, lc) {
+        var len = histroyDatas.length - 1;
+        var matchAs = [];
+        for (var a = 0; a < 5; a++) {
+            var r = findPrev(histroyDatas, len, a, nums);
+            if (r === true) {
+                matchAs.push({
+                    index: a,
+                });
+            }
+        }
+
+        if (matchAs.length <= 0) {
+            return null;
+        }
+
+        for (var mi in matchAs) {
+            var a = matchAs[mi].index;
+            var str = "";
+            var findNums = [];
+            for (var dl = len - 1; dl >= 100; dl--) {
+                var match = findPrev(histroyDatas, dl, a, nums);
+                if (match === false) {
+                    continue;
+                }
+
+                var cn = parseInt(histroyDatas[dl + 1].ZJHM.split(',')[a], 10);
+                findNums.push(cn);
+                str += cn;
+                if (findNums.length >= 20) {
+                    break;
+                }
+            }
+
+            console.logex(str + "_" + a + "_ns" + lc);
+            if (findNums.length >= 3) {
+                if (findNums[0] === findNums[1] && findNums[2] === findNums[3] && findNums[2] === findNums[3] && nums.indexOf(findNums[0]) <= -1) {
+                    return {
+                        index: a,
+                        num: findNums[0] + ''
+                    };
+                }
+
+                if (findNums[0] - findNums[1] == findNums[1] - findNums[2]) {
+                    var n = findNums[0] - findNums[1] + findNums[0];
+                    if (n <= 9 && n >= 0) {
+                        return {
+                            index: a,
+                            num: n + ''
+                        };
+                    }
+                }
+            }
+            else if (findNums.length >= 5) {
+                if (findNums[0] !== findNums[1] && findNums[1] === findNums[2] && findNums[2] !== findNums[3] && findNums[3] === findNums[4] ) {
+                    return {
+                        index: a,
+                        num: findNums[0] + ''
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    var watch = {
+        name: "nummin",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = find(histroyDatas, [0, 2, 4], "min");
+            if (matchArry === null) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, [matchArry], newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+
+    var watch1 = {
+        name: "nummax",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = find(histroyDatas, [5, 7, 9], "max");
+            if (matchArry === null) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch1.policies.length; a++) {
+                watch1.policies[a].tryStart(watch1, [matchArry], newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch1);
+
+    var watch2 = {
+        name: "nummid",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = find(histroyDatas, [3, 6, 8], "mid");
+            if (matchArry === null) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch2.policies.length; a++) {
+                watch2.policies[a].tryStart(watch2, [matchArry], newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch2);
 })();

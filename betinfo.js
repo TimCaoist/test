@@ -132,6 +132,7 @@ window.console.logex = function (str) {
 
 (function () {
     var storeDatas = [];
+    var lastCPQS = "";
     var handlerResult = function (result) {
         if (betUtil.currentBetInfo !== null && result.CP_QS == betUtil.currentBetInfo.CP_QS) {
             return;
@@ -143,7 +144,8 @@ window.console.logex = function (str) {
             return;
         }
 
-        console.log("开奖期号:" + result.CP_QS + "开奖号码:" + result.ZJHM);
+        lastCPQS = result.CP_QS;
+        console.logex("开奖期号:" + result.CP_QS + "开奖号码:" + result.ZJHM);
         storeDatas.push(result);
         for (var i = 0; i < window.watchers.length; i++) {
             var watcher = window.watchers[i];
@@ -169,7 +171,7 @@ window.console.logex = function (str) {
             window.policies[i].register();
         }
 
-        var str = "<button id='start'>开始</button><button id='stop'>停止</button><div id='msg'></div><div id='havenmsg'></div><div id='brothermsg'></div>";
+        var str = "<button id='start'>开始</button><button id='restart'>c开</button><button id='stop'>停止</button><div id='msg'></div><div id='havenmsg'></div><div id='brothermsg'></div>";
         str += "<div><input id='betId' type='text' value='" + window.betUtil.xxnBetId + "' ></div>";
 
         var ids = [96,91,67,65,47];
@@ -184,6 +186,9 @@ window.console.logex = function (str) {
         str += "<div><button id='btnBrotherBet1'>brotherBet1</button></div>";
         str += "<div><button id='btnHavenBet1'>havenBet1</button></div>";
         str += "<div><button id='btnReverse1'>reverseBet1</button></div>";
+        str += "<button id='dobet'>do</button>";
+        str += "<div><input type='text' id='tbIndex' value='0'/></div>";
+        str += "<div><input type='text' id='tbNum' value='0'/></div>";
         $("body").html(str);
 
         $(".idButton").click(function () {
@@ -226,6 +231,11 @@ window.console.logex = function (str) {
             }
         });
 
+        $("#dobet").click(function () {
+            var cpqs = (parseInt(lastCPQS) + 1) + "";
+            doBet1(parseInt($("#tbIndex").val()), parseInt($("#tbNum").val()), 1, cpqs);
+        });
+
         $("#start").click(function () {
             window.betUtil.getBetDatas(window.betUtil.workId(), 2000, function (result) {
                 storeDatas = result.reverse();
@@ -238,6 +248,13 @@ window.console.logex = function (str) {
             console.log("开始停止");
             for (var i = 0; i < window.policies.length; i++) {
                 window.policies[i].tryStop();
+            }
+        });
+
+        $("#restart").click(function () {
+            console.log("重新开始");
+            for (var i = 0; i < window.policies.length; i++) {
+                window.policies[i].stop = window.policies[i].stopping = false;
             }
         });
     };

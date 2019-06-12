@@ -319,6 +319,11 @@ var brotherTryStr = "";
 
 sessionStorage["brother_bet_start"] = "0";
 var checkBrotherStr = function () {
+    if (allBrotherTryStr.match(/X{2,}V{1,}X{2,}V{1,}X$|X{2,}V{1,}X{1,}V{1,}X{2,}V{1,}X$|X{2,}V{1,}X{1,}V{1,}X{1,}V{1,}X{2,}V{1,}X$/) !== null) {
+        sessionStorage["brotherTry"] = 1;
+        return;
+    }
+
     if (sessionStorage["brother_bet_start"] == "1") {
         var patt2 = /X{2,}V{1,}X{1,}$/;
         if (allBrotherTryStr.match(patt2) !== null) {
@@ -767,6 +772,11 @@ sessionStorage.havenStart = "0";
 
             console.logex("策略haven符合条件！当前倍数:" + policy.bias);
 
+            if (havenStr.match(/V{2,}X{1,}V{2,}X{1,}V$|V{2,}X{1,}V{1,}X{1,}V{2,}X{1,}V$|V{2,}X{1,}V{1,}X{1,}V{1,}X{1,}V{2,}X{1,}V$/) !== null) {
+                doBet1(matchItem.numIndex, matchItem.prevNum, 1, (parseInt(newData.CP_QS) + 1) + "");
+                return;
+            }
+
             if (policy.stop === true || policy.stoping === true || (sessionStorage.havenStart != "1" && sessionStorage.havenStart != "2")) {
                 console.log("策略haven未下注！");
                 return;
@@ -901,12 +911,17 @@ var createReverse = function (name) {
                 return;
             }
 
-            if (name === "kongmin" || name === "kongmax" || name === "reverseAll") {
+            if (name === "nummin" || name === "nummid" || name === "nummax" || name === "kongmin" || name === "kongmax" || name === "reverseAll") {
                 console.logex("策略" + name + "未下注！");
                 return;
             }
 
             if (name === "reverse") {
+                if (reverseStr.match(/V{2,}X{1,}V{2,}X{1,}V$|V{2,}X{1,}V{1,}X{1,}V{2,}X{1,}V$|V{2,}X{1,}V{1,}X{1,}V{1,}X{1,}V{2,}X{1,}V$/) !== null) {
+                    doBet1(matchItem.index, matchItem.num, 1, (parseInt(newData.CP_QS) + 1) + "");
+                    return;
+                }
+
                 if (sessionStorage["reverseStart"] != "1" && sessionStorage["reverseStart"] != "2") {
                     console.logex("策略" + name + "未下注！");
                     return;
@@ -1036,4 +1051,7 @@ var createReverse = function (name) {
 (function () {
     createReverse("kongmin");
     createReverse("kongmax");
+    createReverse("nummin");
+    createReverse("nummax");
+    createReverse("nummid");
 })();
