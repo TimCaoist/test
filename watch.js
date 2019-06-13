@@ -933,7 +933,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             if (miss == 0 && matchStr.match(/^V{0,4}X{1,}V{0,}X{1,}V{0,}X{1,}/) === null) {
                 return;
             }
-            else if (miss <= 4 && matchStr.match(/^X{1,}V{0,}X{1,}|^VX{1,}/) === null) {
+            else if (matchStr.match(/^X{1,}V{0,}X{1,}|^VX{1,}/) === null) {
                 return;
             }
 
@@ -1294,7 +1294,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                     var num = datas[dl + 1].ZJHM.split(',')[a];
                     var cm = parseInt(num, 10) - parseInt(compareNum, 10);
                     perMissArray.push(cm);
-                    str += cm + "_" + compareNum + "_" + num + ",";
+                    str += cm + ",";
                     if (perMissArray.length >= 20) {
                         break;
                     }
@@ -1346,6 +1346,122 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
 
     var watch1 = {
         name: "reverseAll",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = findMore(histroyDatas);
+            if (matchArry.length == 0) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch1.policies.length; a++) {
+                watch1.policies[a].tryStart(watch1, matchArry, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch1);
+})();
+
+(function () {
+    var isMatch = function (index, datas, a, miss) {
+        var na = datas[index].ZJHM.split(',')[a];
+        var nb = datas[index - 1].ZJHM.split(',')[a];
+        var nc = datas[index - 2].ZJHM.split(',')[a];
+        var nd = datas[index - 3].ZJHM.split(',')[a];
+
+        if ((parseInt(na, 10) - parseInt(nd, 10)) == miss &&
+            (parseInt(nb, 10) - parseInt(nc, 10)) == miss) {
+            return true;
+        }
+
+        return false;
+    }
+
+    var find = function (histroyDatas, miss) {
+        var datas = histroyDatas;
+        var len = datas.length - 1;
+        var matchAs = [];
+        for (var a = 0; a < 5; a++) {
+            if (isMatch(len, datas, a, miss)) {
+                matchAs.push(a);
+            }
+        }
+
+        var matchArry = [];
+        for (var index in matchAs) {
+            var a = matchAs[index];
+            var str = "";
+            var perMissArray = [];
+            for (var dl = len - 1; dl >= 5; dl--) {
+                if (isMatch(dl, datas, a, miss)) {
+                    var num = datas[dl + 1].ZJHM.split(',')[a];
+                    perMissArray.push(num);
+                    str += num;
+                    if (perMissArray.length >= 20) {
+                        break;
+                    }
+                }
+            }
+
+            console.logex(str + "_" + a + "_" + miss + "_rn");
+            if (perMissArray.length < 3) {
+                continue;
+            }
+
+            if (perMissArray[0] === perMissArray[1] && perMissArray[1] === perMissArray[2]) {
+                matchArry.push({
+                    index: a,
+                    num: perMissArray[0],
+                    miss: miss
+                });
+
+                console.logex(miss);
+                break;
+            }
+            else if (perMissArray[0] - perMissArray[1] == perMissArray[1] - perMissArray[2]) {
+                var cn = perMissArray[0] - perMissArray[1] + perMissArray[0];
+                if (cn < 0 || cn > 9) {
+                    continue;
+                }
+
+                matchArry.push({
+                    index: a,
+                    num: perMissArray[0],
+                    miss: miss
+                });
+
+                console.logex(miss);
+                break;
+            }
+        }
+
+        return matchArry;
+    }
+
+    var findMore = function (histroyDatas) {
+        for (var i = 8; i >= 0; i--) {
+            var matchArry = find(histroyDatas, i);
+            if (matchArry.length > 0) {
+                return matchArry;
+            }
+        }
+
+        for (var i = -8; i < 0; i++) {
+            var matchArry = find(histroyDatas, i);
+            if (matchArry.length > 0) {
+                return matchArry;
+            }
+        }
+
+        return [];
+    }
+
+    var watch1 = {
+        name: "reverseANum",
         txt: "",
         prevWrong: false,
         policies: [],
@@ -1546,7 +1662,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                     };
                 }
 
-                if (findNums[0] - findNums[1] == findNums[1] - findNums[2]) {
+                if (findNums[0] - findNums[1] == findNums[1] - findNums[2] && (findNums[1] - findNums[2] !== 0)) {
                     var n = findNums[0] - findNums[1] + findNums[0];
                     if (n <= 9 && n >= 0) {
                         return {
@@ -1556,13 +1672,33 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                     }
                 }
             }
-            else if (findNums.length >= 5) {
+
+            if (findNums.length >= 5) {
                 if (findNums[0] !== findNums[1] && findNums[1] === findNums[2] && findNums[2] !== findNums[3] && findNums[3] === findNums[4] ) {
                     return {
                         index: a,
                         num: findNums[0] + ''
                     };
                 }
+            }
+
+            if (nums.indexOf(findNums[0]) > -1 || findNums.length < 3) {
+                continue;
+            }
+
+            var count = 0;
+            for (var f = 1; f < findNums.length; f++) {
+                var fn = findNums[f];
+                if (fn === findNums[0]) {
+                    count++;
+                }
+            }
+
+            if (count >= 2) {
+                return {
+                    index: a,
+                    num: findNums[0] + ''
+                };
             }
         }
 

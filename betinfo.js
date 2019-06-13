@@ -133,6 +133,24 @@ window.console.logex = function (str) {
 (function () {
     var storeDatas = [];
     var lastCPQS = "";
+    var openMissSecond = 45000;
+    var nextOpenDate = new Date();
+
+    var convertDate = function (str) {
+        var year = str.substring(0, 4);
+        var month = str.substring(4, 6);
+        var day = str.substring(6, 8);
+        var hh = str.substring(8, 10);
+        var mm = str.substring(10, 12);
+        var ss = str.substring(12, 14);
+        return new Date(year + "-" + month + "-" + day + " " + hh + ":" + mm + ":" + ss);
+    };
+
+    var setNextOpenDate = function (lastOpenDate) {
+        lastOpenDate.setTime(lastOpenDate.getTime() + openMissSecond);
+        nextOpenDate = lastOpenDate;
+    };
+
     var handlerResult = function (result) {
         if (betUtil.currentBetInfo !== null && result.CP_QS == betUtil.currentBetInfo.CP_QS) {
             return;
@@ -145,6 +163,9 @@ window.console.logex = function (str) {
         }
 
         lastCPQS = result.CP_QS;
+        var lastDate = convertDate(result.SJKJSJ);
+        setNextOpenDate(lastDate);
+
         console.logex("开奖期号:" + result.CP_QS + "开奖号码:" + result.ZJHM);
         storeDatas.push(result);
         for (var i = 0; i < window.watchers.length; i++) {
@@ -163,6 +184,10 @@ window.console.logex = function (str) {
     };
 
     var loopGetBet = function () {
+        if ((new Date()) < nextOpenDate) {
+            return;
+        }
+
         betUtil.getCurrentBetData(window.betUtil.workId(), handlerResult);
     };
 
@@ -239,8 +264,15 @@ window.console.logex = function (str) {
         $("#start").click(function () {
             window.betUtil.getBetDatas(window.betUtil.workId(), 2000, function (result) {
                 storeDatas = result.reverse();
+                var lastPrevData = storeDatas[storeDatas.length - 2];
+                var lastData = storeDatas[storeDatas.length - 1];
+                var lastPrevDate = convertDate(lastPrevData.SJKJSJ);
+                var lastDate = convertDate(lastData.SJKJSJ);
+                openMissSecond = lastDate.getTime() - lastPrevDate.getTime();
+                setNextOpenDate(lastDate);
+
                 console.log("开始抽奖");
-                setInterval(loopGetBet, 15000);
+                setInterval(loopGetBet, 5000);
             });
         });
 
