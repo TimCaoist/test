@@ -185,11 +185,17 @@ window.console.logex = function (str) {
 
     var loopGetBet = function () {
         if ((new Date()) < nextOpenDate) {
+           
             return;
         }
 
         betUtil.getCurrentBetData(window.betUtil.workId(), handlerResult);
     };
+
+    var countTimes = function () {
+        var t = (nextOpenDate.getTime() - new Date().getTime()) / 1000;
+        $("#openSecond").text(t);
+    }
 
     var init = function () {
         for (var i = 0; i < window.policies.length; i++) {
@@ -214,6 +220,7 @@ window.console.logex = function (str) {
         str += "<button id='dobet'>do</button>";
         str += "<div><input type='text' id='tbIndex' value='0'/></div>";
         str += "<div><input type='text' id='tbNum' value='0'/></div>";
+        str += "<div><label id='openSecond' /></div>";
         $("body").html(str);
 
         $(".idButton").click(function () {
@@ -273,6 +280,7 @@ window.console.logex = function (str) {
 
                 console.log("开始抽奖");
                 setInterval(loopGetBet, 5000);
+                setInterval(countTimes, 1000);
             });
         });
 

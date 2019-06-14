@@ -1315,7 +1315,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 matchArry.push({
                     index: a,
                     num: cn,
-                    miss: miss
+                    miss: miss,
                 });
 
                 console.logex(miss);
@@ -1416,22 +1416,24 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 matchArry.push({
                     index: a,
                     num: perMissArray[0],
-                    miss: miss
+                    miss: miss,
+                    t: 1,
                 });
 
                 console.logex(miss);
                 break;
             }
-            else if (perMissArray[0] - perMissArray[1] == perMissArray[1] - perMissArray[2]) {
-                var cn = perMissArray[0] - perMissArray[1] + perMissArray[0];
+            else if (perMissArray[0] - perMissArray[1] == perMissArray[1] - perMissArray[2] ) {
+                var cn = parseInt(perMissArray[0] - perMissArray[1], 10) + parseInt(perMissArray[0], 10);
                 if (cn < 0 || cn > 9) {
                     continue;
                 }
 
                 matchArry.push({
                     index: a,
-                    num: perMissArray[0],
-                    miss: miss
+                    num: cn,
+                    miss: miss,
+                    t: 2,
                 });
 
                 console.logex(miss);
@@ -1550,7 +1552,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_kong");
-            if (str.match(/^VX{1,}VX{1,}VX{1,}|^X{2,}/)) {
+            if (str.match(/^VX{1,}VX{1,}VX{1,}|^V{0,1}X{3,}/)) {
                 return matchAs[mi];
             }
         }
@@ -1658,6 +1660,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 if (findNums[0] === findNums[1] && findNums[2] === findNums[3] && findNums[2] === findNums[3] && nums.indexOf(findNums[0]) <= -1) {
                     return {
                         index: a,
+                        t:1,
                         num: findNums[0] + ''
                     };
                 }
@@ -1667,7 +1670,8 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                     if (n <= 9 && n >= 0) {
                         return {
                             index: a,
-                            num: n + ''
+                            num: n + '',
+                            t: 2,
                         };
                     }
                 }
@@ -1677,7 +1681,8 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 if (findNums[0] !== findNums[1] && findNums[1] === findNums[2] && findNums[2] !== findNums[3] && findNums[3] === findNums[4] ) {
                     return {
                         index: a,
-                        num: findNums[0] + ''
+                        num: findNums[0] + '',
+                        t: 3,
                     };
                 }
             }
@@ -1697,7 +1702,8 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             if (count >= 2) {
                 return {
                     index: a,
-                    num: findNums[0] + ''
+                    num: findNums[0] + '',
+                    t: 4,
                 };
             }
         }

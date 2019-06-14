@@ -21,7 +21,7 @@ var getMutil = function (b) {
     }
 };
 
-sessionStorage.bet_money_1 = 1100;
+sessionStorage.bet_money_1 = 2800;
 
 var getMutil1 = function (b) {
     return parseInt(sessionStorage.bet_money_1, 10);
@@ -312,7 +312,7 @@ setInterval(function () {
     });
 
     $("#brothermsg").html(msg);
-}, 30000);
+}, 90000);
 
 sessionStorage.brotherTry = 0;
 var brotherTryStr = "";
@@ -709,7 +709,7 @@ setInterval(function () {
     });
 
     $("#havenmsg").html(msg);
-}, 30000);
+}, 90000);
 
 sessionStorage.havenStart = "0";
 (function () {
@@ -837,7 +837,7 @@ setInterval(function () {
     });
 
     $("#msg").html(msg);
-}, 30000);
+}, 90000);
 
 sessionStorage["reverseStart"] = "0";
 
