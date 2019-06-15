@@ -911,7 +911,7 @@ var createReverse = function (name) {
                 return;
             }
 
-            if (name === "nummin" || name === "nummid" || name === "nummax" || name === "reverseAll" || name === "reverseANum") {
+            if (name === "rmatch" || name === "horizontal" || name === "nummin" || name === "nummid" || name === "nummax" || name === "reverseAll" || name === "reverseANum") {
                 console.logex("策略" + name + "未下注！");
                 return;
             }
@@ -1055,4 +1055,6 @@ var createReverse = function (name) {
     createReverse("nummin");
     createReverse("nummax");
     createReverse("nummid");
+    createReverse("horizontal");
+    createReverse("rmatch");
 })();

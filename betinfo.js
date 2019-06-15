@@ -203,7 +203,7 @@ window.console.logex = function (str) {
         }
 
         var str = "<button id='start'>开始</button><button id='restart'>c开</button><button id='stop'>停止</button><div id='msg'></div><div id='havenmsg'></div><div id='brothermsg'></div>";
-        str += "<div><input id='betId' type='text' value='" + window.betUtil.xxnBetId + "' ></div>";
+        str += "<div><input id='betId' type='number' value='" + window.betUtil.xxnBetId + "' ></div>";
 
         var ids = [96,91,67,65,47];
         str += "<div>"
@@ -218,8 +218,8 @@ window.console.logex = function (str) {
         str += "<div><button id='btnHavenBet1'>havenBet1</button></div>";
         str += "<div><button id='btnReverse1'>reverseBet1</button></div>";
         str += "<button id='dobet'>do</button>";
-        str += "<div><input type='text' id='tbIndex' value='0'/></div>";
-        str += "<div><input type='text' id='tbNum' value='0'/></div>";
+        str += "<div><input type='number' id='tbIndex' value='0' min='0' max='4'/></div>";
+        str += "<div><input type='number' id='tbNum' value='0' min='0' max='9'/></div>";
         str += "<div><label id='openSecond' /></div>";
         $("body").html(str);
 
