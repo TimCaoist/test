@@ -1299,114 +1299,6 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             var perMissArray = [];
             for (var dl = len - 1; dl >= 5; dl--) {
                 if (isMatch(dl, datas, a, miss)) {
-                    var compareNum = datas[dl - 4].ZJHM.split(',')[a];
-                    var num = datas[dl + 1].ZJHM.split(',')[a];
-                    var cm = parseInt(num, 10) - parseInt(compareNum, 10);
-                    perMissArray.push(cm);
-                    str += cm + ",";
-                    if (perMissArray.length >= 20) {
-                        break;
-                    }
-                }
-            }
-
-            console.logex(str + "_"+ a + "_" + miss + "_ra");
-            if (perMissArray.length < 3) {
-                continue;
-            }
-
-            if (perMissArray[0] === perMissArray[2] && perMissArray[0] === perMissArray[1]) {
-                var cn = parseInt(datas[len - 4].ZJHM.split(',')[a], 10) + perMissArray[0];
-                if (cn < 0 || cn > 9) {
-                   continue;
-                }
-
-                matchArry.push({
-                    index: a,
-                    num: cn,
-                    miss: miss,
-                });
-
-                console.logex(miss);
-                break;
-            }
-        }
-
-        return matchArry;
-    }
-
-    var findMore = function (histroyDatas) {
-        for (var i = 8; i >= 0; i--) {
-            var matchArry = find(histroyDatas, i);
-            if (matchArry.length > 0) {
-                return matchArry;
-            }
-        }
-
-        for (var i = -8; i < 0; i++) {
-            var matchArry = find(histroyDatas, i);
-            if (matchArry.length > 0) {
-                return matchArry;
-            }
-        }
-
-        return [];
-    }
-
-    var watch1 = {
-        name: "reverseAll",
-        txt: "",
-        prevWrong: false,
-        policies: [],
-        matchGuy: null,
-        newBetData: function (oldData, newData, histroyDatas) {
-            var matchArry = findMore(histroyDatas);
-            if (matchArry.length == 0) {
-                return;
-            }
-
-            console.log(matchArry);
-            for (var a = 0; a < watch1.policies.length; a++) {
-                watch1.policies[a].tryStart(watch1, matchArry, newData);
-            }
-        }
-    };
-
-    window.watchers.push(watch1);
-})();
-
-(function () {
-    var isMatch = function (index, datas, a, miss) {
-        var na = datas[index].ZJHM.split(',')[a];
-        var nb = datas[index - 1].ZJHM.split(',')[a];
-        var nc = datas[index - 2].ZJHM.split(',')[a];
-        var nd = datas[index - 3].ZJHM.split(',')[a];
-
-        if ((parseInt(na, 10) - parseInt(nd, 10)) == miss &&
-            (parseInt(nb, 10) - parseInt(nc, 10)) == miss) {
-            return true;
-        }
-
-        return false;
-    }
-
-    var find = function (histroyDatas, miss) {
-        var datas = histroyDatas;
-        var len = datas.length - 1;
-        var matchAs = [];
-        for (var a = 0; a < 5; a++) {
-            if (isMatch(len, datas, a, miss)) {
-                matchAs.push(a);
-            }
-        }
-
-        var matchArry = [];
-        for (var index in matchAs) {
-            var a = matchAs[index];
-            var str = "";
-            var perMissArray = [];
-            for (var dl = len - 1; dl >= 5; dl--) {
-                if (isMatch(dl, datas, a, miss)) {
                     var num = datas[dl + 1].ZJHM.split(',')[a];
                     perMissArray.push(num);
                     str += num;
@@ -1473,6 +1365,123 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
 
     var watch1 = {
         name: "reverseANum",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = findMore(histroyDatas);
+            if (matchArry.length == 0) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch1.policies.length; a++) {
+                watch1.policies[a].tryStart(watch1, matchArry, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch1);
+})();
+
+(function () {
+    var isMatch = function (index, datas, a, miss) {
+        var na = datas[index].ZJHM.split(',')[a];
+        var nb = datas[index - 1].ZJHM.split(',')[a];
+        var nc = datas[index - 2].ZJHM.split(',')[a];
+        var nd = datas[index - 3].ZJHM.split(',')[a];
+
+        if ((parseInt(na, 10) - parseInt(nd, 10)) == miss &&
+            (parseInt(nb, 10) - parseInt(nc, 10)) == miss) {
+            return true;
+        }
+
+        return false;
+    }
+
+    var find = function (histroyDatas, miss) {
+        var datas = histroyDatas;
+        var len = datas.length - 1;
+        var matchAs = [];
+        for (var a = 0; a < 5; a++) {
+            if (isMatch(len, datas, a, miss)) {
+                matchAs.push(a);
+            }
+        }
+
+        var matchArry = [];
+        for (var index in matchAs) {
+            var a = matchAs[index];
+            var str = "";
+            var perMissArray = [];
+            for (var dl = len - 1; dl >= 5; dl--) {
+                if (isMatch(dl, datas, a, miss)) {
+                    var num = datas[dl + 1].ZJHM.split(',')[a];
+                    perMissArray.push(num);
+                    str += num;
+                    if (perMissArray.length >= 20) {
+                        break;
+                    }
+                }
+            }
+
+            if (perMissArray.length < 5) {
+                continue;
+            }
+
+            if (perMissArray[0] === perMissArray[1] && perMissArray[1] !== perMissArray[2] && perMissArray[2] == perMissArray[3] && perMissArray[3] == perMissArray[4]) {
+                matchArry.push({
+                    index: a,
+                    num: perMissArray[0],
+                    miss: miss,
+                    t: 1,
+                });
+
+                console.logex(miss);
+                break;
+            }
+
+            if (perMissArray.length < 6) {
+                continue;
+            }
+
+            if (perMissArray[1] === perMissArray[2] && perMissArray[1] != perMissArray[2] && perMissArray[3] == perMissArray[4] && perMissArray[4] == perMissArray[5]) {
+                matchArry.push({
+                    index: a,
+                    num: perMissArray[0],
+                    miss: miss,
+                    t: 2,
+                });
+
+                console.logex(miss);
+                break;
+            }
+        }
+
+        return matchArry;
+    }
+
+    var findMore = function (histroyDatas) {
+        for (var i = 8; i >= 0; i--) {
+            var matchArry = find(histroyDatas, i);
+            if (matchArry.length > 0) {
+                return matchArry;
+            }
+        }
+
+        for (var i = -8; i < 0; i++) {
+            var matchArry = find(histroyDatas, i);
+            if (matchArry.length > 0) {
+                return matchArry;
+            }
+        }
+
+        return [];
+    }
+
+    var watch1 = {
+        name: "reverseANumR",
         txt: "",
         prevWrong: false,
         policies: [],
@@ -1673,27 +1682,6 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                         num: findNums[0] + ''
                     };
                 }
-
-                if (findNums[0] - findNums[1] == findNums[1] - findNums[2] && (findNums[1] - findNums[2] !== 0)) {
-                    var n = findNums[0] - findNums[1] + findNums[0];
-                    if (n <= 9 && n >= 0) {
-                        return {
-                            index: a,
-                            num: n + '',
-                            t: 2,
-                        };
-                    }
-                }
-            }
-
-            if (findNums.length >= 5) {
-                if (findNums[0] !== findNums[1] && findNums[1] === findNums[2] && findNums[2] !== findNums[3] && findNums[3] === findNums[4] ) {
-                    return {
-                        index: a,
-                        num: findNums[0] + '',
-                        t: 3,
-                    };
-                }
             }
 
             if (nums.indexOf(findNums[0]) > -1 || findNums.length < 3) {
@@ -1708,7 +1696,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 }
             }
 
-            if (count >= 2) {
+            if (count >= 3) {
                 return {
                     index: a,
                     num: findNums[0] + '',
@@ -1870,7 +1858,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
 
             console.log(matchArry);
             for (var a = 0; a < watch.policies.length; a++) {
-                watch.policies[a].tryStart(watch, [matchArry], newData);
+                watch.policies[a].tryStart(watch, [matchArry], newData, 2);
             }
         }
     };
@@ -1933,8 +1921,17 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_rm");
-            if (str.match(/^V{1,3}X{1,}/)) {
-                return matchAs[mi];
+            if (str.match(/^V{1,2}X{1,}/)) {
+                return {
+                    t: 1,
+                    m: matchAs[mi]
+                };
+            }
+            else if (str.match(/^X{0,}/)) {
+                return {
+                    t: 2,
+                    m: matchAs[mi]
+                };
             }
         }
 
@@ -1955,7 +1952,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
 
             console.log(matchArry);
             for (var a = 0; a < watch.policies.length; a++) {
-                watch.policies[a].tryStart(watch, [matchArry], newData);
+                watch.policies[a].tryStart(watch, [matchArry.m], newData, matchArry.t);
             }
         }
     };

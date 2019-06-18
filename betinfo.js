@@ -220,11 +220,33 @@ window.console.logex = function (str) {
         str += "<button id='dobet'>do</button>";
         str += "<div><input type='number' id='tbIndex' value='0' min='0' max='4'/></div>";
         str += "<div><input type='number' id='tbNum' value='0' min='0' max='9'/></div>";
+        str += "<div><label id='betName' /></div>";
         str += "<div><label id='openSecond' /></div>";
         $("body").html(str);
 
         $(".idButton").click(function () {
             $("#betId").val($(this).attr("bet_id"));
+
+            var betName = "";
+            switch ($(this).attr("bet_id")) {
+                case '96':
+                    betName = "新西兰";
+                    break;
+                case '91':
+                    betName = "俄罗斯";
+                    break;
+                case '67':
+                    betName = "腾讯";
+                    break;
+                case '65':
+                    betName = "东京";
+                    break;
+                case '47':
+                    betName = "韩国";
+                    break;
+            }
+
+            $("#betName").text(betName);
         });
 
         $("#btnBrother").click(function () {

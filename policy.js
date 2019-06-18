@@ -21,7 +21,7 @@ var getMutil = function (b) {
     }
 };
 
-sessionStorage.bet_money_1 = 2800;
+sessionStorage.bet_money_1 = 1100;
 
 var getMutil1 = function (b) {
     return parseInt(sessionStorage.bet_money_1, 10);
@@ -911,7 +911,7 @@ var createReverse = function (name) {
                 return;
             }
 
-            if (name === "rmatch" || name === "horizontal" || name === "nummin" || name === "nummid" || name === "nummax" || name === "reverseAll" || name === "reverseANum") {
+            if (name === "rmatch" || name === "horizontal" || name === "reverseANumR" || name === "reverseANum") {
                 console.logex("策略" + name + "未下注！");
                 return;
             }
@@ -962,13 +962,12 @@ var createReverse = function (name) {
 })();
 
 (function () {
-    createReverse("reverseAll");
     createReverse("reverseANum");
 })();
 
-(function () {
+var createReverseWrongOne = function (name, cacheName) {
     var register = function () {
-        var watch = findWatch("reverseAdv5");
+        var watch = findWatch(name);
         watch.policies.push(policy);
     };
 
@@ -1004,14 +1003,14 @@ var createReverse = function (name) {
             if (isRight) {
                 policy.wins++;
                 batchWins++;
-                console.logex("策略reverseAdv5正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
+                console.logex("策略" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
             }
             else {
                 if (policy.t == 2) {
-                    sessionStorage["reverse5Start"] = "1";
+                    sessionStorage[cacheName] = "1";
                 }
 
-                console.logex("策略reverseAdv5被终结。");
+                console.logex("策略" + name + "被终结。");
             }
         },
         tryStart: function (watch, array, newData, t) {
@@ -1027,14 +1026,14 @@ var createReverse = function (name) {
             policy.a = matchItem.num;
             policy.t = t;
 
-            console.logex("策略reverseAdv5符合条件！当前倍数:" + policy.bias);
+            console.logex("策略" + name + "符合条件！当前倍数:" + policy.bias);
             if (policy.stop === true || policy.stoping === true) {
-                console.logex("策略reverseAdv5未下注！");
+                console.logex("策略" + name + "未下注！");
                 return;
             }
 
-            if (t == 2 && sessionStorage["reverse5Start"] != "1") {
-                console.logex("策略reverseAdv5未下注！");
+            if (t == 2 && sessionStorage[cacheName] != "1") {
+                console.logex("策略" + name + "未下注！");
                 return;
             }
 
@@ -1043,10 +1042,12 @@ var createReverse = function (name) {
     };
 
     window.policies.push(policy);
-})();
+};
 
 (function () {
-    //createReverse("reverseAdv6");
+    createReverseWrongOne("reverseAdv5", "reverse5Start");
+    createReverseWrongOne("rmatch", "rmatchStart");
+    createReverseWrongOne("horizontal", "horizontalStart");
 })();
 
 (function () {
@@ -1055,6 +1056,5 @@ var createReverse = function (name) {
     createReverse("nummin");
     createReverse("nummax");
     createReverse("nummid");
-    createReverse("horizontal");
-    createReverse("rmatch");
+    createReverse("reverseANumR");
 })();
