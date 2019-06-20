@@ -1,3 +1,22 @@
+String.prototype.endWith = function (str) {
+    if (str == null || str == "" || this.length == 0 || str.length > this.length)
+        return false;
+    if (this.substring(this.length - str.length) == str)
+        return true;
+    else
+        return false;
+    return true;
+};
+
+String.prototype.padLeft = function (c, length) {
+    var str = this;
+    while (str.length < length) {
+        str = c + str;
+    }
+
+    return str;
+};
+
 window.policies = [];
 var timetamp = Number(new Date());
 
@@ -39,24 +58,7 @@ var getMutil2 = function (b) {
 
 var batchWins = 0;
 
-String.prototype.endWith = function (str) {
-    if (str == null || str == "" || this.length == 0 || str.length > this.length)
-        return false;
-    if (this.substring(this.length - str.length) == str)
-        return true;
-    else
-        return false;
-    return true;
-};
 
-String.prototype.padLeft = function (c, length) {
-    var str = this;
-    while (str.length < length) {
-        str = c + str;
-    }
-
-    return str;
-};
 
 //
 var isMatchFive = function (arrary) {

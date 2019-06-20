@@ -1,3 +1,5 @@
+
+
 window.betUtil = {
     xxnBetId: '96',
     jndBetId: '91',
@@ -38,7 +40,8 @@ window.console.logex = function (str) {
 };
 
 (function () {
-    var builderOrderParams = function (betInfo, issueNumber) {
+    var builderOrderParams = function (betInfo, issueNumber, target) {
+        console.logex(typeof target === "undefined" ? 'singlebet' : target);
         var realBet = function () {
             var betInfos = {
                 "command_id": 521,
@@ -135,6 +138,7 @@ window.console.logex = function (str) {
     var lastCPQS = "";
     var openMissSecond = 45000;
     var nextOpenDate = new Date();
+    var nextBetDate = new Date();
 
     var convertDate = function (str) {
         var year = str.substring(0, 4);
@@ -151,6 +155,11 @@ window.console.logex = function (str) {
         nextOpenDate = lastOpenDate;
     };
 
+    var setNextBetDate = function (lastBetDate) {
+        lastBetDate.setTime(lastBetDate.getTime() + openMissSecond);
+        nextBetDate = lastBetDate;
+    };
+
     var handlerResult = function (result) {
         if (betUtil.currentBetInfo !== null && result.CP_QS == betUtil.currentBetInfo.CP_QS) {
             return;
@@ -165,6 +174,9 @@ window.console.logex = function (str) {
         lastCPQS = result.CP_QS;
         var lastDate = convertDate(result.SJKJSJ);
         setNextOpenDate(lastDate);
+
+        var lastBetDate = convertDate(result.KJSJ);
+        setNextBetDate(lastBetDate);
 
         console.logex("开奖期号:" + result.CP_QS + "开奖号码:" + result.ZJHM);
         storeDatas.push(result);
@@ -185,7 +197,6 @@ window.console.logex = function (str) {
 
     var loopGetBet = function () {
         if ((new Date()) < nextOpenDate) {
-           
             return;
         }
 
@@ -193,8 +204,11 @@ window.console.logex = function (str) {
     };
 
     var countTimes = function () {
-        var t = (nextOpenDate.getTime() - new Date().getTime()) / 1000;
-        $("#openSecond").text(t);
+        var seconds = new Date().getTime();
+        var t = (nextOpenDate.getTime() - seconds) / 1000;
+        var t1 = (nextBetDate.getTime() - seconds) / 1000;
+        $("#openSecond").text(parseInt(t, 10));
+        $("#betSecond").text(parseInt(t1, 10));
     }
 
     var init = function () {
@@ -217,11 +231,15 @@ window.console.logex = function (str) {
         str += "<div><button id='btnBrotherBet1'>brotherBet1</button></div>";
         str += "<div><button id='btnHavenBet1'>havenBet1</button></div>";
         str += "<div><button id='btnReverse1'>reverseBet1</button></div>";
+        str += "<div><label id='betName' /></div>";
+        str += "<div><label id='openSecond' />#<label id='betSecond' /></div>";
         str += "<button id='dobet'>do</button>";
         str += "<div><input type='number' id='tbIndex' value='0' min='0' max='4'/></div>";
         str += "<div><input type='number' id='tbNum' value='0' min='0' max='9'/></div>";
-        str += "<div><label id='betName' /></div>";
-        str += "<div><label id='openSecond' /></div>";
+        str += "<div><button id='dobet4'>do4</button><button id='show4'>show</button></div>";
+        str += "<div><input type='number' id='tbFourType' value='0' min='0' max='1'/></div>";
+        str += "<div><input type='number' id='tbFourNum' value='0' min='0' /></div>";
+        str += "<div id='msg4'></div>";
         $("body").html(str);
 
         $(".idButton").click(function () {
@@ -295,10 +313,15 @@ window.console.logex = function (str) {
                 storeDatas = result.reverse();
                 var lastPrevData = storeDatas[storeDatas.length - 2];
                 var lastData = storeDatas[storeDatas.length - 1];
+
                 var lastPrevDate = convertDate(lastPrevData.SJKJSJ);
                 var lastDate = convertDate(lastData.SJKJSJ);
+
+                var lastBetDate = convertDate(lastData.KJSJ);
+
                 openMissSecond = lastDate.getTime() - lastPrevDate.getTime();
                 setNextOpenDate(lastDate);
+                setNextBetDate(lastBetDate);
 
                 console.log("开始抽奖");
                 setInterval(loopGetBet, 5000);
@@ -318,6 +341,100 @@ window.console.logex = function (str) {
             for (var i = 0; i < window.policies.length; i++) {
                 window.policies[i].stop = window.policies[i].stopping = false;
             }
+        });
+
+        $("#show4").click(function () {
+            var str = "";
+            var indexex = $("#tbFourType").val() == '1' ? [1, 2, 3, 4] : [0, 1, 2, 3]
+            for (var i = storeDatas.length - 10; i <= storeDatas.length - 1; i++) {
+                str += "<div>";
+                for (var n = 0; n < 10; n++) {
+                    var isFound = false;
+                    for (var index in indexex) {
+                        var num = fetchHistroy(storeDatas, i, indexex[index]);
+                        if (n == num) {
+                            isFound = true;
+                            break;
+                        }
+                    }
+
+                    if (isFound) {
+                        str += "<span style='display:block;float:left;width:20px;'>" + n +"</span>";
+                    }
+                    else {
+                        str += "<span style='display:block;float:left;width:20px;color:green'>X</span>";
+                    }
+                }
+
+                str += "</div>";
+                str += "<div style='clear: left'></div>";
+            }
+
+            $("#msg4").html(str);
+        });
+
+        $("#dobet4").click(function () {
+            var numberstr = $("#tbFourNum").val();
+            if (numberstr.length < 3) {
+                return;
+            }
+
+            var numberArray = numberstr.split('');
+            var betNumberA = "";
+            var betNumberB = "";
+            var ca = 0;
+            var cb = 0;
+            for (var i = 0; i < 10000; i++) {
+                var n = (i + '').padLeft('0', 4);
+                for (var index in numberArray) {
+                    if (n.indexOf(numberArray[index]) > -1) {
+                        if (i < 5000) {
+                            ca++;
+                            betNumberA += n + "$";
+                        }
+                        else {
+                            cb++;
+                            betNumberB += n + "$";
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            var datas = [];
+            var multiple = 1;
+            var perMoney = multiple * 0.002;
+            var index = "0,1,2,3";
+            switch ($("#tbFourType").val()) {
+                case '1':
+                    index = "1,2,3,4";
+                    break;
+            }
+
+            datas.push({
+                "method_id": "140001",
+                "number": index + "@" + betNumberA.substr(0, betNumberA.length - 1),
+                "rebate_count": 80,
+                "multiple": multiple + "",
+                "mode": 3,
+                "bet_money": (perMoney * ca).toFixed(3),
+                "calc_type": "0"
+            });
+
+            datas.push({
+                "method_id": "140001",
+                "number": index + "@" + betNumberB.substr(0, betNumberB.length - 1),
+                "rebate_count": 80,
+                "multiple": multiple + "",
+                "mode": 3,
+                "bet_money": (perMoney * cb).toFixed(3),
+                "calc_type": "0"
+            });
+
+            window.betUtil.builderOrderParams(datas, parseInt(storeDatas[storeDatas.length - 1].CP_QS) + 1, 'fourbet');
+
+            $("#tbFourNum").val('');
         });
     };
 

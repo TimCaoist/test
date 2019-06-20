@@ -2,7 +2,7 @@ window.watchers = [];
 
 var fetchHistroy = function (datas, index, a) {
     var hd = datas[index];
-    if (typeof hd.nums === null) {
+    if (typeof hd.nums === "undefined") {
         hd.nums = hd.ZJHM.split(',');
     }
 
@@ -1297,11 +1297,22 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             var a = matchAs[index];
             var str = "";
             var perMissArray = [];
+            var prevNum = -999;
+            var addCount = 0;
+            var lessCount = 0;
             for (var dl = len - 1; dl >= 5; dl--) {
                 if (isMatch(dl, datas, a, miss)) {
                     var num = datas[dl + 1].ZJHM.split(',')[a];
                     perMissArray.push(num);
                     str += num;
+                    if (prevNum - num == 1) {
+                        addCount++;
+                    }
+                    else if (num - prevNum == 1) {
+                        lessCount++;
+                    }
+
+                    prevNum = num;
                     if (perMissArray.length >= 20) {
                         break;
                     }
@@ -1309,6 +1320,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_" + a + "_" + miss + "_rn");
+            console.logex("1:" + addCount + "-1:" + lessCount + "_" + miss + "_reportrn");
             if (perMissArray.length < 3) {
                 continue;
             }
@@ -1921,13 +1933,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_rm");
-            if (str.match(/^V{1,2}X{1,}/)) {
-                return {
-                    t: 1,
-                    m: matchAs[mi]
-                };
-            }
-            else if (str.match(/^X{0,}/)) {
+            if (str.match(/^X{0,}/)) {
                 return {
                     t: 2,
                     m: matchAs[mi]
