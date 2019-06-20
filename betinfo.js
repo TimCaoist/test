@@ -133,6 +133,7 @@ window.console.logex = function (str) {
     };
 })();
 
+sessionStorage["bet_multiple_4"] = 1;
 (function () {
     var storeDatas = [];
     var lastCPQS = "";
@@ -403,7 +404,7 @@ window.console.logex = function (str) {
             }
 
             var datas = [];
-            var multiple = 1;
+            var multiple = parseInt(sessionStorage["bet_multiple_4"], 10);
             var perMoney = multiple * 0.002;
             var index = "0,1,2,3";
             switch ($("#tbFourType").val()) {
