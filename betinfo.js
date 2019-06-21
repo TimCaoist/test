@@ -57,8 +57,11 @@ window.console.logex = function (str) {
             };
 
             $.post("/controller/lottery/943848", model,
-                function (data) {
-                    // console.log(data.data.detail[0].remark);
+                function (result) {
+                     var details = result.data.detail;
+                     for (var item in details ) {
+                        console.log(item + ":" + details[item].remark);
+                     }
                 });
         };
 
