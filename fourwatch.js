@@ -102,7 +102,7 @@ var fourWatchUtil = {
 
         var str = "<div>" + type + ":";
         for (var i = storeDatas.length - 15; i < storeDatas.length - 1; i++) {
-            var min = getMinNum(storeDatas, i);
+            var min = parseInt(getMinNum(storeDatas, i), 10);
             if (min > 5) {
                 str += "P";
                 continue;
@@ -128,8 +128,7 @@ var fourWatchUtil = {
             }
             else {
                 var fiveNum = parseInt(fetchHistroy(storeDatas, i + 1, fiveIndex), 10);
-                var nmin = parseInt(min, 10);
-                str += (fiveNum >= nmin && fiveNum <= nmin + 4) ? "O" : "X";
+                str += (fiveNum >= min && fiveNum <= min + 4) ? "O" : "X";
             }
         }
 
