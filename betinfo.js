@@ -240,7 +240,7 @@ sessionStorage["bet_multiple_4"] = 1;
         str += "<button id='dobet'>do</button>";
         str += "<div><input type='number' id='tbIndex' value='0' min='0' max='4'/></div>";
         str += "<div><input type='number' id='tbNum' value='0' min='0' max='9'/></div>";
-        str += "<div><button id='dobet4'>do4</button><button id='show4'>show</button></div>";
+        str += "<div><button id='dobet4'>do4</button><button id='show4'>show</button><input type='checkbox' id='cbFourloop' />4<input type='checkbox' id='cbThreeloop' />3</div>";
         str += "<div><input type='number' id='tbFourType' value='0' min='0' max='1'/></div>";
         str += "<div><input type='number' id='tbFourNum' value='0' min='0' /></div>";
         str += "<div id='msg4'></div>";
@@ -349,60 +349,74 @@ sessionStorage["bet_multiple_4"] = 1;
 
         $("#show4").click(function () {
             var str = "";
-            var indexex = $("#tbFourType").val() == '1' ? [1, 2, 3, 4] : [0, 1, 2, 3]
-            for (var i = storeDatas.length - 10; i <= storeDatas.length - 1; i++) {
-                str += "<div>";
-                for (var n = 0; n < 10; n++) {
-                    var isFound = false;
-                    for (var index in indexex) {
-                        var num = fetchHistroy(storeDatas, i, indexex[index]);
-                        if (n == num) {
-                            isFound = true;
-                            break;
-                        }
-                    }
-
-                    if (isFound) {
-                        str += "<span style='display:block;float:left;width:20px;'>" + n +"</span>";
-                    }
-                    else {
-                        str += "<span style='display:block;float:left;width:20px;color:green'>X</span>";
-                    }
-                }
-
-                str += "</div>";
-                str += "<div style='clear: left'></div>";
+            for (var index in fourWatchUtil.reports) {
+               str += fourWatchUtil.reports[index](storeDatas);
             }
 
             $("#msg4").html(str);
         });
 
         $("#dobet4").click(function () {
+            var isCheckedFour = $("#cbFourloop")[0].checked;
+            var isCheckedThree = $("#cbThreeloop")[0].checked;
+
             var numberstr = $("#tbFourNum").val();
-            if (numberstr.length < 3) {
+            if (numberstr.length < 3 && isCheckedFour == false && isCheckedThree == false) {
                 return;
             }
 
             var numberArray = numberstr.split('');
+            var filterNumbers = function (n) {
+                for (var index in numberArray) {
+                    if (n.indexOf(numberArray[index]) > -1) {
+                        return true;
+                    }
+                }
+
+                return false;
+            };
+
+            $("#cbFourloop")[0].checked = false;
+            $("#cbThreeloop")[0].checked = false;
+            var filters = [];
+            if (numberstr.length >= 3) {
+                filters.push(filterNumbers);
+            }
+
+            if (isCheckedThree) {
+                filters.push(filterThreeLoop);
+            }
+
+            if (isCheckedFour) {
+                filters.push(filterFourLoop);
+            }
+
             var betNumberA = "";
             var betNumberB = "";
             var ca = 0;
             var cb = 0;
             for (var i = 0; i < 10000; i++) {
                 var n = (i + '').padLeft('0', 4);
-                for (var index in numberArray) {
-                    if (n.indexOf(numberArray[index]) > -1) {
-                        if (i < 5000) {
-                            ca++;
-                            betNumberA += n + "$";
-                        }
-                        else {
-                            cb++;
-                            betNumberB += n + "$";
-                        }
-
+                var isMatch = true;
+                for (var fi in filters) {
+                    var filter = filters[fi];
+                    if (filter(n) === false) {
+                        isMatch = false;
                         break;
                     }
+                }
+
+                if (isMatch === false) {
+                    continue;
+                }
+
+                if (i < 5000) {
+                    ca++;
+                    betNumberA += n + "$";
+                }
+                else {
+                    cb++;
+                    betNumberB += n + "$";
                 }
             }
 
