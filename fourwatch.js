@@ -87,6 +87,10 @@ var fourWatchUtil = {
                 min = prevn;
                 break;
             }
+
+            if (ni === nums.length - 1 && cn - prevn == 1) {
+                min = cn;
+            }
         }
 
         return min;
