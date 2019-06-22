@@ -118,8 +118,9 @@ var fourWatchUtil = {
                 str += "V";
             }
             else {
-                var fiveNum = fetchHistroy(storeDatas, i + 1, fiveIndex);
-                str += (fiveNum >= min && fiveNum <= min + 4) ? "O" : "X";
+                var fiveNum = parseInt(fetchHistroy(storeDatas, i + 1, fiveIndex), 10);
+                var nmin = parseInt(min, 10);
+                str += (fiveNum >= nmin && fiveNum <= nmin + 4) ? "O" : "X";
             }
         }
 
@@ -146,11 +147,12 @@ var fourWatchUtil = {
 
         var disNums = [];
         for (var d = 0; d < 10; d++) {
-            if (nums.indexOf(d + '') > -1) {
+            var cn = d + '';
+            if (nums.indexOf(cn) > -1) {
                 continue;
             }
 
-            disNums.push(d);
+            disNums.push(cn);
         }
 
         return disNums;
@@ -164,7 +166,6 @@ var fourWatchUtil = {
         for (var i = storeDatas.length - 15; i < storeDatas.length - 1; i++) {
             var nums = getDistNum(storeDatas, i);
             if (nums.length != 5) {
-                str += "P";
                 continue;
             }
 
