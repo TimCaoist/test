@@ -195,10 +195,12 @@ var fourWatchUtil = {
 
         var cmin = getDistNum(storeDatas, storeDatas.length - 1);
         var subStr = "";
-        for (var ni in cmin) {
-            subStr += cmin[ni];
+        if (cmin.length == 5) {
+            for (var ni in cmin) {
+                subStr += cmin[ni];
+            }
         }
-
+        
         str += ":" + subStr;
         str += "</div>";
         return str;
