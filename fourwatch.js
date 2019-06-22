@@ -92,11 +92,11 @@ var fourWatchUtil = {
         return min;
     };
 
-    var builderMinNumberMissReport = function (storeDatas) {
-        var indexex = $("#tbFourType").val() == '1' ? [1, 2, 3, 4] : [0, 1, 2, 3];
-        var fiveIndex = $("#tbFourType").val() == '1' ? 0 : 4;
+    var show = function (storeDatas, type) {
+        var indexex = type == '1' ? [1, 2, 3, 4] : [0, 1, 2, 3];
+        var fiveIndex = type == '1' ? 0 : 4;
 
-        var str = "<div>";
+        var str = "<div>" + type + ":";
         for (var i = storeDatas.length - 15; i < storeDatas.length - 1; i++) {
             var min = getMinNum(storeDatas, i);
             if (min > 5) {
@@ -132,6 +132,13 @@ var fourWatchUtil = {
         var cmin = getMinNum(storeDatas, storeDatas.length - 1);
         str += ":" + cmin;
         str += "</div>";
+        return str;
+    }
+
+    var builderMinNumberMissReport = function (storeDatas) {
+        var str = "";
+        str += show(storeDatas, '1');
+        str += show(storeDatas, '0');
         return str;
     };
 
@@ -212,7 +219,7 @@ var fourWatchUtil = {
         return str;
     };
 
-    fourWatchUtil.reports.push(builderDistNumberMissReport);
+    //fourWatchUtil.reports.push(builderDistNumberMissReport);
 })();
 
 (function () {
