@@ -69,7 +69,12 @@ var fourWatchUtil = {
     var getMinNum = function (storeDatas, i) {
         var nums = [];
         for (var a = 0; a < 5; a++) {
-            nums.push(fetchHistroy(storeDatas, i, a));
+            var n = fetchHistroy(storeDatas, i, a);
+            if (nums.indexOf(n) > -1) {
+                continue;
+            }
+
+            nums.push(n);
         }
 
         nums.sort(function (a, b) { return a - b });
