@@ -354,6 +354,7 @@ sessionStorage["bet_multiple_4"] = 1;
             }
 
             $("#msg4").html(str);
+            $(".minmax").click(onMinMaxClick);
         });
 
         $("#dobet4").click(function () {

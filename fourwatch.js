@@ -65,6 +65,26 @@ var fourWatchUtil = {
     fourWatchUtil.reports.push(builderMissReport);
 })();
 
+var onMinMaxClick = function () {
+    var m = $(this).attr("method");
+    var v = parseInt($(this).attr("val"), 10);
+
+    $("#tbFourType").val($(this).attr("index"));
+    var betStr = "";
+    if (m == '0') {
+        for (var i = v; i < v + 5; i++) {
+            betStr += i;
+        }
+    }
+    else {
+        for (var i = v; i > v - 5; i--) {
+            betStr += i;
+        }
+    }
+
+    $("#tbFourNum").val(betStr);
+};
+
 (function () {
     var getMinNum = function (storeDatas, i) {
         var nums = [];
@@ -100,7 +120,8 @@ var fourWatchUtil = {
         var indexex = type == '1' ? [1, 2, 3, 4] : [0, 1, 2, 3];
         var fiveIndex = type == '1' ? 0 : 4;
 
-        var str = "<div>" + type + ":";
+        var cmin = getMinNum(storeDatas, storeDatas.length - 1);
+        var str = "<div class='minmax' method='0' val='" + cmin + "'  index='" + type + "'>Min_" + type + ":";
         for (var i = storeDatas.length - 15; i < storeDatas.length - 1; i++) {
             var min = parseInt(getMinNum(storeDatas, i), 10);
             if (min > 5) {
@@ -132,7 +153,89 @@ var fourWatchUtil = {
             }
         }
 
+        str += ":" + cmin;
+        str += "</div>";
+        return str;
+    }
+
+    var builderMinNumberMissReport = function (storeDatas) {
+        var str = "";
+        str += show(storeDatas, '1');
+        str += show(storeDatas, '0');
+        return str;
+    };
+
+    fourWatchUtil.reports.push(builderMinNumberMissReport);
+})();
+
+(function () {
+    var getMinNum = function (storeDatas, i) {
+        var nums = [];
+        for (var a = 0; a < 5; a++) {
+            var n = fetchHistroy(storeDatas, i, a);
+            if (nums.indexOf(n) > -1) {
+                continue;
+            }
+
+            nums.push(n);
+        }
+
+        nums.sort(function (a, b) { return a - b });
+
+        var min = 0;
+        for (var ni = nums.length - 2; ni >= 0; ni--) {
+            var prevn = nums[ni + 1];
+            var cn = nums[ni];
+            if (prevn - cn != 1) {
+                min = prevn;
+                break;
+            }
+
+            if (ni === 0 && prevn - cn == 1) {
+                min = cn;
+            }
+        }
+
+        return min;
+    };
+
+    var show = function (storeDatas, type) {
+        var indexex = type == '1' ? [1, 2, 3, 4] : [0, 1, 2, 3];
+        var fiveIndex = type == '1' ? 0 : 4;
+
         var cmin = getMinNum(storeDatas, storeDatas.length - 1);
+        var str = "<div class='minmax' method='1' val='" + cmin + "' index='" + type + "' >Max_" + type + ":";
+        for (var i = storeDatas.length - 15; i < storeDatas.length - 1; i++) {
+            var min = parseInt(getMinNum(storeDatas, i), 10);
+            if (min < 5) {
+                str += "P";
+                continue;
+            }
+
+            var isFound = false;
+            for (var d = min; d > min - 5; d--) {
+                for (var index in indexex) {
+                    var num = fetchHistroy(storeDatas, i + 1, indexex[index]);
+                    if (d == num) {
+                        isFound = true;
+                        break;
+                    }
+                }
+
+                if (isFound) {
+                    break;
+                }
+            }
+
+            if (isFound) {
+                str += "V";
+            }
+            else {
+                var fiveNum = parseInt(fetchHistroy(storeDatas, i + 1, fiveIndex), 10);
+                str += (fiveNum <= min && fiveNum >= min - 4) ? "O" : "X";
+            }
+        }
+
         str += ":" + cmin;
         str += "</div>";
         return str;
