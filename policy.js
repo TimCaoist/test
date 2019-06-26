@@ -40,7 +40,7 @@ var getMutil = function (b) {
     }
 };
 
-sessionStorage.bet_money_1 = 1100;
+sessionStorage.bet_money_1 = 2000;
 
 var getMutil1 = function (b) {
     return parseInt(sessionStorage.bet_money_1, 10);
@@ -913,10 +913,10 @@ var createReverse = function (name) {
                 return;
             }
 
-            if (name === "rmatch" || name === "horizontal" || name === "reverseANumR" || name === "reverseANum") {
-                console.logex("策略" + name + "未下注！");
-                return;
-            }
+            //if (name === "rmatch" || name === "horizontal") {
+            //    console.logex("策略" + name + "未下注！");
+            //    return;
+            //}
 
             if (name === "reverse") {
                 if (reverseStr.match(/V{2,}X{1,}V{2,}X{1,}V$|V{2,}X{1,}V{1,}X{1,}V{2,}X{1,}V$|V{2,}X{1,}V{1,}X{1,}V{1,}X{1,}V{2,}X{1,}V$/) !== null) {
@@ -1058,5 +1058,4 @@ var createReverseWrongOne = function (name, cacheName) {
     createReverse("nummin");
     createReverse("nummax");
     createReverse("nummid");
-    createReverse("reverseANumR");
 })();

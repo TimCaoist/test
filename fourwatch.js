@@ -1,3 +1,23 @@
+var filterThreeNumber = function (n) {
+    var array = [];
+    for (var i = 0; i < n.length; i++) {
+        array.push(n[i]);
+    }
+
+    array.sort(function (a, b) { return a - b });
+    return !(array[0] == array[1] && array[2] == array[1]) && !(array[1] == array[2] && array[2] == array[3]) ;
+};
+
+var filterDoubleNumber = function (n) {
+    var array = [];
+    for (var i = 0; i < n.length; i++) {
+        array.push(n[i]);
+    }
+
+    array.sort(function (a, b) { return a - b });
+    return !(array[0] == array[1] && array[2] == array[3]);
+};
+
 var filterLoop = function (n, limit) {
     var count = 0;
     var array = [];
@@ -16,6 +36,7 @@ var filterLoop = function (n, limit) {
 
     return count < limit;
 };
+
 
 var filterFourLoop = function (n) {
     return filterLoop(n, 3);
@@ -77,7 +98,7 @@ var onMinMaxClick = function () {
         }
     }
     else {
-        for (var i = v; i > v - 5; i--) {
+        for (var i = v - 4; i <= v; i ++) {
             betStr += i;
         }
     }
@@ -252,80 +273,48 @@ var onMinMaxClick = function () {
 })();
 
 (function () {
-    var getDistNum = function (storeDatas, i) {
-        var nums = [];
-        for (var a = 0; a < 5; a++) {
-            var n = fetchHistroy(storeDatas, i, a);
-            if (nums.indexOf(n) > -1) {
-                continue;
-            }
-
-            nums.push(n);
+    var numbers = [];
+    for (var a = 0; a < 5; a++) {
+        var str = '';
+        for (var b = a; b < a + 6; b++) {
+            str += b;
         }
 
-        var disNums = [];
-        for (var d = 0; d < 10; d++) {
-            var cn = d + '';
-            if (nums.indexOf(cn) > -1) {
-                continue;
-            }
-
-            disNums.push(cn);
-        }
-
-        return disNums;
-    };
+        numbers.push(str);
+    }
 
     var builderDistNumberMissReport = function (storeDatas) {
         var indexex = $("#tbFourType").val() == '1' ? [1, 2, 3, 4] : [0, 1, 2, 3];
         var fiveIndex = $("#tbFourType").val() == '1' ? 0 : 4;
 
-        var str = "<div>";
-        for (var i = storeDatas.length - 15; i < storeDatas.length - 1; i++) {
-            var nums = getDistNum(storeDatas, i);
-            if (nums.length != 5) {
-                continue;
-            }
-
-            var isFound = false;
-            for (var ni in nums) {
+        var str = "";
+        for (var ni in numbers) {
+            str += "<div>" + numbers[ni] + ":";
+            for (var i = storeDatas.length - 1; i >= 0; i--) {
+                var isFound = false;
                 for (var index in indexex) {
-                    var num = fetchHistroy(storeDatas, i + 1, indexex[index]);
-                    if (nums[ni] == num) {
+                    var num = fetchHistroy(storeDatas, i, indexex[index]);
+                    if (numbers[ni].indexOf(num) > -1) {
                         isFound = true;
                         break;
                     }
                 }
 
-                if (isFound) {
-                    break;
+                if (isFound == true) {
+                    str += "V";
+                }
+                else {
+                    str += "X";
                 }
             }
 
-            if (isFound) {
-                str += "V";
-            }
-            else {
-                str += "X";
-                var fiveNum = fetchHistroy(storeDatas, i + 1, fiveIndex);
-                str += nums.indexOf(fiveNum) > -1 ? "O" : "X";
-            }
+            str += "</div>";
         }
 
-        var cmin = getDistNum(storeDatas, storeDatas.length - 1);
-        var subStr = "";
-        if (cmin.length == 5) {
-            for (var ni in cmin) {
-                subStr += cmin[ni];
-            }
-        }
-        
-        str += ":" + subStr;
-        str += "</div>";
         return str;
     };
 
-    //fourWatchUtil.reports.push(builderDistNumberMissReport);
+   fourWatchUtil.reports.push(builderDistNumberMissReport);
 })();
 
 (function () {

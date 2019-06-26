@@ -136,7 +136,6 @@ window.console.logex = function (str) {
     };
 })();
 
-sessionStorage["bet_multiple_4"] = 1;
 (function () {
     var storeDatas = [];
     var lastCPQS = "";
@@ -240,9 +239,12 @@ sessionStorage["bet_multiple_4"] = 1;
         str += "<button id='dobet'>do</button>";
         str += "<div><input type='number' id='tbIndex' value='0' min='0' max='4'/></div>";
         str += "<div><input type='number' id='tbNum' value='0' min='0' max='9'/></div>";
-        str += "<div><button id='dobet4'>do4</button><button id='show4'>show</button><input type='checkbox' id='cbFourloop' />4<input type='checkbox' id='cbThreeloop' />3</div>";
-        str += "<div><input type='number' id='tbFourType' value='0' min='0' max='1'/></div>";
-        str += "<div><input type='number' id='tbFourNum' value='0' min='0' /></div>";
+        //str += "<div><button id='dobet4'>do4</button><button id='show4'>show</button><input value='3' id='tbMatchCount' type='number' min='0' max='5'><input type='checkbox' id='cbThreeNumberloop' />T<input type='checkbox' id='cbDouble' />D<input type='checkbox' id='cbFourloop' />4<input type='checkbox' id='cbThreeloop' />3</div>";
+        //str += "<div><input type='number' id='tbFourType' value='0' min='0' max='1'/></div>";
+        //str += "<div><input type='number' id='tbFourNum' value='0' min='0' /></div>";
+        str += "<div><button id='dobet2'>do2</button><button id='show2'>show</button></div>";
+        str += "<div><input type='number' id='tbTwoType' value='0' min='0' max='3'/></div>";
+        str += "<div><input type='number' id='tbTwoNum' value='0' min='0' /></div>";
         str += "<div id='msg4'></div>";
         $("body").html(str);
 
@@ -347,113 +349,165 @@ sessionStorage["bet_multiple_4"] = 1;
             }
         });
 
-        $("#show4").click(function () {
+         $("#show2").click(function () {
             var str = "";
-            for (var index in fourWatchUtil.reports) {
-               str += fourWatchUtil.reports[index](storeDatas);
+            for (var index in twoWatchUtil.reports) {
+                str += twoWatchUtil.reports[index](storeDatas);
             }
 
             $("#msg4").html(str);
-            $(".minmax").click(onMinMaxClick);
         });
 
-        $("#dobet4").click(function () {
-            var isCheckedFour = $("#cbFourloop")[0].checked;
-            var isCheckedThree = $("#cbThreeloop")[0].checked;
+        //$("#show4").click(function () {
+        //    var str = "";
+        //    for (var index in fourWatchUtil.reports) {
+        //       str += fourWatchUtil.reports[index](storeDatas);
+        //    }
 
-            var numberstr = $("#tbFourNum").val();
-            if (numberstr.length < 3 && isCheckedFour == false && isCheckedThree == false) {
+        //    $("#msg4").html(str);
+        //    $(".minmax").click(onMinMaxClick);
+        //});
+
+        //$("#dobet4").click(function () {
+        //    var isCheckedFour = $("#cbFourloop")[0].checked;
+        //    var isCheckedThree = $("#cbThreeloop")[0].checked;
+
+        //    var numberstr = $("#tbFourNum").val();
+        //    if (numberstr.length < 3 && isCheckedFour == false && isCheckedThree == false) {
+        //        return;
+        //    }
+
+        //    var numberArray = numberstr.split('');
+        //    var filterNumbers = function (n) {
+        //        for (var index in numberArray) {
+        //            if (n.indexOf(numberArray[index]) > -1) {
+        //                return true;
+        //            }
+        //        }
+
+        //        return false;
+        //    };
+
+        //    var mc = parseInt($("#tbMatchCount").val(), 10);
+        //    var filterNumberByCount = function (n) {
+        //        var mcn = [];
+        //        var cc = 0;
+        //        for (var ni in n) {
+        //            for (var index in numberArray) {
+        //                if (n[ni] == numberArray[index]) {
+        //                    if (mcn.indexOf(n[ni]) < 0) {
+        //                        mcn.push(n[ni]);
+        //                        cc++;
+        //                    }
+
+        //                    break;
+        //                }
+        //            }
+        //        }
+               
+        //        return cc >= 1 && cc <= mc;
+        //    };
+
+        //    $("#cbFourloop")[0].checked = false;
+        //    $("#cbThreeloop")[0].checked = false;
+        //    var filters = [];
+        //    if (numberstr.length >= 3) {
+        //        if (mc < 2) {
+        //            filters.push(filterNumbers);
+        //        }
+        //        else {
+        //            filters.push(filterNumberByCount);
+        //        }
+        //    }
+
+        //    if (isCheckedThree) {
+        //        filters.push(filterThreeLoop);
+        //    }
+
+        //    if (isCheckedFour) {
+        //        filters.push(filterFourLoop);
+        //    }
+
+        //    if ($("#cbThreeNumberloop")[0].checked === true) {
+        //        filters.push(filterThreeNumber);
+        //    }
+
+        //    if ($("#cbDouble")[0].checked === true) {
+        //        filters.push(filterDoubleNumber);
+        //    }
+
+        //    var betNumberA = "";
+        //    var betNumberB = "";
+        //    var ca = 0;
+        //    var cb = 0;
+        //    for (var i = 0; i < 10000; i++) {
+        //        var n = (i + '').padLeft('0', 4);
+        //        var isMatch = true;
+        //        for (var fi in filters) {
+        //            var filter = filters[fi];
+        //            if (filter(n) === false) {
+        //                isMatch = false;
+        //                break;
+        //            }
+        //        }
+
+        //        if (isMatch === false) {
+        //            continue;
+        //        }
+
+        //        if (i < 5000) {
+        //            ca++;
+        //            betNumberA += n + "$";
+        //        }
+        //        else {
+        //            cb++;
+        //            betNumberB += n + "$";
+        //        }
+        //    }
+
+        //    var datas = [];
+        //    var multiple = parseInt(sessionStorage["bet_multiple_4"], 10);
+        //    var perMoney = multiple * 0.002;
+        //    var index = "0,1,2,3";
+        //    switch ($("#tbFourType").val()) {
+        //        case '1':
+        //            index = "1,2,3,4";
+        //            break;
+        //    }
+
+        //    datas.push({
+        //        "method_id": "140001",
+        //        "number": index + "@" + betNumberA.substr(0, betNumberA.length - 1),
+        //        "rebate_count": 80,
+        //        "multiple": multiple + "",
+        //        "mode": 3,
+        //        "bet_money": (perMoney * ca).toFixed(3),
+        //        "calc_type": "0"
+        //    });
+
+        //    datas.push({
+        //        "method_id": "140001",
+        //        "number": index + "@" + betNumberB.substr(0, betNumberB.length - 1),
+        //        "rebate_count": 80,
+        //        "multiple": multiple + "",
+        //        "mode": 3,
+        //        "bet_money": (perMoney * cb).toFixed(3),
+        //        "calc_type": "0"
+        //    });
+
+        //    window.betUtil.builderOrderParams(datas, parseInt(storeDatas[storeDatas.length - 1].CP_QS) + 1, 'fourbet');
+
+        //    $("#tbFourNum").val('');
+        //});
+
+        $("#dobet2").click(function () {
+            var numberstr = $("#tbTwoNum").val();
+            if (numberstr.length < 3) {
                 return;
             }
 
-            var numberArray = numberstr.split('');
-            var filterNumbers = function (n) {
-                for (var index in numberArray) {
-                    if (n.indexOf(numberArray[index]) > -1) {
-                        return true;
-                    }
-                }
-
-                return false;
-            };
-
-            $("#cbFourloop")[0].checked = false;
-            $("#cbThreeloop")[0].checked = false;
-            var filters = [];
-            if (numberstr.length >= 3) {
-                filters.push(filterNumbers);
-            }
-
-            if (isCheckedThree) {
-                filters.push(filterThreeLoop);
-            }
-
-            if (isCheckedFour) {
-                filters.push(filterFourLoop);
-            }
-
-            var betNumberA = "";
-            var betNumberB = "";
-            var ca = 0;
-            var cb = 0;
-            for (var i = 0; i < 10000; i++) {
-                var n = (i + '').padLeft('0', 4);
-                var isMatch = true;
-                for (var fi in filters) {
-                    var filter = filters[fi];
-                    if (filter(n) === false) {
-                        isMatch = false;
-                        break;
-                    }
-                }
-
-                if (isMatch === false) {
-                    continue;
-                }
-
-                if (i < 5000) {
-                    ca++;
-                    betNumberA += n + "$";
-                }
-                else {
-                    cb++;
-                    betNumberB += n + "$";
-                }
-            }
-
-            var datas = [];
-            var multiple = parseInt(sessionStorage["bet_multiple_4"], 10);
-            var perMoney = multiple * 0.002;
-            var index = "0,1,2,3";
-            switch ($("#tbFourType").val()) {
-                case '1':
-                    index = "1,2,3,4";
-                    break;
-            }
-
-            datas.push({
-                "method_id": "140001",
-                "number": index + "@" + betNumberA.substr(0, betNumberA.length - 1),
-                "rebate_count": 80,
-                "multiple": multiple + "",
-                "mode": 3,
-                "bet_money": (perMoney * ca).toFixed(3),
-                "calc_type": "0"
-            });
-
-            datas.push({
-                "method_id": "140001",
-                "number": index + "@" + betNumberB.substr(0, betNumberB.length - 1),
-                "rebate_count": 80,
-                "multiple": multiple + "",
-                "mode": 3,
-                "bet_money": (perMoney * cb).toFixed(3),
-                "calc_type": "0"
-            });
-
-            window.betUtil.builderOrderParams(datas, parseInt(storeDatas[storeDatas.length - 1].CP_QS) + 1, 'fourbet');
-
-            $("#tbFourNum").val('');
+            doTwoBet($("#tbTwoType").val(), $("#tbTwoNum").val(), 1, parseInt(storeDatas[storeDatas.length - 1].CP_QS) + 1);
+            $("#tbTwoNum").val('');
         });
     };
 
