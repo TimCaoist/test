@@ -913,10 +913,10 @@ var createReverse = function (name) {
                 return;
             }
 
-            //if (name === "rmatch" || name === "horizontal") {
-            //    console.logex("策略" + name + "未下注！");
-            //    return;
-            //}
+            if (name === "threetwo" || name === "cross") {
+                console.logex("策略" + name + "未下注！");
+                return;
+            }
 
             if (name === "reverse") {
                 if (reverseStr.match(/V{2,}X{1,}V{2,}X{1,}V$|V{2,}X{1,}V{1,}X{1,}V{2,}X{1,}V$|V{2,}X{1,}V{1,}X{1,}V{1,}X{1,}V{2,}X{1,}V$/) !== null) {
@@ -1058,4 +1058,6 @@ var createReverseWrongOne = function (name, cacheName) {
     createReverse("nummin");
     createReverse("nummax");
     createReverse("nummid");
+    createReverse("threetwo");
+    createReverse("cross");
 })();

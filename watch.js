@@ -1870,3 +1870,178 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
 
     window.watchers.push(watch);
 })();
+
+(function () {
+    var findPrev = function (histroyDatas, index, a) {
+        var n5 = fetchHistroy(histroyDatas, index - 5, a);
+        var n4 = fetchHistroy(histroyDatas, index - 4, a);
+        var n3 = fetchHistroy(histroyDatas, index - 3, a);
+        var n2 = fetchHistroy(histroyDatas, index - 2, a);
+        var n1 = fetchHistroy(histroyDatas, index - 1, a);
+
+        if (n5 == n4 && n4 == n3 && n3 != n2 && n2 == n1) {
+            return fetchHistroy(histroyDatas, index, a);
+        }
+
+        return -1;
+    }
+
+    var find = function (histroyDatas) {
+        var len = histroyDatas.length - 1;
+        var matchAs = [];
+        for (var a = 0; a < 5; a++) {
+            var r = findPrev(histroyDatas, len, a);
+            if (r !== -1) {
+                matchAs.push({
+                    index: a,
+                    num: r,
+                });
+            }
+        }
+
+        if (matchAs.length === 0) {
+            return null;
+        }
+
+        for (var mi in matchAs) {
+            var a = matchAs[mi].index;
+            var str = "";
+            for (var dl = len - 1; dl >= 100; dl--) {
+                var n = findPrev(histroyDatas, dl, a);
+                if (n === -1) {
+                    continue;
+                }
+
+                var result = histroyDatas[dl + 1].ZJHM.split(',')[a] == n;
+                if (result === true) {
+                    str += "X";
+                }
+                else if (result === false) {
+                    str += "V";
+                }
+
+                if (str.length > 15) {
+                    break;
+                }
+            }
+
+            console.logex(str + "_rm");
+            if (str.match(/^X{1,}/)) {
+                return {
+                    t: 2,
+                    m: matchAs[mi]
+                };
+            }
+        }
+
+        return null;
+    }
+
+    var watch = {
+        name: "threetwo",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = find(histroyDatas);
+            if (matchArry === null) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, [matchArry.m], newData, matchArry.t);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
+
+(function () {
+    var findPrev = function (histroyDatas, index, a) {
+        var n4 = fetchHistroy(histroyDatas, index - 4, a);
+        var n3 = fetchHistroy(histroyDatas, index - 3, a + 1);
+        var n2 = fetchHistroy(histroyDatas, index - 2, a);
+        var n1 = fetchHistroy(histroyDatas, index - 1, a + 1);
+
+        if (n4 == n3 && n3 == n2 && n2 == n1) {
+            return fetchHistroy(histroyDatas, index, a);
+        }
+
+        return -1;
+    }
+
+    var find = function (histroyDatas) {
+        var len = histroyDatas.length - 1;
+        var matchAs = [];
+        for (var a = 0; a < 4; a++) {
+            var r = findPrev(histroyDatas, len, a);
+            if (r !== -1) {
+                matchAs.push({
+                    index: a,
+                    num: r,
+                });
+            }
+        }
+
+        if (matchAs.length === 0) {
+            return null;
+        }
+
+        for (var mi in matchAs) {
+            var a = matchAs[mi].index;
+            var str = "";
+            for (var dl = len - 1; dl >= 100; dl--) {
+                var n = findPrev(histroyDatas, dl, a);
+                if (n === -1) {
+                    continue;
+                }
+
+                var result = histroyDatas[dl + 1].ZJHM.split(',')[a + 1] == n;
+                if (result === true) {
+                    str += "X";
+                }
+                else if (result === false) {
+                    str += "V";
+                }
+
+                if (str.length > 15) {
+                    break;
+                }
+            }
+
+            console.logex(str + "_rm");
+            if (str.match(/^X{1,}/)) {
+                return {
+                    t: 2,
+                    m: matchAs[mi]
+                };
+            }
+        }
+
+        return null;
+    }
+
+    var watch = {
+        name: "cross",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = find(histroyDatas);
+            if (matchArry === null) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, [matchArry.m], newData, matchArry.t);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
