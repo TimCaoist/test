@@ -1,3 +1,4 @@
+sessionStorage["bet_multiple_4"] = 1;
 var filterThreeNumber = function (n) {
     var array = [];
     for (var i = 0; i < n.length; i++) {
@@ -186,7 +187,7 @@ var onMinMaxClick = function () {
         return str;
     };
 
-    fourWatchUtil.reports.push(builderMinNumberMissReport);
+    //fourWatchUtil.reports.push(builderMinNumberMissReport);
 })();
 
 (function () {
@@ -269,7 +270,7 @@ var onMinMaxClick = function () {
         return str;
     };
 
-    fourWatchUtil.reports.push(builderMinNumberMissReport);
+    //fourWatchUtil.reports.push(builderMinNumberMissReport);
 })();
 
 (function () {
@@ -314,7 +315,7 @@ var onMinMaxClick = function () {
         return str;
     };
 
-   fourWatchUtil.reports.push(builderDistNumberMissReport);
+   //fourWatchUtil.reports.push(builderDistNumberMissReport);
 })();
 
 (function () {

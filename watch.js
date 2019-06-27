@@ -1353,26 +1353,33 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                         return matchArry;
                     }
                 }
+
+                return [];
             };
 
+            
             switch (Math.abs(miss)) {
                 case 0:
-                    doJudge(7);
+                    matchArry =doJudge(7);
                     break;
                 case 1:
-                    doJudge(6);
+                    matchArry =doJudge(6);
                     break;
                 case 2:
                 case 3:
-                    doJudge(5);
+                    matchArry =doJudge(5);
                     break;
                 case 4:
                     doJudge(4);
                     break;
                 case 5:
                 case 6:
-                    doJudge(3);
+                    matchArry =doJudge(3);
                     break;
+            }
+
+            if (matchArry.length > 0) {
+                return matchArry;
             }
         }
 
@@ -1925,8 +1932,8 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 }
             }
 
-            console.logex(str + "_rm");
-            if (str.match(/^X{1,}/)) {
+            console.logex(str + "_trm");
+            if (str.match(/^V{0,2}X{1,}/)) {
                 return {
                     t: 2,
                     m: matchAs[mi]
@@ -2012,7 +2019,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 }
             }
 
-            console.logex(str + "_rm");
+            console.logex(str + "_cr");
             if (str.match(/^X{1,}/)) {
                 return {
                     t: 2,

@@ -10,7 +10,7 @@
     },
     {
       "matches": [ "http://*/static/html/google_code/index.html?22", "https://*/static/html/google_code/index.html?22" ],
-      "js": [ "jquery-1.11.2.min.js", "watch.js", "twowatch.js", "policy.js", "twopolicy.js", "betinfo.js" ]
+      "js": [ "jquery-1.11.2.min.js", "watch.js", "twowatch.js", "fourwatch.js", "policy.js", "twopolicy.js", "betinfo.js" ]
     },
     {
       "matches": [ "http://*/static/html/google_code/index.html?diu2", "https://*/static/html/google_code/index.html?diu2" ],

@@ -212,7 +212,7 @@ var onMinMaxClick = function () {
                 }
             }
 
-            if (str.match(/^V{0,1}X{4,}/) || str.match(/^XVX{4,}/)) {
+            if (str.match(/^X{3,3}V/) || str.match(/^XVX{4,}/)) {
                 console.logex(str + "_tl");
                 return {
                     index: a,
@@ -291,7 +291,7 @@ var onMinMaxClick = function () {
                     }
                 }
 
-                if (str.match(/^V{0,1}X{4,}/) || str.match(/^XVX{4,}/)) {
+                if (str.match(/^X{3,3}V/) || str.match(/^XVX{4,}/)) {
                     console.logex(str + "_tm");
                     return {
                         index: a,
