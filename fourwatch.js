@@ -446,7 +446,7 @@ var onMinMaxClick = function () {
             }
         }
 
-        if (str.match(/X{3,}/) || str.match(/XVX{2,}/)) {
+        if (str.match(/X{3,}/) != null || str.match(/XVX{2,}/) != null) {
             console.logex(str);
             var cNs = getMinNumbers(indexes, histroyDatas.length - 1, histroyDatas);
             if (cNs.length < 2) {
@@ -470,10 +470,10 @@ var onMinMaxClick = function () {
         policies: [],
         matchGuy: null,
         newBetData: function (oldData, newData, histroyDatas) {
-            var match = find(histroyDatas, [0, 1, 2, 3]);
-            if (match == null) {
-                match = find(histroyDatas, [1, 2, 3, 4]);
-                if (match != null) {
+            var matchArry = find(histroyDatas, [0, 1, 2, 3]);
+            if (matchArry == null) {
+                matchArry = find(histroyDatas, [1, 2, 3, 4]);
+                if (matchArry != null) {
                     console.log(matchArry);
                     for (var a = 0; a < watch.policies.length; a++) {
                         watch.policies[a].tryStart(watch, matchArry, newData);
@@ -543,7 +543,7 @@ var onMinMaxClick = function () {
             }
         }
 
-        if (str.match(/X{3,}/) || str.match(/XVX{2,}/)) {
+        if (str.match(/X{3,}/) != null || str.match(/XVX{2,}/) != null) {
             console.logex(str);
             var cNs = getMinNumbers(indexes, histroyDatas.length - 1, histroyDatas);
             if (cNs.length < 2) {
@@ -571,16 +571,16 @@ var onMinMaxClick = function () {
             if (match == null) {
                 match = find(histroyDatas, [1, 2, 3, 4]);
                 if (match != null) {
-                    console.log(matchArry);
+                    console.log(match);
                     for (var a = 0; a < watch.policies.length; a++) {
-                        watch.policies[a].tryStart(watch, matchArry, newData);
+                        watch.policies[a].tryStart(watch, match, newData);
                     }
                 }
             }
             else {
-                console.log(matchArry);
+                console.log(match);
                 for (var a = 0; a < watch.policies.length; a++) {
-                    watch.policies[a].tryStart(watch, matchArry, newData);
+                    watch.policies[a].tryStart(watch, match, newData);
                 }
             }
         }
