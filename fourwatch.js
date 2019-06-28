@@ -1,4 +1,4 @@
-sessionStorage["bet_multiple_4"] = 1;
+
 var filterThreeNumber = function (n) {
     var array = [];
     for (var i = 0; i < n.length; i++) {
@@ -381,6 +381,95 @@ var onMinMaxClick = function () {
                 console.logex("策略fourwatch符合条件！");
                 $("#tbFourType").val('0');
                 $("#tbFourNum").val(match);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
+
+(function () {
+    var find = function (histroyDatas, indexes) {
+        var str = "";
+        for (var i = histroyDatas.length - 1; i >= 1; i--) {
+            var ns = [];
+            var prevNs = [];
+
+            for (var index in indexes) {
+                var n = fetchHistroy(histroyDatas, i, indexes[index]);
+                ns.push(n);
+
+                var pn = fetchHistroy(histroyDatas, i - 1, indexes[index]);
+                if (prevNs.indexOf(pn) > -1 || prevNs.length == 2) {
+                    continue;
+                }
+
+                prevNs.push(pn);
+            }
+
+            if (prevNs.length < 2) {
+                continue;
+            }
+
+            if (ns.indexOf(prevNs[0]) > -1 && ns.indexOf(prevNs[1]) > -1) {
+                str += "X";
+            }
+            else {
+                str += "V";
+            }
+
+            if (str.length > 15) {
+                break;
+            }
+        }
+
+        if (str.match(/X{3,}/) || str.match(/XVX{2,}/)) {
+            console.logex(str);
+            var cNs = [];
+            for (var index in indexes) {
+                var cn = fetchHistroy(histroyDatas, histroyDatas.length - 1, indexes[index]);
+                if (cNs.indexOf(cn) > -1) {
+                    continue;
+                }
+
+                cNs.push(cn);
+                if (cNs.length == 2) {
+                    break;
+                }
+            }
+
+            return {
+                index: indexes[0],
+                nums: cNs,
+                t: 1
+            };
+        }
+
+        return null;
+    }
+
+    var watch = {
+        name: "fourpaiwei",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var match = find(histroyDatas, [0, 1, 2, 3]);
+            if (match == null) {
+                match = find(histroyDatas, [1, 2, 3, 4]);
+                if (match != null) {
+                    console.log(matchArry);
+                    for (var a = 0; a < watch.policies.length; a++) {
+                        watch.policies[a].tryStart(watch, matchArry, newData);
+                    }
+                }
+            }
+            else {
+                console.log(matchArry);
+                for (var a = 0; a < watch.policies.length; a++) {
+                    watch.policies[a].tryStart(watch, matchArry, newData);
+                }
             }
         }
     };

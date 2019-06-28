@@ -384,90 +384,11 @@ window.console.logex = function (str) {
 
         $("#dobet4").click(function () {
             var numberstr = $("#tbFourNum").val();
-            var numberArray = numberstr.split('');
-            var filterNumbers = function (n) {
-                var array = [];
-                var matchCount = 0;
-                for (var ni in n) {
-                    if (array.indexOf(n[ni]) > -1) {
-                        continue;
-                    }
-
-                    array.push(n[ni]);
-                    for (var index in numberArray) {
-                        if (n[ni] == numberArray[index]) {
-                            matchCount++;
-                            break;
-                        }
-                    }
-                }
-
-                return matchCount == 0 || matchCount == 1;
-            };
-
-            var filters = [filterNumbers];
-
-            var betNumberA = "";
-            var betNumberB = "";
-            var ca = 0;
-            var cb = 0;
-            for (var i = 0; i < 10000; i++) {
-                var n = (i + '').padLeft('0', 4);
-                var isMatch = true;
-                for (var fi in filters) {
-                    var filter = filters[fi];
-                    if (filter(n) === false) {
-                        isMatch = false;
-                        break;
-                    }
-                }
-
-                if (isMatch === false) {
-                    continue;
-                }
-
-                if (i < 5000) {
-                    ca++;
-                    betNumberA += n + "$";
-                }
-                else {
-                    cb++;
-                    betNumberB += n + "$";
-                }
+            if (numberstr.length < 2) {
+                return;
             }
 
-            var datas = [];
-            var multiple = parseInt(sessionStorage["bet_multiple_4"], 10);
-            var perMoney = multiple * 0.002;
-            var index = "0,1,2,3";
-            switch ($("#tbFourType").val()) {
-                case '1':
-                    index = "1,2,3,4";
-                    break;
-            }
-
-            datas.push({
-                "method_id": "140001",
-                "number": index + "@" + betNumberA.substr(0, betNumberA.length - 1),
-                "rebate_count": 80,
-                "multiple": multiple + "",
-                "mode": 3,
-                "bet_money": (perMoney * ca).toFixed(3),
-                "calc_type": "0"
-            });
-
-            datas.push({
-                "method_id": "140001",
-                "number": index + "@" + betNumberB.substr(0, betNumberB.length - 1),
-                "rebate_count": 80,
-                "multiple": multiple + "",
-                "mode": 3,
-                "bet_money": (perMoney * cb).toFixed(3),
-                "calc_type": "0"
-            });
-
-            window.betUtil.builderOrderParams(datas, parseInt(storeDatas[storeDatas.length - 1].CP_QS) + 1, 'fourbet');
-
+            doFourBet($("#tbFourType").val(), $("#tbFourNum").val(), 1, parseInt(storeDatas[storeDatas.length - 1].CP_QS) + 1);
             $("#tbFourNum").val('');
         });
 

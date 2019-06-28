@@ -1095,7 +1095,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_adv");
-            if (str.match(/^V{0,2}X{2,}V{0,3}X{1,}|^XV{1,2}X{1,}V{1,2}X{1,}|^V{0,1}XX{2,}|^V{0,1}X{1,}V{1,2}X{1,}V{1,2}X{1,}V{1,2}X{1,}/)) {
+            if (str.match(/^V{0,1}X{2,}V{0,3}X{1,}|^XV{1,2}X{1,}V{1,2}X{1,}|^V{0,1}XX{2,}|^V{0,1}X{1,}V{1,2}X{1,}V{1,2}X{1,}V{1,2}X{1,}/)) {
                 return matchAs[mi];
             }
 
@@ -1880,14 +1880,14 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
 
 (function () {
     var findPrev = function (histroyDatas, index, a) {
-        var n5 = fetchHistroy(histroyDatas, index - 5, a);
         var n4 = fetchHistroy(histroyDatas, index - 4, a);
         var n3 = fetchHistroy(histroyDatas, index - 3, a);
         var n2 = fetchHistroy(histroyDatas, index - 2, a);
         var n1 = fetchHistroy(histroyDatas, index - 1, a);
+        var n = fetchHistroy(histroyDatas, index - 1, a);
 
-        if (n5 == n4 && n4 == n3 && n3 != n2 && n2 == n1) {
-            return fetchHistroy(histroyDatas, index, a);
+        if (n4 == n3 && n3 == n2 && n2 != n1 && n1 != n) {
+            return n;
         }
 
         return -1;
@@ -1968,13 +1968,13 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
 
 (function () {
     var findPrev = function (histroyDatas, index, a) {
-        var n4 = fetchHistroy(histroyDatas, index - 4, a);
         var n3 = fetchHistroy(histroyDatas, index - 3, a + 1);
         var n2 = fetchHistroy(histroyDatas, index - 2, a);
         var n1 = fetchHistroy(histroyDatas, index - 1, a + 1);
+        var n = fetchHistroy(histroyDatas, index, a);
 
-        if (n4 == n3 && n3 == n2 && n2 == n1) {
-            return fetchHistroy(histroyDatas, index, a);
+        if (n3 == n2 && n2 == n1 && n == n1) {
+            return n;
         }
 
         return -1;
