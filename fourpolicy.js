@@ -162,5 +162,6 @@ var createFourPolicy = function (name, cacheName) {
 };
 
 (function () {
-    createFourPolicy(fourpaiwei, "fourpaiwei_start");
+    createFourPolicy("fourpaiwei", "fourpaiwei_start");
+    createFourPolicy("fourmin2", "fourmin2_start");
 })();

@@ -389,6 +389,110 @@ var onMinMaxClick = function () {
 })();
 
 (function () {
+    var getMinNumbers = function (indexes, i, histroyDatas) {
+        var prevNs = [];
+        for (var index in indexes) {
+            var pn = fetchHistroy(histroyDatas, i, indexes[index]);
+            prevNs.push(pn);
+        }
+
+        prevNs.sort(function (a, b) { return a - b });
+
+        var min = prevNs[0];
+        for (var pi = 1; pi < prevNs.length; pi++) {
+            if (prevNs[pi] - min == 0) {
+                continue;
+            }
+
+            if (prevNs[pi] - min <= 1) {
+                min = prevNs[pi];
+            }
+            else {
+                break;
+            }
+        }
+
+        if (min > 7) {
+            return []
+        }
+
+        var m = parseInt(min, 10);
+        return [m + 1, m + 2];
+    };
+
+    var find = function (histroyDatas, indexes) {
+        var str = "";
+        for (var i = histroyDatas.length - 1; i >= 1; i--) {
+            var ns = [];
+            for (var index in indexes) {
+                var n = fetchHistroy(histroyDatas, i, indexes[index]);
+                ns.push(n);
+            }
+
+            var cNums = getMinNumbers(indexes, i - 1, histroyDatas);
+            if (cNums.length < 2) {
+                continue;
+            }
+
+            if (ns.indexOf(cNums[0]) > -1 && ns.indexOf(cNums[1]) > -1) {
+                str += "X";
+            }
+            else {
+                str += "V";
+            }
+
+            if (str.length > 15) {
+                break;
+            }
+        }
+
+        if (str.match(/X{3,}/) || str.match(/XVX{2,}/)) {
+            console.logex(str);
+            var cNs = getMinNumbers(indexes, histroyDatas.length - 1, histroyDatas);
+            if (cNs.length < 2) {
+                return null;
+            }
+
+            return {
+                index: indexes[0],
+                nums: cNs,
+                t: 1
+            };
+        }
+
+        return null;
+    }
+
+    var watch = {
+        name: "fourmin2",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var match = find(histroyDatas, [0, 1, 2, 3]);
+            if (match == null) {
+                match = find(histroyDatas, [1, 2, 3, 4]);
+                if (match != null) {
+                    console.log(matchArry);
+                    for (var a = 0; a < watch.policies.length; a++) {
+                        watch.policies[a].tryStart(watch, matchArry, newData);
+                    }
+                }
+            }
+            else {
+                console.log(matchArry);
+                for (var a = 0; a < watch.policies.length; a++) {
+                    watch.policies[a].tryStart(watch, matchArry, newData);
+                }
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
+
+(function () {
     var find = function (histroyDatas, indexes) {
         var str = "";
         for (var i = histroyDatas.length - 1; i >= 1; i--) {
@@ -423,7 +527,7 @@ var onMinMaxClick = function () {
             }
         }
 
-        if (str.match(/X{3,}/) || str.match(/XVX{2,}/)) {
+        if (str.match(/X{4,}/)) {
             console.logex(str);
             var cNs = [];
             for (var index in indexes) {
@@ -436,6 +540,10 @@ var onMinMaxClick = function () {
                 if (cNs.length == 2) {
                     break;
                 }
+            }
+
+            if (cNs.length < 2) {
+                return null;
             }
 
             return {
