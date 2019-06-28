@@ -72,7 +72,7 @@ var doFourBet = function (betIndex, nums, bias, issueNumber) {
         "calc_type": "0"
     });
 
-    console.log("ÏÂ×¢ĞÅÏ¢:");
+    console.log("ä¸‹æ³¨ä¿¡æ¯:");
     console.log(datas);
     window.betUtil.builderOrderParams(datas, issueNumber, 'fourbet');
 };
@@ -124,11 +124,11 @@ var createFourPolicy = function (name, cacheName) {
             if (isRight) {
                 policy.wins++;
                 batchWins++;
-                console.logex("²ßÂÔ" + name + "ÕıÈ·Ó¯ÀûÒ»´Î¡£µ±Ç°»ñÀû´ÎÊı£º" + policy.wins + "×ÜÓ¯Àû: " + batchWins);
+                console.logex("ç­–ç•¥" + name + "æ­£ç¡®ç›ˆåˆ©ä¸€æ¬¡ã€‚å½“å‰è·åˆ©æ¬¡æ•°ï¼š" + policy.wins + "æ€»ç›ˆåˆ©: " + batchWins);
             }
             else {
                 sessionStorage[cacheName] = "1";
-                console.logex("²ßÂÔ" + name + "±»ÖÕ½á¡£");
+                console.logex("ç­–ç•¥" + name + "è¢«ç»ˆç»“ã€‚");
             }
         },
         tryStart: function (watch, array, newData) {
@@ -143,14 +143,14 @@ var createFourPolicy = function (name, cacheName) {
             policy.i = matchItem.index;
             policy.nums = matchItem.nums;
 
-            console.logex("²ßÂÔ" + name + "·ûºÏÌõ¼ş£¡µ±Ç°±¶Êı:" + policy.bias + "Î»ÖÃ£º" + matchItem.index);
+            console.logex("ç­–ç•¥" + name + "ç¬¦åˆæ¡ä»¶ï¼å½“å‰å€æ•°:" + policy.bias + "ä½ç½®ï¼š" + matchItem.index);
             if (policy.stop === true || policy.stoping === true) {
-                console.logex("²ßÂÔ" + name + "Î´ÏÂ×¢£¡");
+                console.logex("ç­–ç•¥" + name + "æœªä¸‹æ³¨ï¼");
                 return;
             }
 
             if (sessionStorage[cacheName] != "1") {
-                console.logex("²ßÂÔ" + name + "Î´ÏÂ×¢£¡");
+                console.logex("ç­–ç•¥" + name + "æœªä¸‹æ³¨ï¼");
                 return;
             }
 
