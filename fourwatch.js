@@ -493,29 +493,45 @@ var onMinMaxClick = function () {
 })();
 
 (function () {
+    var getMinNumbers = function (indexes, i, histroyDatas) {
+        var prevNs = [];
+        for (var index in indexes) {
+            var pn = fetchHistroy(histroyDatas, i, indexes[index]);
+            prevNs.push(pn);
+        }
+
+        prevNs.sort(function (a, b) { return a - b });
+
+        var ms = [];
+        for (var pi = 0; pi < prevNs.length; pi++) {
+            if (ms.indexOf(prevNs[pi]) > -1) {
+                continue;
+            }
+
+            ms.push(prevNs[pi]);
+            if (ms.length == 2) {
+                break;
+            }
+        }
+
+        return ms;
+    };
+
     var find = function (histroyDatas, indexes) {
         var str = "";
         for (var i = histroyDatas.length - 1; i >= 1; i--) {
             var ns = [];
-            var prevNs = [];
-
             for (var index in indexes) {
                 var n = fetchHistroy(histroyDatas, i, indexes[index]);
                 ns.push(n);
-
-                var pn = fetchHistroy(histroyDatas, i - 1, indexes[index]);
-                if (prevNs.indexOf(pn) > -1 || prevNs.length == 2) {
-                    continue;
-                }
-
-                prevNs.push(pn);
             }
 
-            if (prevNs.length < 2) {
+            var cNums = getMinNumbers(indexes, i - 1, histroyDatas);
+            if (cNums.length < 2) {
                 continue;
             }
 
-            if (ns.indexOf(prevNs[0]) > -1 && ns.indexOf(prevNs[1]) > -1) {
+            if (ns.indexOf(cNums[0]) > -1 && ns.indexOf(cNums[1]) > -1) {
                 str += "X";
             }
             else {
@@ -527,21 +543,9 @@ var onMinMaxClick = function () {
             }
         }
 
-        if (str.match(/X{4,}/)) {
+        if (str.match(/X{3,}/) || str.match(/XVX{2,}/)) {
             console.logex(str);
-            var cNs = [];
-            for (var index in indexes) {
-                var cn = fetchHistroy(histroyDatas, histroyDatas.length - 1, indexes[index]);
-                if (cNs.indexOf(cn) > -1) {
-                    continue;
-                }
-
-                cNs.push(cn);
-                if (cNs.length == 2) {
-                    break;
-                }
-            }
-
+            var cNs = getMinNumbers(indexes, histroyDatas.length - 1, histroyDatas);
             if (cNs.length < 2) {
                 return null;
             }
