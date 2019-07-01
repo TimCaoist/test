@@ -1048,11 +1048,11 @@ var createReverseWrongOne = function (name, cacheName) {
 
 (function () {
     createReverseWrongOne("reverseAdv5", "reverse5Start");
-    createReverseWrongOne("rmatch", "rmatchStart");
     createReverseWrongOne("horizontal", "horizontalStart");
 })();
 
 (function () {
+    createReverseWrongOne("rmatch");
     createReverse("kongmin");
     createReverse("kongmax");
     createReverse("nummin");

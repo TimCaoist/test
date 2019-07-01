@@ -1,6 +1,15 @@
 sessionStorage["bet_multiple_4"] = 1;
 var filterFourNumbers = function (n, numberArray) {
-    return !(numberArray.indexOf(n[0]) > - 1 && numberArray.indexOf(n[1]) > -1);
+	var cc = 0;
+	for(var ni in numberArray)
+	{
+		if (n.indexOf(numberArray[ni]) > - 1)
+		{
+			cc++;
+		}
+	}
+	
+    return cc < numberArray.length;
 };
 
 var getFourIndex = function (index) {

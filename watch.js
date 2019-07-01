@@ -946,7 +946,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             if ((miss == 0 || miss == 1 )&& matchStr.match(/^V{0,4}X{1,}V{0,}X{1,}V{0,}X{1,}/) === null) {
                 return;
             }
-            else if (matchStr.match(/^X{1,}V{0,}X{1,}|^VX{1,}/) === null) {
+            else if (matchStr.match(/^X{1,}V{0,}X{1,}|^X{1,}VX{1,}/) === null) {
                 return;
             }
 
@@ -1363,9 +1363,9 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                     matchArry =doJudge(7);
                     break;
                 case 1:
+                case 2:
                     matchArry =doJudge(6);
                     break;
-                case 2:
                 case 3:
                     matchArry =doJudge(5);
                     break;
@@ -1845,7 +1845,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_rm");
-            if (str.match(/^X{0,}/)) {
+            if (str.match(/^V{0,1}X{1,}V{0,1}X{1,}/)) {
                 return {
                     t: 2,
                     m: matchAs[mi]

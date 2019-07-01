@@ -417,7 +417,7 @@ var onMinMaxClick = function () {
         }
 
         var m = parseInt(min, 10);
-        return [m + 1, m + 2];
+        return [(m + 1) + '', (m + 2) + ''];
     };
 
     var find = function (histroyDatas, indexes) {
@@ -446,7 +446,7 @@ var onMinMaxClick = function () {
             }
         }
 
-        if (str.match(/^V{0,2}X{3,}/) != null || str.match(/^XVX{2,}/) != null) {
+        if (str.match(/^X{3,}/) != null || str.match(/^XVX{2,}/) != null) {
             console.logex(str);
             var cNs = getMinNumbers(indexes, histroyDatas.length - 1, histroyDatas);
             if (cNs.length < 2) {
@@ -543,7 +543,7 @@ var onMinMaxClick = function () {
             }
         }
 
-        if (str.match(/^V{0,2}X{3,}/) != null || str.match(/^XVX{2,}/) != null) {
+        if (str.match(/^X{3,}/) != null || str.match(/^XVX{2,}/) != null) {
             console.logex(str);
             var cNs = getMinNumbers(indexes, histroyDatas.length - 1, histroyDatas);
             if (cNs.length < 2) {
