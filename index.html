@@ -32,7 +32,6 @@
     };
 
     fourWatchUtil.getNums = getNums;
-	
     var getMinLoopCount = function (storeDatas, i, indexex) {
         var nums = fourWatchUtil.getNums(storeDatas, i, indexex);
         var max = 0;
@@ -72,6 +71,57 @@
         };
     };
 
+      fourWatchUtil.getMinLoopCount = getMinLoopCount;
+      var find = function (storeDatas, indexex) {
+          var pi = storeDatas.length - 3;
+          var loopInfo = fourWatchUtil.getMinLoopCount(storeDatas, pi, indexex);
+          if (loopInfo.max == 3) {
+              return null;
+          }
+
+          loopInfo = fourWatchUtil.getMinLoopCount(storeDatas, pi + 1, indexex);
+          if (loopInfo.max != 2) {
+              return null;
+          }
+
+          var c = 0;
+          var i = pi;
+          while (i >= storeDatas.length - 103) {
+              var info = fourWatchUtil.getMinLoopCount(storeDatas, i - 3, indexex);
+              if (info.max == 3) {
+                  c++;
+                  i -= 3;
+                  if (c >= 2) {
+                      break;
+                  }
+              }
+              else {
+                  info = fourWatchUtil.getMinLoopCount(storeDatas, i - 2, indexex);
+                  if (info.max == 2) {
+                      break;
+                  }
+
+                  i--;
+              }
+          }
+
+          if (c < 2) {
+              return null;
+          }
+
+          var numbers = loopInfo.numbers;
+          var nb = parseInt(numbers[1], 10);
+          if (nb + 2 > 9) {
+              return null;
+          }
+
+          return {
+              index: indexex[1],
+              nums: [(nb + 1) + '', (nb + 2) + ''],
+              t: 1
+          }
+      }
+
      window.ticket.datas = [
 	   ["3", "3", "3", "3" ,"3"],
 	   ["3", "3", "3", "3" ,"3"],
@@ -84,18 +134,18 @@
 	   ["1", "2", "3", "5" ,"5"],
 	   ["1", "2", "1", "1" ,"1"],
 	   ["1", "2", "1", "1" ,"1"],
-	   ["1", "2", "3", "5" ,"5"],
-	   ["1", "2", "3", "5" ,"5"],
+	   ["1", "2", "9", "6" ,"5"],
+	   ["1", "2", "3", "5" ,"4"],
 	   ["1", "2", "3", "6" ,"7"],
-	   ["1", "2", "3", "5" ,"5"],
-	   ["1", "2", "3", "5" ,"5"],
+	   ["1", "2", "6", "7" ,"5"],
+	   ["1", "2", "4", "5" ,"5"],
 	   ["1", "2", "3", "5" ,"5"],
 	   ["1", "2", "3", "5" ,"5"],
 	   ["5", "6", "4", "8" ,"9"],
-	   ["3", "2", "9", "9" ,"0"],
-	   ["1", "9", "0", "2" ,"9"]
+	   ["3", "4", "5", "9" ,"0"],
+	   ["1", "9", "2", "3" ,"9"]
 	 ];
 	 
-	 console.log(getMinLoopCount(window.ticket.datas, window.ticket.datas.length - 3, [4, 1, 2, 3]));
+      console.log(find(window.ticket.datas, [4, 1, 2, 3]));
   </script>
 </html>

@@ -732,14 +732,13 @@ var onMinMaxClick = function () {
         }
 
         var numbers = loopInfo.numbers;
-        var nb = parseInt(numbers[0], 10);
-        if (nb - 2 < 0) {
+        if (numbers[1] > 9) {
             return null;
         }
 
         return {
-            index: indexex[1],
-            nums: [(nb - 1) + '', (nb - 2) + ''],
+            index: indexex[0],
+            nums: numbers,
             t: 1
         }
 
@@ -810,14 +809,13 @@ var onMinMaxClick = function () {
         }
 
         var numbers = loopInfo.numbers;
-        var nb = parseInt(numbers[1], 10);
-        if (nb + 2 > 9) {
+        if (numbers[0] < 0 || numbers[1] < 0) {
             return null;
         }
 
         return {
-            index: indexex[1],
-            nums: [(nb + 1) + '', (nb + 2) + ''],
+            index: indexex[0],
+            nums: numbers,
             t: 1
         }
     }
