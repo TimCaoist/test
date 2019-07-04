@@ -1367,10 +1367,8 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                     matchArry =doJudge(6);
                     break;
                 case 3:
-                    matchArry =doJudge(5);
-                    break;
                 case 4:
-                    doJudge(4);
+                    matchArry =doJudge(5);
                     break;
                 case 5:
                 case 6:
@@ -1608,25 +1606,25 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                 }
             }
 
-            if (nums.indexOf(findNums[0]) > -1 || findNums.length < 3) {
-                continue;
-            }
+            //if (nums.indexOf(findNums[0]) > -1 || findNums.length < 3) {
+            //    continue;
+            //}
 
-            var count = 0;
-            for (var f = 1; f < findNums.length; f++) {
-                var fn = findNums[f];
-                if (fn === findNums[0]) {
-                    count++;
-                }
-            }
+            //var count = 0;
+            //for (var f = 1; f < findNums.length; f++) {
+            //    var fn = findNums[f];
+            //    if (fn === findNums[0]) {
+            //        count++;
+            //    }
+            //}
 
-            if (count >= 3) {
-                return {
-                    index: a,
-                    num: findNums[0] + '',
-                    t: 4,
-                };
-            }
+            //if (count >= 3) {
+            //    return {
+            //        index: a,
+            //        num: findNums[0] + '',
+            //        t: 4,
+            //    };
+            //}
         }
 
         return null;
@@ -1770,6 +1768,95 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
 
     var watch = {
         name: "horizontal",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var matchArry = find(histroyDatas);
+            if (matchArry === null) {
+                return;
+            }
+
+            console.log(matchArry);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, [matchArry], newData, 2);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
+
+(function () {
+    var findPrev = function (histroyDatas, index, a) {
+        var na4 = histroyDatas[index - 3].ZJHM.split(',');
+        var n2 = fetchHistroy(histroyDatas, index - 2, a);
+        if (na4[0] !== n2) {
+            return -1;
+        }
+
+        var n1 = fetchHistroy(histroyDatas, index - 1, a);
+        if (na4[1] !== n1) {
+            return -1;
+        }
+
+        var n = fetchHistroy(histroyDatas, index, a);
+        if (na4[2] !== n) {
+            return -1;
+        }
+
+        return na4[3];
+    }
+
+    var find = function (histroyDatas) {
+        var len = histroyDatas.length - 1;
+        var matchAs = [];
+        for (var a = 0; a < 5; a++) {
+            var r = findPrev(histroyDatas, len, a);
+            if (r !== -1) {
+                matchAs.push({
+                    index: a,
+                    num: r,
+                });
+            }
+        }
+
+        if (matchAs.length === 0) {
+            return null;
+        }
+
+        for (var mi in matchAs) {
+            var a = matchAs[mi].index;
+            var str = "";
+            for (var dl = len - 1; dl >= 100; dl--) {
+                var n = findPrev(histroyDatas, dl, a);
+                if (n === -1) {
+                    continue;
+                }
+
+                var result = fetchHistroy(histroyDatas, dl + 1, a) == n;
+                if (result === true) {
+                    str += "X";
+                }
+                else if (result === false) {
+                    str += "V";
+                }
+
+                if (str.length > 15) {
+                    break;
+                }
+            }
+
+            console.logex(str + "_ho3");
+            return matchAs[mi];
+        }
+
+        return null;
+    }
+
+    var watch = {
+        name: "horizontal3",
         txt: "",
         prevWrong: false,
         policies: [],
@@ -2020,7 +2107,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_cr");
-            if (str.match(/^X{1,}/)) {
+            if (str.match(/^V{1,2}X{1,}/)) {
                 return {
                     t: 2,
                     m: matchAs[mi]

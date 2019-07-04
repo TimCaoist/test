@@ -913,7 +913,7 @@ var createReverse = function (name) {
                 return;
             }
 
-            if (name === "threetwo" || name === "cross") {
+            if (name === "threetwo" || name === "cross" || name === "horizontal3") {
                 console.logex("策略" + name + "未下注！");
                 return;
             }
@@ -1052,7 +1052,8 @@ var createReverseWrongOne = function (name, cacheName) {
 })();
 
 (function () {
-    createReverseWrongOne("rmatch");
+    createReverse("horizontal3");
+    createReverse("rmatch");
     createReverse("kongmin");
     createReverse("kongmax");
     createReverse("nummin");
