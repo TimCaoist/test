@@ -246,7 +246,7 @@ window.console.logex = function (str) {
         str += "<div><input type='number' id='tbTwoType' value='0' min='0' max='3'/></div>";
         str += "<div><input type='number' id='tbTwoNum' value='0' min='0' /></div>";
 		
-		str += "<div><button id='dobet4'>do4</button><button id='show4'>show</button></div>";
+        str += "<div><button id='dobet4'>do4</button><button id='dobetAny4'>doAny4</button><button id='show4'>show</button></div>";
         str += "<div><input type='number' id='tbFourType' value='0' min='0' max='1'/></div>";
         str += "<div><input type='number' id='tbFourNum' value='0' min='0' /></div>";
 		
@@ -389,6 +389,16 @@ window.console.logex = function (str) {
             }
 
             doFourBet($("#tbFourType").val(), $("#tbFourNum").val(), 1, parseInt(storeDatas[storeDatas.length - 1].CP_QS) + 1);
+            $("#tbFourNum").val('');
+        });
+
+        $("#dobetAny4").click(function () {
+            var numberstr = $("#tbFourNum").val();
+            if (numberstr.length < 2) {
+                return;
+            }
+
+            doFourBet($("#tbFourType").val(), $("#tbFourNum").val(), 1, parseInt(storeDatas[storeDatas.length - 1].CP_QS) + 1, 1);
             $("#tbFourNum").val('');
         });
 

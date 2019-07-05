@@ -18,7 +18,7 @@ String.prototype.padLeft = function (c, length) {
 };
 
 window.policies = [];
-var timetamp = Number(new Date());
+var timetamp = 0;
 
 var findWatch = function (name)
 {

@@ -371,7 +371,7 @@ var onMinMaxClick = function () {
                     }
                 }
 
-                if (str.match(/^X{4,}/) || str.match(/^XVX{3,}/)) {
+                if (str.match(/^X{3,}/) || str.match(/^XVX{3,}/)) {
                     console.logex(str + "_tm3");
                     return {
                         index: a,

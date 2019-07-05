@@ -12,6 +12,17 @@ var filterFourNumbers = function (n, numberArray) {
     return cc < numberArray.length;
 };
 
+var filterAnyMatchNumbers = function (n, numberArray) {
+    for (var ni in numberArray) {
+        if (n.indexOf(numberArray[ni]) > - 1) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+
 var getFourIndex = function (index) {
     switch (index + "") {
         case "0":
@@ -21,14 +32,19 @@ var getFourIndex = function (index) {
     }
 };
 
-var doFourBet = function (betIndex, nums, bias, issueNumber) {
+var doFourBet = function (betIndex, nums, bias, issueNumber, type) {
     var betNumberA = "";
     var betNumberB = "";
     var ca = 0;
     var cb = 0;
 
     var filters = [];
-    filters.push(filterFourNumbers);
+    if (typeof type == "undefined") {
+        filters.push(filterFourNumbers);
+    }
+    else {
+        filters.push(filterAnyMatchNumbers);
+    }
 
     for (var i = 0; i < 10000; i++) {
         var n = (i + '').padLeft('0', 4);
