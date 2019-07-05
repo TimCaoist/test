@@ -2107,7 +2107,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_cr");
-            if (str.match(/^V{1,2}X{1,}/)) {
+            if (str.match(/^V{1,2}XV{0,3}X/)) {
                 return {
                     t: 2,
                     m: matchAs[mi]
