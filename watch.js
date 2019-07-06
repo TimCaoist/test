@@ -1360,9 +1360,9 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             
             switch (Math.abs(miss)) {
                 case 0:
+                case 1:
                     matchArry =doJudge(7);
                     break;
-                case 1:
                 case 2:
                     matchArry =doJudge(6);
                     break;
@@ -1372,7 +1372,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
                     break;
                 case 5:
                 case 6:
-                    matchArry =doJudge(3);
+                    matchArry =doJudge(4);
                     break;
             }
 

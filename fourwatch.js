@@ -252,21 +252,23 @@ var onMinMaxClick = function () {
 (function () {
     var print = function (storeDatas, indexex) {
         var str = "";
-        for (var a = 0; a < 8; a++) {
-            for (var b = a + 1; b < 9; b++) {
-                for (var c = b + 1; c < 10; c++) {
-                    str += "<div> " + a + "," + b + "," + c + ":";
-                    for (var i = 0; i < storeDatas.length; i++) {
-                        var bNums = fourWatchUtil.getNums(storeDatas, i, indexex);
-                        if (bNums.indexOf(a + '') > -1 || bNums.indexOf(b + '') > -1 || bNums.indexOf(c + '') > -1) {
-                            str += "V";
+        for (var a = 0; a < 7; a++) {
+            for (var b = a + 1; b <8; b++) {
+                for (var c = b + 1; c < 9; c++) {
+                    for (var d = c + 1; d < 10; d++) {
+                        str += "<div> " + a + "," + b + "," + c + "," + d + ":";
+                        for (var i = 0; i < storeDatas.length; i++) {
+                            var bNums = fourWatchUtil.getNums(storeDatas, i, indexex);
+                            if (bNums.indexOf(a + '') > -1 || bNums.indexOf(b + '') > -1 || bNums.indexOf(c + '') > -1 || bNums.indexOf(d + '') > -1) {
+                                str += "V";
+                            }
+                            else {
+                                str += "X";
+                            }
                         }
-                        else {
-                            str += "X";
-                        }
-                    }
 
-                    str += "</div>";
+                        str += "</div>";
+                    }
                 }
             }
         }
