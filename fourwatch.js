@@ -847,3 +847,185 @@ var onMinMaxClick = function () {
 
     window.watchers.push(watch);
 })();
+
+(function () {
+    var find = function (storeDatas, indexex, step) {
+        var prevI = storeDatas.length - 2;
+        var nums = fourWatchUtil.getNums(storeDatas, prevI, indexex);
+
+        var lastI = storeDatas.length - 1;
+        var lastNums = fourWatchUtil.getNums(storeDatas, lastI, indexex);
+
+        var min = 3 + (step * 2);
+        for (var i = 9; i >= min; i--) {
+            var isWrong = false;
+            for (var a = 0; a < 4; a++) {
+                if (nums.indexOf((i - a) + '') > -1) {
+                    isWrong = true;
+                    break;
+                }
+
+                if (lastNums.indexOf((i - a - step) + '') > -1) {
+                    isWrong = true;
+                    break;
+                }
+            }
+
+            if (isWrong) {
+                continue;
+            }
+
+            var outNums = [];
+            for (var a = 0; a < 4; a++) {
+                outNums.push((i - a - (step * 2)) + '');
+            }
+
+            return {
+                index: indexex[0],
+                nums: outNums,
+                t: 1
+            }
+        }
+    }
+
+    var watch = {
+        name: "fourmissleftOne",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var match = find(histroyDatas, [0, 1, 2, 3], 1);
+            if (match == null) {
+                match = find(histroyDatas, [1, 2, 3, 4], 1);
+            }
+
+            if (match == null) {
+                return;
+            }
+
+            console.log(match);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, match, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+
+    var watch1 = {
+        name: "fourmissleftTwo",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var match = find(histroyDatas, [0, 1, 2, 3], 2);
+            if (match == null) {
+                match = find(histroyDatas, [1, 2, 3, 4], 2);
+            }
+
+            if (match == null) {
+                return;
+            }
+
+            console.log(match);
+            for (var a = 0; a < watch1.policies.length; a++) {
+                watch1.policies[a].tryStart(watch1, match, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch1);
+})();
+
+(function () {
+    var find = function (storeDatas, indexex, step) {
+        var prevI = storeDatas.length - 2;
+        var nums = fourWatchUtil.getNums(storeDatas, prevI, indexex);
+
+        var lastI = storeDatas.length - 1;
+        var lastNums = fourWatchUtil.getNums(storeDatas, lastI, indexex);
+
+        var max = step == 1 ? 4 : 2;
+        for (var i = 0; i <= max ; i++) {
+            var isWrong = false;
+            for (var a = 0; a < 4; a++) {
+                if (nums.indexOf((i + a) + '') > -1) {
+                    isWrong = true;
+                    break;
+                }
+
+                if (lastNums.indexOf((i + a + step) + '') > -1) {
+                    isWrong = true;
+                    break;
+                }
+            }
+
+            if (isWrong) {
+                continue;
+            }
+
+            var outNums = [];
+            for (var a = 0; a < 4; a++) {
+                outNums.push((i + a + (step * 2)) + '');
+            }
+
+            return {
+                index: indexex[0],
+                nums: outNums,
+                t: 1
+            }
+        }
+    }
+
+    var watch = {
+        name: "fourmissRightOne",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var match = find(histroyDatas, [0, 1, 2, 3], 1);
+            if (match == null) {
+                match = find(histroyDatas, [1, 2, 3, 4], 1);
+            }
+
+            if (match == null) {
+                return;
+            }
+
+            console.log(match);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, match, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+
+    var watch1 = {
+        name: "fourmissRightTwo",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var match = find(histroyDatas, [0, 1, 2, 3], 2);
+            if (match == null) {
+                match = find(histroyDatas, [1, 2, 3, 4], 2);
+            }
+
+            if (match == null) {
+                return;
+            }
+
+            console.log(match);
+            for (var a = 0; a < watch1.policies.length; a++) {
+                watch1.policies[a].tryStart(watch1, match, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch1);
+})();

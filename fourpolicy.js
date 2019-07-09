@@ -102,7 +102,7 @@ var doFourBet = function (betIndex, nums, bias, issueNumber, type) {
     window.betUtil.builderOrderParams(datas, issueNumber, 'fourbet');
 };
 
-var createFourPolicy = function (name, cacheName) {
+var createFourPolicy = function (name, cacheName, type) {
     var register = function () {
         var watch = findWatch(name);
         watch.policies.push(policy);
@@ -110,6 +110,16 @@ var createFourPolicy = function (name, cacheName) {
 
     var compare = function (ns, fiveNumber) {
         return !(ns.indexOf(fiveNumber[0]) > -1 && ns.indexOf(fiveNumber[1]) > -1);
+    };
+
+    var compareAny = function (ns, fiveNumber) {
+        for (var index in fiveNumber) {
+            if (ns.indexOf(fiveNumber[index]) > -1) {
+                return true;
+            }
+        }
+
+        return false;
     };
 
     var policy = {
@@ -144,8 +154,14 @@ var createFourPolicy = function (name, cacheName) {
                 ns.push(n1);
             }
 
-            var isRight = compare(ns, policy.nums);
-
+            var isRight = false;
+            if (typeof type == "undefined") {
+                isRight = compare(ns, policy.nums);
+            }
+            else {
+                isRight = compareAny(ns, policy.nums);
+            }
+            
             if (isRight) {
                 policy.wins++;
                 batchWins++;
@@ -179,7 +195,7 @@ var createFourPolicy = function (name, cacheName) {
                 return;
             }
 
-           // doFourBet(matchItem.index, matchItem.nums, 1, (parseInt(newData.CP_QS) + 1) + "");
+           // doFourBet(matchItem.index, matchItem.nums, 1, (parseInt(newData.CP_QS) + 1) + "", type);
         }
     };
 
@@ -274,4 +290,9 @@ var createFourNormalPolicy = function (name) {
     createFourPolicy("fourleft3", "fourleft3_start");
     createFourPolicy("fourdoubleright", "fourdoubleright_start");
     createFourPolicy("fourdoubleleft", "fourdoubleleft_start");
+
+    createFourPolicy("fourmissleftOne", "fourmissleftOne_start", 1);
+    createFourPolicy("fourmissleftTwo", "fourmissleftTwo_start", 1);
+    createFourPolicy("fourmissRightOne", "fourmissRightOne_start", 1);
+    createFourPolicy("fourmissRightTwo", "fourmissRightTwo_start", 1);
 })();

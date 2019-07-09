@@ -40,7 +40,7 @@ var getMutil = function (b) {
     }
 };
 
-sessionStorage.bet_money_1 = 2000;
+sessionStorage.bet_money_1 = 600;
 
 var getMutil1 = function (b) {
     return parseInt(sessionStorage.bet_money_1, 10);
@@ -913,7 +913,7 @@ var createReverse = function (name) {
                 return;
             }
 
-            if (name === "threetwo" || name === "cross" || name === "horizontal3") {
+            if (name === "threetwo" || name === "horizontal3") {
                 console.logex("策略" + name + "未下注！");
                 return;
             }
@@ -967,7 +967,7 @@ var createReverse = function (name) {
     createReverse("reverseANum");
 })();
 
-var createReverseWrongOne = function (name, cacheName) {
+var createReverseWrongOne = function (name, cacheName, winStop) {
     var register = function () {
         var watch = findWatch(name);
         watch.policies.push(policy);
@@ -1006,6 +1006,10 @@ var createReverseWrongOne = function (name, cacheName) {
                 policy.wins++;
                 batchWins++;
                 console.logex("策略" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
+
+                if (winStop == true && policy.t == 2) {
+                    sessionStorage[cacheName] = "0";
+                }
             }
             else {
                 if (policy.t == 2) {
@@ -1047,8 +1051,8 @@ var createReverseWrongOne = function (name, cacheName) {
 };
 
 (function () {
-    createReverseWrongOne("reverseAdv5", "reverse5Start");
-    createReverseWrongOne("horizontal", "horizontalStart");
+    createReverseWrongOne("reverseAdv5", "reverse5Start", true);
+    createReverseWrongOne("horizontal", "horizontalStart", false);
 })();
 
 (function () {

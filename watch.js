@@ -991,7 +991,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
         matchGuy: null,
         newBetData: function (oldData, newData, histroyDatas) {
             var matchArry = findMore(histroyDatas, isReverse6, 10, /^X{0,}/);
-            if (matchArry.length === 0) {
+            if (matchArry.length === 0 || matchArry[0].miss == 0) {
                 return;
             }
 
@@ -1095,7 +1095,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             }
 
             console.logex(str + "_adv");
-            if (str.match(/^V{0,1}X{2,}V{0,3}X{1,}|^XV{1,2}X{1,}V{1,2}X{1,}|^V{0,1}XX{2,}|^V{0,1}X{1,}V{1,2}X{1,}V{1,2}X{1,}V{1,2}X{1,}/)) {
+            if (str.match(/^XV{1,2}X{1,}V{1,2}X{1,}|^V{0,1}X{1,}V{1,2}X{1,}V{1,2}X{1,}V{1,2}X{1,}/)) {
                 return matchAs[mi];
             }
 
