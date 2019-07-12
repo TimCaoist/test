@@ -1054,9 +1054,20 @@ var onMinMaxClick = function () {
         }
 
         var pnums = fourWatchUtil.getNums(storeDatas, storeDatas.length - 2, indexex);
+
+        var ppnums = fourWatchUtil.getNums(storeDatas, storeDatas.length - 3, indexex);
+
         for (var i = 0; i < nums.length; i++) {
             var n = parseInt(nums[i], 10);
-            if (pnums.indexOf(n - 1) > -1) {
+            if (n < 2) {
+                continue;
+            }
+
+            if (n > 5) {
+                break;
+            }
+
+            if (pnums.indexOf((n - 1) + '') > -1 && ppnums.indexOf((n - 2) + '') > -1) {
                 var numbers = [];
                 for (var a = n + 1; a <= n + 4; a++) {
                     numbers.push(a + '');
@@ -1111,11 +1122,9 @@ var onMinMaxClick = function () {
         for (var n = 0; n <= 6; n++) {
             var isMatch = true;
             var allRight = false;
-            var limitN = 0;
             for (var a = n; a < n + 4; a++) {
                 if (ppnums.indexOf(a + '') > -1 || nums.indexOf(a + '') > -1) {
                     isMatch = false;
-                    limitN = a - n;
                     break;
                 }
 
@@ -1124,7 +1133,7 @@ var onMinMaxClick = function () {
                 }
             }
 
-            if ((!isMatch && limitN < 3) || !allRight) {
+            if (!isMatch || !allRight) {
                 continue;
             }
 
