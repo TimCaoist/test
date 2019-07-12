@@ -242,7 +242,7 @@ window.console.logex = function (str) {
         //str += "<div><button id='dobet4'>do4</button><button id='show4'>show</button><input value='3' id='tbMatchCount' type='number' min='0' max='5'><input type='checkbox' id='cbThreeNumberloop' />T<input type='checkbox' id='cbDouble' />D<input type='checkbox' id='cbFourloop' />4<input type='checkbox' id='cbThreeloop' />3</div>";
         //str += "<div><input type='number' id='tbFourType' value='0' min='0' max='1'/></div>";
         //str += "<div><input type='number' id='tbFourNum' value='0' min='0' /></div>";
-        str += "<div><button id='dobet2'>do2</button><button id='show2'>show</button></div>";
+        str += "<div><button id='dobet2'>do2</button><button id='dobetAny2'>doAny2</button><button id='show2'>show</button></div>";
         str += "<div><input type='number' id='tbTwoType' value='0' min='0' max='3'/></div>";
         str += "<div><input type='number' id='tbTwoNum' value='0' min='0' /></div>";
 		
@@ -409,6 +409,16 @@ window.console.logex = function (str) {
             }
 
             doTwoBet($("#tbTwoType").val(), $("#tbTwoNum").val(), 1, parseInt(storeDatas[storeDatas.length - 1].CP_QS) + 1);
+            $("#tbTwoNum").val('');
+        });
+
+        $("#dobetAny2").click(function () {
+            var numberstr = $("#tbTwoNum").val();
+            if (numberstr.length < 3) {
+                return;
+            }
+
+            doTwoBet($("#tbTwoType").val(), $("#tbTwoNum").val(), 1, parseInt(storeDatas[storeDatas.length - 1].CP_QS) + 1, 1);
             $("#tbTwoNum").val('');
         });
     };

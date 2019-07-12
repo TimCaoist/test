@@ -850,22 +850,30 @@ var onMinMaxClick = function () {
 
 (function () {
     var find = function (storeDatas, indexex, step) {
+        var pprevI = storeDatas.length - 3;
+        var ppnums = fourWatchUtil.getNums(storeDatas, pprevI, indexex);
+
         var prevI = storeDatas.length - 2;
         var nums = fourWatchUtil.getNums(storeDatas, prevI, indexex);
 
         var lastI = storeDatas.length - 1;
         var lastNums = fourWatchUtil.getNums(storeDatas, lastI, indexex);
 
-        var min = 3 + (step * 2);
+        var min = 3 + (step * 3);
         for (var i = 9; i >= min; i--) {
             var isWrong = false;
             for (var a = 0; a < 4; a++) {
-                if (nums.indexOf((i - a) + '') > -1) {
+                if (ppnums.indexOf((i - a) + '') > -1) {
                     isWrong = true;
                     break;
                 }
 
-                if (lastNums.indexOf((i - a - step) + '') > -1) {
+                if (nums.indexOf((i - a - step) + '') > -1) {
+                    isWrong = true;
+                    break;
+                }
+
+                if (lastNums.indexOf((i - a - (step * 2)) + '') > -1) {
                     isWrong = true;
                     break;
                 }
@@ -877,7 +885,7 @@ var onMinMaxClick = function () {
 
             var outNums = [];
             for (var a = 0; a < 4; a++) {
-                outNums.push((i - a - (step * 2)) + '');
+                outNums.push((i - a - (step * 3)) + '');
             }
 
             return {
@@ -941,22 +949,30 @@ var onMinMaxClick = function () {
 
 (function () {
     var find = function (storeDatas, indexex, step) {
+        var pprevI = storeDatas.length - 3;
+        var ppnums = fourWatchUtil.getNums(storeDatas, pprevI, indexex);
+
         var prevI = storeDatas.length - 2;
         var nums = fourWatchUtil.getNums(storeDatas, prevI, indexex);
 
         var lastI = storeDatas.length - 1;
         var lastNums = fourWatchUtil.getNums(storeDatas, lastI, indexex);
 
-        var max = step == 1 ? 4 : 2;
+        var max = step == 1 ? 3 : 0;
         for (var i = 0; i <= max ; i++) {
             var isWrong = false;
             for (var a = 0; a < 4; a++) {
-                if (nums.indexOf((i + a) + '') > -1) {
+                if (ppnums.indexOf((i + a) + '') > -1) {
                     isWrong = true;
                     break;
                 }
 
-                if (lastNums.indexOf((i + a + step) + '') > -1) {
+                if (nums.indexOf((i + a + step) + '') > -1) {
+                    isWrong = true;
+                    break;
+                }
+
+                if (lastNums.indexOf((i + a + (step * 2)) + '') > -1) {
                     isWrong = true;
                     break;
                 }
@@ -968,7 +984,7 @@ var onMinMaxClick = function () {
 
             var outNums = [];
             for (var a = 0; a < 4; a++) {
-                outNums.push((i + a + (step * 2)) + '');
+                outNums.push((i + a + (step * 3)) + '');
             }
 
             return {
@@ -1028,4 +1044,153 @@ var onMinMaxClick = function () {
     };
 
     window.watchers.push(watch1);
+})();
+
+(function () {
+    var find = function (storeDatas, indexex) {
+        var nums = fourWatchUtil.getNums(storeDatas, storeDatas.length - 1, indexex);
+        if (nums[0] > 5) {
+            return null;
+        }
+
+        var pnums = fourWatchUtil.getNums(storeDatas, storeDatas.length - 2, indexex);
+        for (var i = 0; i < nums.length; i++) {
+            var n = parseInt(nums[i], 10);
+            if (pnums.indexOf(n - 1) > -1) {
+                var numbers = [];
+                for (var a = n + 1; a <= n + 4; a++) {
+                    numbers.push(a + '');
+                }
+
+                return {
+                    index: indexex[0],
+                    nums: numbers,
+                    t: 1
+                }
+            }
+        }
+
+        return null;
+    }
+
+    var watch = {
+        name: "fourboy",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var match = find(histroyDatas, [0, 1, 2, 3]);
+            if (match == null) {
+                match = find(histroyDatas, [1, 2, 3, 4]);
+            }
+
+            if (match == null) {
+                return;
+            }
+
+            console.log(match);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, match, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
+})();
+
+(function () {
+    var find = function (storeDatas, indexex) {
+        var ppnums = fourWatchUtil.getNums(storeDatas, storeDatas.length - 3, indexex);
+
+        var pnums = fourWatchUtil.getNums(storeDatas, storeDatas.length - 2, indexex);
+
+        var nums = fourWatchUtil.getNums(storeDatas, storeDatas.length - 1, indexex);
+        
+        var mn = -1;
+        for (var n = 0; n <= 6; n++) {
+            var isMatch = true;
+            var allRight = false;
+            var limitN = 0;
+            for (var a = n; a < n + 4; a++) {
+                if (ppnums.indexOf(a + '') > -1 || nums.indexOf(a + '') > -1) {
+                    isMatch = false;
+                    limitN = a - n;
+                    break;
+                }
+
+                if (pnums.indexOf(a + '') > -1) {
+                    allRight = true;
+                }
+            }
+
+            if ((!isMatch && limitN < 3) || !allRight) {
+                continue;
+            }
+
+            mn = n;
+        }
+
+        if (mn == -1) {
+            return null;
+        }
+
+        for (var n = 0; n <= 6; n++) {
+            if (n === mn) {
+                continue;
+            }
+
+            var isMatch = true;
+            var allRight = false;
+            var numbers = [];
+            for (var a = n; a < n + 4; a++) {
+                if (pnums.indexOf(a + '') > -1) {
+                    isMatch = false;
+                    break;
+                }
+
+                numbers.push(a + '');
+                if (nums.indexOf(a + '') > -1) {
+                    allRight = true;
+                }
+            }
+
+            if (allRight == false || isMatch == false) {
+                continue;
+            }
+
+            return {
+                index: indexex[0],
+                nums: numbers,
+                t: 1
+            }
+        }
+
+        return null;
+    }
+
+    var watch = {
+        name: "foursplit",
+        txt: "",
+        prevWrong: false,
+        policies: [],
+        matchGuy: null,
+        newBetData: function (oldData, newData, histroyDatas) {
+            var match = find(histroyDatas, [0, 1, 2, 3]);
+            if (match == null) {
+                match = find(histroyDatas, [1, 2, 3, 4]);
+            }
+
+            if (match == null) {
+                return;
+            }
+
+            console.log(match);
+            for (var a = 0; a < watch.policies.length; a++) {
+                watch.policies[a].tryStart(watch, match, newData);
+            }
+        }
+    };
+
+    window.watchers.push(watch);
 })();

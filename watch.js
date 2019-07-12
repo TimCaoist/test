@@ -1268,7 +1268,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
         }
     };
 
-    window.watchers.push(watch1);
+   // window.watchers.push(watch1);
 })();
 
 (function () {

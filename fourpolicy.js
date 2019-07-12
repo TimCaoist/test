@@ -12,16 +12,6 @@ var filterFourNumbers = function (n, numberArray) {
     return cc < numberArray.length;
 };
 
-var filterAnyMatchNumbers = function (n, numberArray) {
-    for (var ni in numberArray) {
-        if (n.indexOf(numberArray[ni]) > - 1) {
-            return true;
-        }
-    }
-
-    return false;
-};
-
 
 var getFourIndex = function (index) {
     switch (index + "") {
@@ -295,4 +285,6 @@ var createFourNormalPolicy = function (name) {
     createFourPolicy("fourmissleftTwo", "fourmissleftTwo_start", 1);
     createFourPolicy("fourmissRightOne", "fourmissRightOne_start", 1);
     createFourPolicy("fourmissRightTwo", "fourmissRightTwo_start", 1);
+    createFourPolicy("fourboy", "fourboy_start", 1);
+    createFourPolicy("foursplit", "foursplit_start", 1);
 })();

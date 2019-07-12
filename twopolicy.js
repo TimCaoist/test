@@ -9,7 +9,19 @@ var filterNumbers = function (n, numberArray) {
     return numberArray.indexOf(n[0]) == - 1 || numberArray.indexOf(n[1]) == -1;
 };
 
-var doTwoBet = function (betIndex, nums, bias, issueNumber) {
+
+var filterAnyMatchNumbers = function (n, numberArray) {
+    for (var ni in numberArray) {
+        if (n.indexOf(numberArray[ni]) > - 1) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+
+var doTwoBet = function (betIndex, nums, bias, issueNumber, type) {
 
     var betNumberA = "";
     var betNumberB = "";
@@ -17,7 +29,12 @@ var doTwoBet = function (betIndex, nums, bias, issueNumber) {
     var cb = 0;
 
     var filters = [];
-    filters.push(filterNumbers);
+    if (typeof type == "undefined") {
+        filters.push(filterFourNumbers);
+    }
+    else {
+        filters.push(filterAnyMatchNumbers);
+    }
 
     for (var i = 0; i < 100; i++) {
         var n = (i + '').padLeft('0', 2);
