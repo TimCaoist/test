@@ -186,6 +186,5 @@ var createTwoPolicy = function (name, cacheName) {
 
 (function () {
     createTwoPolicy("twolike", "twolike_start");
-    createTwoPolicy("twomatch", "twomatch_start");
     createTwoPolicy("twomatch3", "twomatch3_start");
 })();

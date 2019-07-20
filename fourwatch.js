@@ -1046,69 +1046,6 @@ var onMinMaxClick = function () {
     window.watchers.push(watch1);
 })();
 
-(function () {
-    var find = function (storeDatas, indexex) {
-        var nums = fourWatchUtil.getNums(storeDatas, storeDatas.length - 1, indexex);
-        if (nums[0] > 5) {
-            return null;
-        }
-
-        var pnums = fourWatchUtil.getNums(storeDatas, storeDatas.length - 2, indexex);
-
-        var ppnums = fourWatchUtil.getNums(storeDatas, storeDatas.length - 3, indexex);
-
-        for (var i = 0; i < nums.length; i++) {
-            var n = parseInt(nums[i], 10);
-            if (n < 2) {
-                continue;
-            }
-
-            if (n > 5) {
-                break;
-            }
-
-            if (pnums.indexOf((n - 1) + '') > -1 && ppnums.indexOf((n - 2) + '') > -1) {
-                var numbers = [];
-                for (var a = n + 1; a <= n + 4; a++) {
-                    numbers.push(a + '');
-                }
-
-                return {
-                    index: indexex[0],
-                    nums: numbers,
-                    t: 1
-                }
-            }
-        }
-
-        return null;
-    }
-
-    var watch = {
-        name: "fourboy",
-        txt: "",
-        prevWrong: false,
-        policies: [],
-        matchGuy: null,
-        newBetData: function (oldData, newData, histroyDatas) {
-            var match = find(histroyDatas, [0, 1, 2, 3]);
-            if (match == null) {
-                match = find(histroyDatas, [1, 2, 3, 4]);
-            }
-
-            if (match == null) {
-                return;
-            }
-
-            console.log(match);
-            for (var a = 0; a < watch.policies.length; a++) {
-                watch.policies[a].tryStart(watch, match, newData);
-            }
-        }
-    };
-
-    window.watchers.push(watch);
-})();
 
 (function () {
     var find = function (storeDatas, indexex) {
@@ -1171,6 +1108,7 @@ var onMinMaxClick = function () {
             return {
                 index: indexex[0],
                 nums: numbers,
+                mn: mn,
                 t: 1
             }
         }
