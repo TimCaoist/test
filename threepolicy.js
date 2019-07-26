@@ -1,4 +1,7 @@
-var createThreePolicy = function (name, cacheName, type) {
+var createThreePolicy = function (name, regs, type) {
+    var cacheName = name + "_reg";
+    sessionStorage[cacheName] = "";
+
     var register = function () {
         var watch = findWatch(name);
         watch.policies.push(policy);
@@ -56,10 +59,16 @@ var createThreePolicy = function (name, cacheName, type) {
                 policy.wins++;
                 batchWins++;
                 console.logex("策略" + name + "正确盈利一次。当前获利次数：" + policy.wins + "总盈利: " + batchWins);
+                sessionStorage[cacheName] = sessionStorage[cacheName] + "V";
             }
             else {
-                sessionStorage[cacheName] = "1";
                 console.logex("策略" + name + "被终结。");
+                sessionStorage[cacheName] = sessionStorage[cacheName] + "X";
+            }
+
+            if (sessionStorage[cacheName].length > 20) {
+                var temp = sessionStorage[cacheName];
+                sessionStorage[cacheName] = temp.substr(temp.length - 20, 20);
             }
         },
         tryStart: function (watch, array, newData) {
@@ -80,9 +89,12 @@ var createThreePolicy = function (name, cacheName, type) {
                 return;
             }
 
-            if (sessionStorage[cacheName] != "1") {
-                console.logex("策略" + name + "未下注！");
-                return;
+            var strs = sessionStorage[cacheName];
+            for (var idx in regs) {
+                if (strs.match(regs[idx]) != null) {
+                    console.logex("策略" + name + "满足条件" + regs[idx]);
+                    break;
+                }
             }
 
             // doFourBet(matchItem.index, matchItem.nums, 1, (parseInt(newData.CP_QS) + 1) + "", type);
@@ -93,7 +105,9 @@ var createThreePolicy = function (name, cacheName, type) {
 };
 
 (function () {
-    createThreePolicy("threeBaoZi1", "threeBaoZi1_start");
-    createThreePolicy("threeBaoZi2", "threeBaoZi2_start");
-    createThreePolicy("threeBaoZi3", "threeBaoZi3_start");
+    var reges1 = ["VX{3,3}$", "VXVXVX$", "VX{2,2}VX{2,2}VX{2,2}$"];
+
+    createThreePolicy("threeBaoZi1", reges1);
+    createThreePolicy("threeBaoZi2", reges1);
+    createThreePolicy("threeBaoZi3", reges1);
 })();

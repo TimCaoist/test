@@ -943,7 +943,7 @@ var addBrotherFind = function (histroyDatas, subIndex, isMatch, isSplit) {
             var fMatch = matchArry[0];
             var miss = Math.abs(fMatch.miss);
             var matchStr = fMatch.matchStr;
-            if ((miss == 0 || miss == 1 )&& matchStr.match(/^V{0,4}X{1,}V{0,}X{1,}V{0,}X{1,}/) === null) {
+            if ((miss == 0 || miss == 1) && matchStr.match(/^V{0,4}X{1,}V{0,}X{1,}V{0,}X{1,}V{0,}X{1,}/) === null) {
                 return;
             }
             else if (matchStr.match(/^X{1,}V{0,}X{1,}|^X{1,}VX{1,}/) === null) {
