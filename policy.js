@@ -40,7 +40,7 @@ var getMutil = function (b) {
     }
 };
 
-sessionStorage.bet_money_1 = 600;
+sessionStorage.bet_money_1 = 2000;
 
 var getMutil1 = function (b) {
     return parseInt(sessionStorage.bet_money_1, 10);

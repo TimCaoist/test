@@ -1,4 +1,4 @@
-sessionStorage["bet_multiple_4"] = 1;
+sessionStorage["bet_multiple_4"] = 2;
 var filterFourNumbers = function (n, numberArray) {
 	var cc = 0;
 	for(var ni in numberArray)
@@ -294,12 +294,13 @@ var createRegPolicy = function (name, regs, type) {
 			for(var idx in regs)
 			{
 			    if (strs.match(regs[idx]) != null){
-				   console.logex("策略" + name + "满足条件" + regs[idx]);
-				   break;
+                    console.logex("策略" + name + "满足条件" + regs[idx]);
+                    doFourBet(matchItem.index, matchItem.nums, 1, (parseInt(newData.CP_QS) + 1) + "", type);
+				    break;
 				} 	
 			}
 			
-           // doFourBet(matchItem.index, matchItem.nums, 1, (parseInt(newData.CP_QS) + 1) + "", type);
+            
         }
     };
 
@@ -390,7 +391,7 @@ var createFourNormalPolicy = function (name) {
 })();
 
 (function () {
-	var reges = ["VX{2,2}$", "VXVX$", "VX{2,2}VX{2,2}$"];
+	var reges = ["VX{3,3}$", "VXVX$", "VX{2,2}VX{2,2}$"];
 	createRegPolicy("fourright3", reges);
 	createRegPolicy("fourleft3", reges);
 	
