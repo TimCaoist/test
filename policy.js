@@ -1064,5 +1064,4 @@ var createReverseWrongOne = function (name, cacheName, winStop) {
     createReverse("nummax");
     createReverse("nummid");
     createReverse("threetwo");
-    createReverse("cross");
 })();
