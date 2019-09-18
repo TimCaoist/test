@@ -1,4 +1,4 @@
-sessionStorage["bet_multiple_4"] = 2;
+sessionStorage["bet_multiple_4"] = 3;
 var filterFourNumbers = function (n, numberArray) {
 	var cc = 0;
 	for(var ni in numberArray)
